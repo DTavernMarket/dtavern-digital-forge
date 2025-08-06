@@ -52,6 +52,16 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// DTavern specific colors
+				'tavern-wood': 'hsl(var(--tavern-wood))',
+				'tavern-parchment': 'hsl(var(--tavern-parchment))',
+				'tavern-brass': 'hsl(var(--tavern-brass))',
+				'tavern-moss': 'hsl(var(--tavern-moss))',
+				'tavern-steel': 'hsl(var(--tavern-steel))',
+				'tavern-wine': 'hsl(var(--tavern-wine))',
+				'magical-glow': 'hsl(var(--magical-glow))',
+				'warm-light': 'hsl(var(--warm-light))',
+				'shadow-deep': 'hsl(var(--shadow-deep))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -84,11 +94,30 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'magical-shimmer': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(100%)' }
+				},
+				'candle-flicker': {
+					'0%, 100%': { opacity: '1', transform: 'scale(1)' },
+					'50%': { opacity: '0.8', transform: 'scale(1.05)' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-10px)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'magical-shimmer': 'magical-shimmer 2s ease-in-out infinite',
+				'candle-flicker': 'candle-flicker 2s ease-in-out infinite',
+				'float': 'float 3s ease-in-out infinite'
+			},
+			fontFamily: {
+				'medieval': ['Cinzel', 'serif'],
+				'body': ['Inter', 'sans-serif']
 			}
 		}
 	},
