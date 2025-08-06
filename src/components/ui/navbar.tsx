@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Shield, Scroll, Coins, User, Menu } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,18 +22,18 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
-            <a 
-              href="#produtos" 
+            <Link 
+              to="/produtos" 
               className="text-foreground hover:text-accent transition-colors duration-300 font-medium"
             >
               Produtos
-            </a>
-            <a 
-              href="#artesaos" 
+            </Link>
+            <Link 
+              to="/artesaos" 
               className="text-foreground hover:text-accent transition-colors duration-300 font-medium"
             >
               Artesãos
-            </a>
+            </Link>
             <a 
               href="#sobre" 
               className="text-foreground hover:text-accent transition-colors duration-300 font-medium"
@@ -65,20 +66,20 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden bg-card/95 backdrop-blur-sm border border-tavern-brass/30 rounded-lg mt-2 p-4 space-y-4">
-            <a 
-              href="#produtos" 
+            <Link 
+              to="/produtos" 
               className="block text-foreground hover:text-accent transition-colors font-medium"
               onClick={() => setIsMenuOpen(false)}
             >
               Produtos
-            </a>
-            <a 
-              href="#artesaos" 
+            </Link>
+            <Link 
+              to="/artesaos" 
               className="block text-foreground hover:text-accent transition-colors font-medium"
               onClick={() => setIsMenuOpen(false)}
             >
               Artesãos
-            </a>
+            </Link>
             <a 
               href="#sobre" 
               className="block text-foreground hover:text-accent transition-colors font-medium"

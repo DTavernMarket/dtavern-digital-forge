@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Package, Users, Award, Crown, ShoppingBag } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ArtisanSection = () => {
   const featuredArtisans = [
@@ -160,9 +161,11 @@ const ArtisanSection = () => {
                     <p className="text-lg font-bold text-accent">{artisan.monthlyPrice}</p>
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
-                      <ShoppingBag className="w-4 h-4" />
-                    </Button>
+                    <Link to={`/artesao/${artisan.id}`}>
+                      <Button variant="outline" size="sm">
+                        <ShoppingBag className="w-4 h-4" />
+                      </Button>
+                    </Link>
                     <Button variant="tavern" size="sm">
                       Assinar
                     </Button>
