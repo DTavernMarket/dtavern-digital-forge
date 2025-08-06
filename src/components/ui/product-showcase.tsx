@@ -132,9 +132,11 @@ const ProductShowcase = () => {
 
         {/* View All CTA */}
         <div className="text-center">
-          <Button variant="outline" size="lg">
-            Ver Todos os Produtos
-            <Users className="w-5 h-5 ml-2" />
+          <Button variant="outline" size="lg" asChild>
+            <a href="/produtos">
+              Ver Todos os Produtos
+              <Users className="w-5 h-5 ml-2" />
+            </a>
           </Button>
         </div>
       </div>
