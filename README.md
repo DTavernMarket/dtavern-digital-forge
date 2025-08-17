@@ -1,73 +1,220 @@
-# Welcome to your Lovable project
+# 🏰 DTavern - Marketplace Medieval de RPG
 
-## Project info
+Uma aplicação Angular moderna para marketplace de produtos digitais de RPG de mesa, com temática medieval e design responsivo.
 
-**URL**: https://lovable.dev/projects/f0f8ce19-5312-4066-a7f0-2b18d665a519
+## 🎯 Sobre o Projeto
 
-## How can I edit this code?
+O **DTavern** é um marketplace especializado em produtos digitais de RPG de mesa, desenvolvido em Angular 17 com TypeScript. A aplicação oferece uma experiência única com design temático medieval, conectando artesãos digitais com jogadores apaixonados por RPG.
 
-There are several ways of editing your application.
+## ✨ Funcionalidades
 
-**Use Lovable**
+### 🏠 Página Inicial
+- **Hero Section** com efeitos visuais mágicos
+- **Exibição de Produtos** em destaque
+- **Seção de Artesãos** com perfis destacados
+- **Navegação responsiva** com tema medieval
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f0f8ce19-5312-4066-a7f0-2b18d665a519) and start prompting.
+### 🛍️ Catálogo de Produtos
+- **Sistema de busca** em tempo real
+- **Filtros por categoria** (Tokens, Mapas, Aventuras, etc.)
+- **Ordenação** por preço, avaliação, downloads
+- **Grid responsivo** de produtos
+- **Paginação** inteligente
 
-Changes made via Lovable will be committed automatically to this repo.
+### 👥 Perfis de Artesãos
+- **Perfis detalhados** dos criadores
+- **Especialidades** e estatísticas
+- **Sistema de avaliações**
+- **Redes sociais** integradas
 
-**Use your preferred IDE**
+### 🎨 Design System
+- **Tema medieval** consistente
+- **Paleta de cores** personalizada
+- **Tipografia** temática (Cinzel + Inter)
+- **Animações** suaves e efeitos visuais
+- **Responsividade** completa
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🛠️ Tecnologias Utilizadas
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Frontend
+- **Angular 17** - Framework principal
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS** - Framework de estilização
+- **RxJS** - Programação reativa
+- **Angular Router** - Navegação SPA
 
-Follow these steps:
+### Design & UX
+- **Google Fonts** - Tipografia (Cinzel, Inter)
+- **CSS Custom Properties** - Variáveis de tema
+- **CSS Animations** - Efeitos visuais
+- **Responsive Design** - Mobile-first
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Arquitetura
+- **Standalone Components** - Componentes independentes
+- **Signal-based State** - Estado reativo moderno
+- **Service Pattern** - Gerenciamento de dados
+- **Type Safety** - Interfaces TypeScript
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🚀 Como Executar
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Pré-requisitos
+- Node.js 18+ 
+- npm ou yarn
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Instalação
+```bash
+# Clonar o repositório
+git clone <url-do-repositorio>
+cd dtavern-angular
+
+# Instalar dependências
+npm install
+
+# Executar em modo desenvolvimento
+npm start
 ```
 
-**Edit a file directly in GitHub**
+### Scripts Disponíveis
+```bash
+npm start          # Executa em modo desenvolvimento
+npm run build      # Build para produção
+npm run watch      # Build com watch mode
+npm test           # Executa testes
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📁 Estrutura do Projeto
 
-**Use GitHub Codespaces**
+```
+src/
+├── app/
+│   ├── components/           # Componentes reutilizáveis
+│   │   ├── barra-navegacao/
+│   │   ├── secao-hero/
+│   │   ├── exibicao-produtos/
+│   │   ├── secao-artesoes/
+│   │   └── rodape/
+│   ├── pages/               # Páginas da aplicação
+│   │   ├── pagina-inicial/
+│   │   ├── pagina-produtos/
+│   │   └── pagina-nao-encontrada/
+│   ├── models/              # Interfaces TypeScript
+│   │   ├── produto.model.ts
+│   │   ├── artesao.model.ts
+│   │   ├── usuario.model.ts
+│   │   └── carrinho.model.ts
+│   ├── services/            # Serviços de dados
+│   │   ├── produto.service.ts
+│   │   └── artesao.service.ts
+│   ├── app.routes.ts        # Configuração de rotas
+│   └── app.ts              # Componente principal
+├── assets/                  # Recursos estáticos
+└── styles.css              # Estilos globais
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🎨 Tema e Design
 
-## What technologies are used for this project?
+### Paleta de Cores
+- **tavern-wood**: #8B4513 (Marrom madeira)
+- **tavern-brass**: #CD7F32 (Latão)
+- **magical-glow**: #FFD700 (Dourado mágico)
+- **accent**: #FF6B35 (Laranja vibrante)
+- **background**: #1a1a1a (Preto profundo)
+- **foreground**: #f5f5f5 (Branco suave)
 
-This project is built with:
+### Tipografia
+- **Cinzel** - Títulos e elementos medievais
+- **Inter** - Texto do corpo e interface
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Componentes Principais
+- **Barra de Navegação** - Navegação responsiva
+- **Hero Section** - Seção principal com partículas
+- **Exibição de Produtos** - Grid de produtos
+- **Seção de Artesãos** - Perfis dos criadores
+- **Rodapé** - Links e informações
 
-## How can I deploy this project?
+## 🔧 Configuração
 
-Simply open [Lovable](https://lovable.dev/projects/f0f8ce19-5312-4066-a7f0-2b18d665a519) and click on Share -> Publish.
+### Tailwind CSS
+O projeto utiliza Tailwind CSS com configuração personalizada para o tema medieval:
 
-## Can I connect a custom domain to my Lovable project?
+```javascript
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        'tavern-wood': '#8B4513',
+        'tavern-brass': '#CD7F32',
+        // ... outras cores
+      },
+      fontFamily: {
+        'medieval': ['Cinzel', 'serif'],
+        'body': ['Inter', 'sans-serif'],
+      }
+    }
+  }
+}
+```
 
-Yes, you can!
+### Rotas
+```typescript
+// app.routes.ts
+export const routes: Routes = [
+  { path: '', component: PaginaInicialComponent },
+  { path: 'produtos', component: PaginaProdutosComponent },
+  { path: '**', component: PaginaNaoEncontradaComponent }
+];
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📱 Responsividade
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+A aplicação é totalmente responsiva com breakpoints:
+- **Mobile**: < 768px
+- **Tablet**: 768px - 1024px
+- **Desktop**: > 1024px
+
+## 🎭 Funcionalidades Especiais
+
+### Efeitos Visuais
+- **Partículas flutuantes** no hero
+- **Animações de hover** nos cards
+- **Gradientes mágicos** nos botões
+- **Backdrop blur** nos overlays
+
+### Interatividade
+- **Busca em tempo real**
+- **Filtros dinâmicos**
+- **Ordenação inteligente**
+- **Navegação suave**
+
+## 🚀 Deploy
+
+### Build para Produção
+```bash
+npm run build
+```
+
+### Servidor de Produção
+```bash
+npm run serve:ssr:dtavern-angular
+```
+
+## 🤝 Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
+
+## 👨‍💻 Desenvolvido por
+
+**DTavern Team** - Marketplace Medieval de RPG
+
+---
+
+*"Onde a magia encontra a tecnologia, e as aventuras ganham vida digital!"* ✨
