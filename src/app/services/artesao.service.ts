@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { Artesao } from '../models/artesao.model';
 
 @Injectable({
@@ -63,6 +63,9 @@ export class ArtesaoService {
     }
   ]);
 
+  // Computed signals para dados derivados
+  artesoesEmDestaque = computed(() => this.artesoes().slice(0, 3));
+
   // Métodos para acessar os artesãos
   obterArtesoes() {
     return this.artesoes;
@@ -77,7 +80,7 @@ export class ArtesaoService {
   }
 
   obterArtesoesEmDestaque() {
-    return this.artesoes().slice(0, 3);
+    return this.artesoesEmDestaque;
   }
 
   buscarArtesoes(termo: string) {

@@ -16,20 +16,20 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
     RodapeComponent
   ],
   template: `
-    <div class="min-h-screen bg-background font-body">
+    <div class="min-h-screen bg-tavern-wood font-body">
       <app-barra-navegacao />
       
       <!-- Cabeçalho da Página -->
-      <section class="pt-20 pb-12 bg-gradient-to-b from-background to-muted/30">
+      <section class="pt-20 pb-12 bg-ash-smoke/30">
         <div class="container mx-auto px-4">
           <div class="text-center space-y-4">
-            <h1 class="text-4xl md:text-6xl font-medieval font-bold text-foreground">
+            <h1 class="text-4xl md:text-6xl font-medieval font-bold text-scroll-beige">
               Catálogo de
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-magical-glow">
+              <span class="text-candlelight-gold">
                 Produtos
               </span>
             </h1>
-            <p class="text-lg text-foreground/70 max-w-2xl mx-auto">
+            <p class="text-lg text-scroll-beige/70 max-w-2xl mx-auto">
               Descubra milhares de produtos digitais criados por artesãos talentosos para suas aventuras de RPG.
             </p>
           </div>
@@ -37,7 +37,7 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
       </section>
 
       <!-- Filtros e Busca -->
-      <section class="py-8 bg-card/50 backdrop-blur-sm border-b border-tavern-brass/30">
+      <section class="py-8 bg-stone-gray/50 backdrop-blur-sm border-b border-brass-accent/30">
         <div class="container mx-auto px-4">
           <div class="flex flex-col lg:flex-row gap-6 items-center justify-between">
             <!-- Barra de Busca -->
@@ -47,9 +47,9 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
                 [ngModel]="termoBusca()"
                 (ngModelChange)="termoBusca.set($event)"
                 placeholder="Buscar produtos..."
-                class="w-full px-4 py-3 pl-12 bg-card/80 backdrop-blur-sm border border-tavern-brass/30 rounded-lg text-foreground placeholder-foreground/50 focus:outline-none focus:ring-2 focus:ring-accent/50"
+                class="w-full px-4 py-3 pl-12 bg-stone-gray/80 backdrop-blur-sm border border-brass-accent/30 rounded-lg text-scroll-beige placeholder-scroll-beige/50 focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50"
               />
-              <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-scroll-beige/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
             </div>
@@ -59,7 +59,7 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
               <select
                 [ngModel]="categoriaSelecionada()"
                 (ngModelChange)="categoriaSelecionada.set($event)"
-                class="px-4 py-3 bg-card/80 backdrop-blur-sm border border-tavern-brass/30 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+                class="px-4 py-3 bg-stone-gray/80 backdrop-blur-sm border border-brass-accent/30 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50"
               >
                 <option value="">Todas as Categorias</option>
                 <option *ngFor="let categoria of categorias" [value]="categoria">
@@ -70,7 +70,7 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
               <select
                 [ngModel]="ordenacaoSelecionada()"
                 (ngModelChange)="ordenacaoSelecionada.set($event)"
-                class="px-4 py-3 bg-card/80 backdrop-blur-sm border border-tavern-brass/30 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-accent/50"
+                class="px-4 py-3 bg-stone-gray/80 backdrop-blur-sm border border-brass-accent/30 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50"
               >
                 <option value="relevancia">Mais Relevantes</option>
                 <option value="preco-menor">Menor Preço</option>
@@ -89,7 +89,7 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
         <div class="container mx-auto px-4">
           <!-- Resultados -->
           <div class="mb-8">
-            <p class="text-foreground/70">
+            <p class="text-scroll-beige/70">
               {{ produtosFiltrados().length }} produto(s) encontrado(s)
             </p>
           </div>
@@ -98,7 +98,7 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div 
               *ngFor="let produto of produtosFiltrados(); trackBy: rastrearProduto"
-              class="group bg-card/80 backdrop-blur-sm border border-tavern-brass/30 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-lg"
+              class="group bg-stone-gray/80 backdrop-blur-sm border border-brass-accent/30 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-lg"
             >
               <!-- Imagem do Produto -->
               <div class="relative overflow-hidden">
@@ -107,18 +107,18 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
                   [alt]="produto.titulo"
                   class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div class="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute inset-0 bg-tavern-wood/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 
                 <!-- Badge da Categoria -->
                 <div class="absolute top-3 left-3">
-                  <span class="bg-accent/90 text-tavern-wood text-xs font-semibold px-3 py-1 rounded-full">
+                  <span class="bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold px-3 py-1 rounded-full">
                     {{ produto.categoria }}
                   </span>
                 </div>
 
                 <!-- Botão Favorito -->
-                <button class="absolute top-3 right-3 w-8 h-8 bg-card/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-accent/20 transition-colors">
-                  <svg class="w-4 h-4 text-foreground hover:text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button class="absolute top-3 right-3 w-8 h-8 bg-stone-gray/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-candlelight-gold/20 transition-colors">
+                  <svg class="w-4 h-4 text-scroll-beige hover:text-candlelight-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                   </svg>
                 </button>
@@ -127,28 +127,28 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
               <!-- Informações do Produto -->
               <div class="p-4 space-y-3">
                 <div class="space-y-1">
-                  <h3 class="text-lg font-semibold text-foreground group-hover:text-accent transition-colors line-clamp-2">
+                  <h3 class="text-lg font-semibold text-scroll-beige group-hover:text-candlelight-gold transition-colors line-clamp-2">
                     {{ produto.titulo }}
                   </h3>
-                  <p class="text-sm text-foreground/60">
+                  <p class="text-sm text-scroll-beige/60">
                     por {{ produto.nomeArtesao }}
                   </p>
                 </div>
 
-                <p class="text-sm text-foreground/70 line-clamp-2">
+                <p class="text-sm text-scroll-beige/70 line-clamp-2">
                   {{ produto.descricao }}
                 </p>
 
                 <!-- Avaliação e Downloads -->
                 <div class="flex items-center justify-between text-sm">
                   <div class="flex items-center space-x-1">
-                    <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-4 h-4 text-candlelight-gold" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                     </svg>
-                    <span class="text-foreground/80">{{ produto.avaliacao }}</span>
-                    <span class="text-foreground/60">({{ produto.numeroAvaliacoes }})</span>
+                    <span class="text-scroll-beige/80">{{ produto.avaliacao }}</span>
+                    <span class="text-scroll-beige/60">({{ produto.numeroAvaliacoes }})</span>
                   </div>
-                  <div class="flex items-center space-x-1 text-foreground/60">
+                  <div class="flex items-center space-x-1 text-scroll-beige/60">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                     </svg>
@@ -158,10 +158,10 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
 
                 <!-- Preço e Botão de Compra -->
                 <div class="flex items-center justify-between pt-2">
-                  <div class="text-lg font-bold text-foreground">
+                  <div class="text-lg font-bold text-scroll-beige">
                     R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
                   </div>
-                  <button class="px-3 py-2 bg-gradient-to-r from-accent to-magical-glow text-tavern-wood rounded-lg font-medium hover:shadow-lg transition-all text-sm">
+                  <button class="px-3 py-2 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-sm">
                     Adicionar
                   </button>
                 </div>
@@ -174,28 +174,28 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
           <div class="mt-12 flex justify-center">
             <div class="flex space-x-2">
               <button 
-                class="px-4 py-2 border border-tavern-brass/30 rounded-lg text-foreground hover:bg-accent/10 transition-colors"
+                class="px-4 py-2 border border-brass-accent/30 rounded-lg text-scroll-beige hover:bg-candlelight-gold/10 transition-colors"
                 [disabled]="paginaAtual() === 1"
               >
                 Anterior
               </button>
               <button 
-                class="px-4 py-2 bg-accent text-tavern-wood rounded-lg font-medium"
+                class="px-4 py-2 bg-candlelight-gold text-tavern-wood rounded-lg font-medium"
               >
                 1
               </button>
               <button 
-                class="px-4 py-2 border border-tavern-brass/30 rounded-lg text-foreground hover:bg-accent/10 transition-colors"
+                class="px-4 py-2 border border-brass-accent/30 rounded-lg text-scroll-beige hover:bg-candlelight-gold/10 transition-colors"
               >
                 2
               </button>
               <button 
-                class="px-4 py-2 border border-tavern-brass/30 rounded-lg text-foreground hover:bg-accent/10 transition-colors"
+                class="px-4 py-2 border border-brass-accent/30 rounded-lg text-scroll-beige hover:bg-candlelight-gold/10 transition-colors"
               >
                 3
               </button>
               <button 
-                class="px-4 py-2 border border-tavern-brass/30 rounded-lg text-foreground hover:bg-accent/10 transition-colors"
+                class="px-4 py-2 border border-brass-accent/30 rounded-lg text-scroll-beige hover:bg-candlelight-gold/10 transition-colors"
               >
                 Próxima
               </button>
@@ -205,11 +205,11 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
           @if(produtosFiltrados().length === 0) {
           <!-- Estado Vazio -->
           <div class="text-center py-12">
-            <svg class="w-16 h-16 text-foreground/30 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-16 h-16 text-scroll-beige/30 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
-            <h3 class="text-xl font-semibold text-foreground mb-2">Nenhum produto encontrado</h3>
-            <p class="text-foreground/60">Tente ajustar os filtros ou termos de busca.</p>
+            <h3 class="text-xl font-semibold text-scroll-beige mb-2">Nenhum produto encontrado</h3>
+            <p class="text-scroll-beige/60">Tente ajustar os filtros ou termos de busca.</p>
           </div>
           }
         </div>

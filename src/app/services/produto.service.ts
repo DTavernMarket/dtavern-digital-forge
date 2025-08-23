@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { Produto, CategoriaProduto } from '../models/produto.model';
 
 @Injectable({
@@ -63,6 +63,9 @@ export class ProdutoService {
     }
   ]);
 
+  // Computed signals para dados derivados
+  produtosEmDestaque = computed(() => this.produtos().slice(0, 3));
+
   // Métodos para acessar os produtos
   obterProdutos() {
     return this.produtos;
@@ -73,7 +76,7 @@ export class ProdutoService {
   }
 
   obterProdutosEmDestaque() {
-    return this.produtos().slice(0, 3);
+    return this.produtosEmDestaque;
   }
 
   buscarProdutos(termo: string) {

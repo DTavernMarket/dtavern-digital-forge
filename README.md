@@ -9,12 +9,14 @@ O **DTavern** é um marketplace especializado em produtos digitais de RPG de mes
 ## ✨ Funcionalidades
 
 ### 🏠 Página Inicial
+
 - **Hero Section** com efeitos visuais mágicos
 - **Exibição de Produtos** em destaque
 - **Seção de Artesãos** com perfis destacados
 - **Navegação responsiva** com tema medieval
 
 ### 🛍️ Catálogo de Produtos
+
 - **Sistema de busca** em tempo real
 - **Filtros por categoria** (Tokens, Mapas, Aventuras, etc.)
 - **Ordenação** por preço, avaliação, downloads
@@ -22,12 +24,14 @@ O **DTavern** é um marketplace especializado em produtos digitais de RPG de mes
 - **Paginação** inteligente
 
 ### 👥 Perfis de Artesãos
+
 - **Perfis detalhados** dos criadores
 - **Especialidades** e estatísticas
 - **Sistema de avaliações**
 - **Redes sociais** integradas
 
 ### 🎨 Design System
+
 - **Tema medieval** consistente
 - **Paleta de cores** personalizada
 - **Tipografia** temática (Cinzel + Inter)
@@ -37,6 +41,7 @@ O **DTavern** é um marketplace especializado em produtos digitais de RPG de mes
 ## 🛠️ Tecnologias Utilizadas
 
 ### Frontend
+
 - **Angular 17** - Framework principal
 - **TypeScript** - Tipagem estática
 - **Tailwind CSS** - Framework de estilização
@@ -44,12 +49,14 @@ O **DTavern** é um marketplace especializado em produtos digitais de RPG de mes
 - **Angular Router** - Navegação SPA
 
 ### Design & UX
+
 - **Google Fonts** - Tipografia (Cinzel, Inter)
 - **CSS Custom Properties** - Variáveis de tema
 - **CSS Animations** - Efeitos visuais
 - **Responsive Design** - Mobile-first
 
 ### Arquitetura
+
 - **Standalone Components** - Componentes independentes
 - **Signal-based State** - Estado reativo moderno
 - **Service Pattern** - Gerenciamento de dados
@@ -58,10 +65,12 @@ O **DTavern** é um marketplace especializado em produtos digitais de RPG de mes
 ## 🚀 Como Executar
 
 ### Pré-requisitos
-- Node.js 18+ 
+
+- Node.js 18+
 - npm ou yarn
 
 ### Instalação
+
 ```bash
 # Clonar o repositório
 git clone <url-do-repositorio>
@@ -75,6 +84,7 @@ npm start
 ```
 
 ### Scripts Disponíveis
+
 ```bash
 npm start          # Executa em modo desenvolvimento
 npm run build      # Build para produção
@@ -113,19 +123,35 @@ src/
 
 ## 🎨 Tema e Design
 
-### Paleta de Cores
-- **tavern-wood**: #8B4513 (Marrom madeira)
-- **tavern-brass**: #CD7F32 (Latão)
-- **magical-glow**: #FFD700 (Dourado mágico)
-- **accent**: #FF6B35 (Laranja vibrante)
-- **background**: #1a1a1a (Preto profundo)
-- **foreground**: #f5f5f5 (Branco suave)
+### Paleta DTavern
+
+- Tavern Wood (Madeira escura) – #4B2E19
+  Fundo estrutural, paredes e barras.
+- Candlelight Gold (Luz de vela / brilho mágico) – #FFD36A
+  Destaques, botões principais, títulos em destaque.
+- Brass Accent (Latão/Metais) – #C58B3D
+  Ícones, bordas e detalhes decorativos.
+- Warm Amber (Âmbar aconchegante) – #FFB347
+  Botões secundários, hovers e destaques intermediários.
+- Stone Gray (Pedra medieval) – #8C7A6B
+  Texto secundário, cards, contrastes suaves.
+- Scroll Beige (Pergaminho envelhecido) – #E9D7B8
+  Fundos de caixas de texto, modais e áreas de leitura.
+
+🌑 Paleta auxiliar (para equilíbrio e acessibilidade)
+
+- Midnight Brown (Quase preto, para contraste forte) – #1C0F0A
+  Texto principal em fundo claro.
+- Ash Smoke (Cinza esfumaçado) – #5A4B43
+  Divisórias, sombras, transições.
 
 ### Tipografia
+
 - **Cinzel** - Títulos e elementos medievais
 - **Inter** - Texto do corpo e interface
 
 ### Componentes Principais
+
 - **Barra de Navegação** - Navegação responsiva
 - **Hero Section** - Seção principal com partículas
 - **Exibição de Produtos** - Grid de produtos
@@ -135,6 +161,7 @@ src/
 ## 🔧 Configuração
 
 ### Tailwind CSS
+
 O projeto utiliza Tailwind CSS com configuração personalizada para o tema medieval:
 
 ```javascript
@@ -157,6 +184,7 @@ module.exports = {
 ```
 
 ### Rotas
+
 ```typescript
 // app.routes.ts
 export const routes: Routes = [
@@ -169,6 +197,7 @@ export const routes: Routes = [
 ## 📱 Responsividade
 
 A aplicação é totalmente responsiva com breakpoints:
+
 - **Mobile**: < 768px
 - **Tablet**: 768px - 1024px
 - **Desktop**: > 1024px
@@ -176,12 +205,14 @@ A aplicação é totalmente responsiva com breakpoints:
 ## 🎭 Funcionalidades Especiais
 
 ### Efeitos Visuais
+
 - **Partículas flutuantes** no hero
 - **Animações de hover** nos cards
 - **Gradientes mágicos** nos botões
 - **Backdrop blur** nos overlays
 
 ### Interatividade
+
 - **Busca em tempo real**
 - **Filtros dinâmicos**
 - **Ordenação inteligente**
@@ -190,11 +221,13 @@ A aplicação é totalmente responsiva com breakpoints:
 ## 🚀 Deploy
 
 ### Build para Produção
+
 ```bash
 npm run build
 ```
 
 ### Servidor de Produção
+
 ```bash
 npm run serve:ssr:dtavern-angular
 ```
