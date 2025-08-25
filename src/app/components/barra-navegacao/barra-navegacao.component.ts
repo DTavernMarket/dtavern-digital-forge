@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-stone-gray/80 backdrop-blur-sm border-b border-brass-accent/30">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-midnight-brown/80 backdrop-blur-sm border-b border-brass-accent/30">
       <div class="container mx-auto px-4">
         <div class="flex items-center justify-between h-16">
           <!-- Logo -->

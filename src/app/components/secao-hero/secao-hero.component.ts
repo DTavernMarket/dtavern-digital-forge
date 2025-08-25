@@ -16,17 +16,15 @@ import { RouterModule } from '@angular/router';
           class="w-full h-full object-cover"
         />
         <!-- Overlay escuro para melhorar legibilidade do texto -->
-        <div class="absolute inset-0 bg-tavern-wood/80"></div>
+        <div class="absolute inset-0 bg-tavern-wood/70"></div>
       </div>
 
       <!-- Conteúdo Principal -->
       <div class="relative z-10 container mx-auto px-4 text-center">
         <div class="max-w-4xl mx-auto space-y-8">
           <!-- Título Principal -->
-          <h1
-            class="text-5xl md:text-7xl lg:text-8xl font-medieval font-bold text-scroll-beige leading-tight"
-          >
-            Bem-vindo à <div class="block text-candlelight-gold">DTavern</div>
+          <h1 class="text-5xl md:text-7xl lg:text-7xl font-medieval font-bold">
+            Bem-vindo à <span class="text-candlelight-gold">DTavern</span>
           </h1>
 
           <!-- Subtítulo -->
@@ -34,22 +32,6 @@ import { RouterModule } from '@angular/router';
             O mercado digital definitivo para suas aventuras de RPG. Descubra tokens únicos, mapas
             épicos e aventuras memoráveis criadas por artesãos talentosos.
           </p>
-
-          <!-- Estatísticas -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-candlelight-gold mb-2">500+</div>
-              <div class="text-scroll-beige/70">Produtos Únicos</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-candlelight-gold mb-2">50+</div>
-              <div class="text-scroll-beige/70">Artesãos Talentosos</div>
-            </div>
-            <div class="text-center">
-              <div class="text-3xl md:text-4xl font-bold text-candlelight-gold mb-2">10k+</div>
-              <div class="text-scroll-beige/70">Downloads</div>
-            </div>
-          </div>
 
           <!-- Botões CTA -->
           <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -95,9 +77,13 @@ import { RouterModule } from '@angular/router';
       </div>
 
       <!-- Scroll Indicator -->
-      <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <button
+        (click)="rolarParaProdutos()"
+        class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform duration-300 p-3 rounded-full hover:bg-scroll-beige/10"
+        aria-label="Rolar para seção de produtos"
+      >
         <svg
-          class="w-6 h-6 text-scroll-beige/50"
+          class="w-9 h-9 text-candlelight-gold transition-colors duration-300"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -109,7 +95,7 @@ import { RouterModule } from '@angular/router';
             d="M19 14l-7 7m0 0l-7-7m7 7V3"
           />
         </svg>
-      </div>
+      </button>
     </section>
   `,
   styles: [
@@ -120,4 +106,14 @@ import { RouterModule } from '@angular/router';
     `,
   ],
 })
-export class SecaoHeroComponent {}
+export class SecaoHeroComponent {
+  rolarParaProdutos(): void {
+    const elementoProdutos = document.getElementById('produtos');
+    if (elementoProdutos) {
+      elementoProdutos.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  }
+}

@@ -11,14 +11,7 @@ import { ProdutoService } from '../../services/produto.service';
     <section id="produtos" class="py-20 bg-tavern-wood">
       <div class="container mx-auto px-4">
         <!-- Cabeçalho da Seção -->
-        <div class="text-center mb-16 space-y-4">
-          <div class="inline-flex items-center space-x-2 bg-stone-gray/80 backdrop-blur-sm border border-brass-accent/30 rounded-full px-4 py-2 text-sm mb-4">
-            <svg class="w-4 h-4 text-candlelight-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-            </svg>
-            <span class="text-scroll-beige font-medium">Produtos em Destaque</span>
-          </div>
-          
+        <div class="text-center mb-20 space-y-4">
           <h2 class="text-3xl md:text-5xl font-medieval font-bold text-scroll-beige">
             Tesouros para suas
             <span class="text-candlelight-gold">
@@ -36,7 +29,7 @@ import { ProdutoService } from '../../services/produto.service';
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           <div 
             *ngFor="let produto of produtosEmDestaque(); trackBy: rastrearProduto"
-            class="group bg-stone-gray/80 backdrop-blur-sm border-brass-accent/30 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-lg"
+            class="group bg-midnight-brown/50 backdrop-blur-sm border-brass-accent/30 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-lg"
           >
             <!-- Imagem do Produto -->
             <div class="relative overflow-hidden">

@@ -4,6 +4,7 @@ export interface Artesao {
   nome: string;
   biografia: string;
   avatar: string;
+  planoFundo: string; // caminho da imagem de fundo do artesão
   especialidades: string[];
   avaliacao: number;
   numeroAvaliacoes: number;
