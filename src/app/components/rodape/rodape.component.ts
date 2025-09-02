@@ -8,22 +8,22 @@ import { RouterModule } from '@angular/router';
   imports: [CommonModule, RouterModule],
   template: `
     <footer class="bg-stone-gray/80 backdrop-blur-sm border-t border-brass-accent/30">
-      <div class="container mx-auto px-4 py-12">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <!-- Logo e Descrição -->
-          <div class="space-y-4">
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center">
-                <img src="assets/images/DTavern-icone.png" alt="DTavern" class="w-12 h-12 object-contain" />
-              </div>
-              <span class="text-xl font-medieval font-bold text-scroll-beige">
-                DTavern
-              </span>
-            </div>
-            <p class="text-sm text-scroll-beige/70">
-              O marketplace definitivo para produtos digitais de RPG de mesa. 
-              Conectando artesãos talentosos com jogadores apaixonados.
-            </p>
+      <div class="container mx-auto px-4 py-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                     <!-- Logo e Descrição -->
+           <div class="space-y-3">
+             <div class="flex items-center space-x-2">
+               <div class="w-8 h-8 rounded-lg flex items-center justify-center">
+                 <img src="assets/images/DTavern-icone.png" alt="DTavern" class="w-12 h-12 object-contain" />
+               </div>
+               <span class="text-lg font-medieval font-bold text-scroll-beige">
+                 DTavern
+               </span>
+             </div>
+             <p class="text-xs text-scroll-beige/70">
+               O marketplace definitivo para produtos digitais de RPG de mesa. 
+               Conectando artesãos talentosos com jogadores apaixonados.
+             </p>
             <div class="flex space-x-4">
               <a href="#" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -48,10 +48,10 @@ import { RouterModule } from '@angular/router';
             </div>
           </div>
 
-          <!-- Links Rápidos -->
-          <div class="space-y-4">
-            <h3 class="text-lg font-semibold text-scroll-beige">Links Rápidos</h3>
-            <ul class="space-y-2">
+                     <!-- Links Rápidos -->
+           <div class="space-y-1">
+             <h3 class="text-base font-semibold text-scroll-beige">Links Rápidos</h3>
+             <ul class="space-y-1">
               <li>
                 <a routerLink="/produtos" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
                   Produtos
@@ -80,10 +80,10 @@ import { RouterModule } from '@angular/router';
             </ul>
           </div>
 
-          <!-- Categorias -->
-          <div class="space-y-4">
-            <h3 class="text-lg font-semibold text-scroll-beige">Categorias</h3>
-            <ul class="space-y-2">
+                     <!-- Categorias -->
+           <div class="space-y-1">
+             <h3 class="text-base font-semibold text-scroll-beige">Categorias</h3>
+             <ul class="space-y-1">
               <li>
                 <a href="#" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
                   Tokens
@@ -112,41 +112,41 @@ import { RouterModule } from '@angular/router';
             </ul>
           </div>
 
-          <!-- Contato -->
-          <div class="space-y-4">
-            <h3 class="text-lg font-semibold text-scroll-beige">Contato</h3>
-            <div class="space-y-2 text-sm text-scroll-beige/60">
-              <p>contato@dtavern.com</p>
-              <p>Suporte: suporte@dtavern.com</p>
-              <p>Horário: Seg-Sex, 9h-18h</p>
-            </div>
-            <div class="pt-4">
-              <button class="px-4 py-2 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-sm">
-                Fale Conosco
-              </button>
-            </div>
-          </div>
+                     <!-- Contato -->
+           <div>
+             <h3 class="text-base font-semibold text-scroll-beige">Contato</h3>
+             <div class="space-y-2 text-xs text-scroll-beige/60">
+               <p>contato@dtavern.com</p>
+               <p>Suporte: suporte@dtavern.com</p>
+               <p>Horário: Seg-Sex, 9h-18h</p>
+             </div>
+             <div class="pt-3">
+               <button class="px-4 py-2 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-xs">
+                 Fale Conosco
+               </button>
+             </div>
+           </div>
         </div>
 
-        <!-- Linha de Separação -->
-        <div class="border-t border-brass-accent/30 mt-8 pt-8">
-          <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div class="text-sm text-scroll-beige/60">
-              © 2024 DTavern. Todos os direitos reservados.
-            </div>
-            <div class="flex space-x-6 text-sm">
-              <a href="#" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
-                Termos de Uso
-              </a>
-              <a href="#" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
-                Política de Privacidade
-              </a>
-              <a href="#" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
-                Cookies
-              </a>
-            </div>
-          </div>
-        </div>
+                 <!-- Linha de Separação -->
+         <div class="border-t border-brass-accent/30 mt-2 pt-2">
+           <div class="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
+             <div class="text-xs text-scroll-beige/60">
+               © 2024 DTavern. Todos os direitos reservados.
+             </div>
+             <div class="flex space-x-6 text-xs">
+               <a href="#" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
+                 Termos de Uso
+               </a>
+               <a href="#" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
+                 Política de Privacidade
+               </a>
+               <a href="#" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
+                 Cookies
+               </a>
+             </div>
+           </div>
+         </div>
       </div>
     </footer>
   `,
