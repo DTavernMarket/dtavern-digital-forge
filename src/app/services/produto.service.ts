@@ -90,4 +90,8 @@ export class ProdutoService {
   obterProdutosPorCategoria(categoria: CategoriaProduto) {
     return this.produtos().filter(produto => produto.categoria === categoria);
   }
+
+  obterProdutosPorArtesao(artesaoId: string) {
+    return this.produtos().filter(produto => produto.artesaoId === artesaoId);
+  }
 }

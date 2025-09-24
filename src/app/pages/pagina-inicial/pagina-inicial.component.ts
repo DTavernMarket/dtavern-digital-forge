@@ -20,10 +20,12 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
   template: `
     <div class="min-h-screen bg-tavern-wood font-body">
       <app-barra-navegacao />
-      <app-secao-hero />
-      <app-exibicao-produtos />
-      <app-secao-artesoes />
-      <app-rodape />
+      <div>
+        <app-secao-hero />
+        <app-exibicao-produtos />
+        <app-secao-artesoes />
+        <app-rodape />
+      </div>
     </div>
   `,
   styles: [`

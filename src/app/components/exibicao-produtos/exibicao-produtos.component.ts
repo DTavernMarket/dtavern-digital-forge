@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProdutoService } from '../../services/produto.service';
+import { ArtesaoService } from '../../services/artesao.service';
 
 @Component({
   selector: 'app-exibicao-produtos',
@@ -62,7 +63,14 @@ import { ProdutoService } from '../../services/produto.service';
                   {{ produto.titulo }}
                 </h3>
                 <p class="text-sm text-scroll-beige/60">
-                  por {{ produto.nomeArtesao }}
+                  por 
+                  <a 
+                    [routerLink]="['/loja', getArtesaoDominio(produto.nomeArtesao)]"
+                    class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-all duration-200 cursor-pointer"
+                    (click)="$event.stopPropagation()"
+                  >
+                    {{ produto.nomeArtesao }}
+                  </a>
                 </p>
               </div>
 
@@ -129,10 +137,16 @@ import { ProdutoService } from '../../services/produto.service';
 })
 export class ExibicaoProdutosComponent {
   private produtoService = inject(ProdutoService);
+  private artesaoService = inject(ArtesaoService);
   
   produtosEmDestaque = this.produtoService.obterProdutosEmDestaque();
 
   rastrearProduto(index: number, produto: any) {
     return produto.uuid;
+  }
+
+  getArtesaoDominio(nomeArtesao: string): string {
+    const artesao = this.artesaoService.obterArtesoes()().find(a => a.nome === nomeArtesao);
+    return artesao?.dominio || '';
   }
 }
