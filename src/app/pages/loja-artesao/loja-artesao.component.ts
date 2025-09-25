@@ -14,7 +14,7 @@ import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-
   imports: [CommonModule, FormsModule, BarraNavegacaoComponent],
   template: `
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
-      <app-barra-navegacao />
+      <app-barra-navegacao [isFixed]="true" />
       
       <!-- Header da Loja com Fundo do Artesão -->
       <div class="relative h-96 overflow-hidden">

@@ -1,4 +1,4 @@
-import { Component, signal, computed, effect, inject } from '@angular/core';
+import { Component, signal, computed, effect, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +11,7 @@ import { Produto } from '../../models/produto.model';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   template: `
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30">
+    <nav [class]="isFixed ? 'fixed top-0 left-0 right-0 z-50 bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30' : 'relative bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30'">
       <div class="container mx-auto px-4">
         <!-- Container principal com 3 seções -->
         <div class="flex items-center justify-between py-4">
@@ -163,6 +163,8 @@ import { Produto } from '../../models/produto.model';
   `]
 })
 export class BarraNavegacaoComponent {
+  @Input() isFixed: boolean = true;
+
   private produtoService = inject(ProdutoService);
   private artesaoService = inject(ArtesaoService);
   private router = inject(Router);

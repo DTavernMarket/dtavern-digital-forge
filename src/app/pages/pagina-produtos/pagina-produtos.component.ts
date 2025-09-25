@@ -14,7 +14,7 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
   imports: [CommonModule, FormsModule, RouterModule, BarraNavegacaoComponent, RodapeComponent],
   template: `
     <div class="min-h-screen bg-tavern-wood font-body">
-      <app-barra-navegacao />
+      <app-barra-navegacao [isFixed]="false" />
 
       <!-- Layout Principal: Filtros + Produtos -->
       <section class="py-8">

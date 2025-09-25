@@ -15,7 +15,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
   ],
   template: `
     <div class="min-h-screen bg-tavern-wood font-body">
-      <app-barra-navegacao />
+      <app-barra-navegacao [isFixed]="false" />
       
       <section class="flex items-center justify-center min-h-screen py-20">
         <div class="container mx-auto px-4 text-center">
