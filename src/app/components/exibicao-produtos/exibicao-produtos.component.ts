@@ -65,7 +65,7 @@ import { ArtesaoService } from '../../services/artesao.service';
                 <p class="text-sm text-scroll-beige/60">
                   por 
                   <a 
-                    [routerLink]="['/loja', getArtesaoDominio(produto.nomeArtesao)]"
+                    [routerLink]="['/lojas', getArtesaoDominio(produto.nomeArtesao)]"
                     class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-all duration-200 cursor-pointer"
                     (click)="$event.stopPropagation()"
                   >

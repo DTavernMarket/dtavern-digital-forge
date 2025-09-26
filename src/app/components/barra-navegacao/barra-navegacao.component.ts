@@ -71,7 +71,7 @@ import { Produto } from '../../models/produto.model';
                         <span class="text-scroll-beige/60 text-xs">
                           por 
                           <a 
-                            [routerLink]="['/loja', getArtesaoDominio(produto.nomeArtesao)]"
+                            [routerLink]="['/lojas', getArtesaoDominio(produto.nomeArtesao)]"
                             class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-all duration-200 cursor-pointer"
                             (click)="$event.stopPropagation()"
                           >

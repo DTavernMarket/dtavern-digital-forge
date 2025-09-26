@@ -7,6 +7,6 @@ import { PaginaNaoEncontradaComponent } from './pages/pagina-nao-encontrada/pagi
 export const routes: Routes = [
   { path: '', component: PaginaInicialComponent },
   { path: 'produtos', component: PaginaProdutosComponent },
-  { path: 'loja/:dominio', component: LojaArtesaoComponent },
+  { path: 'lojas/:dominio', component: LojaArtesaoComponent },
   { path: '**', component: PaginaNaoEncontradaComponent }
 ];
