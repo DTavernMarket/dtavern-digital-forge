@@ -104,6 +104,12 @@ import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-
 
             <!-- Botões de Ação -->
             <div class="flex items-center space-x-4">
+              <button 
+                (click)="novoProduto()"
+                class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-brass-accent/90 transition-colors"
+              >
+                Novo produto
+              </button>
               <button class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors">
                 Seguir
               </button>
@@ -475,5 +481,14 @@ export class LojaArtesaoComponent implements OnInit {
   getYouTubeUrl(youtubeHandle?: string): string {
     if (!youtubeHandle) return '#';
     return 'https://youtube.com/@' + youtubeHandle.replace('@', '').toLowerCase().replace(/\s+/g, '');
+  }
+
+  novoProduto() {
+    // Salvar o domínio da loja atual no sessionStorage
+    const dominioAtual = this.artesao()?.dominio;
+    if (dominioAtual) {
+      sessionStorage.setItem('lojaDominio', dominioAtual);
+    }
+    this.router.navigate(['/novo-produto']);
   }
 }

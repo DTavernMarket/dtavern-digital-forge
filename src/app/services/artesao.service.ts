@@ -1,10 +1,13 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Artesao } from '../models/artesao.model';
+import { ProdutoService } from './produto.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ArtesaoService {
+  private produtoService = inject(ProdutoService);
+
   // Dados mockados dos artesãos
   private artesoes = signal<Artesao[]>([
     {
@@ -24,7 +27,8 @@ export class ArtesaoService {
         website: 'https://mestrealdric.com',
         twitter: '@mestrealdric',
         discord: 'MestreAldric#1234'
-      }
+      },
+      produtos: []
     },
     {
       uuid: '2',
@@ -43,7 +47,8 @@ export class ArtesaoService {
         website: 'https://cartografaluna.com',
         instagram: '@cartografaluna',
         youtube: 'Cartógrafa Luna'
-      }
+      },
+      produtos: []
     },
     {
       uuid: '3',
@@ -62,12 +67,25 @@ export class ArtesaoService {
         website: 'https://narradorsabio.com',
         twitter: '@narradorsabio',
         discord: 'NarradorSábio#5678'
-      }
+      },
+      produtos: []
     }
   ]);
 
   // Computed signals para dados derivados
   artesoesEmDestaque = computed(() => this.artesoes().slice(0, 3));
+
+  constructor() {
+    this.inicializarProdutosArtesoes();
+  }
+
+  private inicializarProdutosArtesoes() {
+    const artesoesAtualizados = this.artesoes().map(artesao => ({
+      ...artesao,
+      produtos: this.produtoService.obterProdutosPorArtesao(artesao.uuid)
+    }));
+    this.artesoes.set(artesoesAtualizados);
+  }
 
   // Métodos para acessar os artesãos
   obterArtesoes() {

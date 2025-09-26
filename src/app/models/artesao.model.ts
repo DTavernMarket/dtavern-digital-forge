@@ -1,3 +1,5 @@
+import { Produto } from "./produto.model";
+
 export interface Artesao {
   uuid: string;
   dominio: string; // identificador amigavel da loja do artesao
@@ -12,6 +14,7 @@ export interface Artesao {
   numeroSeguidores: number;
   dataEntrada: Date;
   redesSociais: RedesSociais;
+  produtos: Produto[];
 }
 
 export interface RedesSociais {
