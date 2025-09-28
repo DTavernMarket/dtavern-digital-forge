@@ -43,12 +43,6 @@ body {
   color: #1C0F0A;
 }
 
-/* Foco personalizado */
-*:focus {
-  outline: 2px solid #FFD36A;
-  outline-offset: 2px;
-}
-
 /* Animações personalizadas */
 @keyframes shimmer {
   0% {
