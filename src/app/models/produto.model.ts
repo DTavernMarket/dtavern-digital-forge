@@ -3,7 +3,6 @@ export interface Produto {
   titulo: string;
   descricao: string;
   categoria: CategoriaProduto;
-  tags: string[];
   imagens: string[];
   artesaoId: string;
   nomeArtesao: string;

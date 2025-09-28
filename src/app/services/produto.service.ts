@@ -13,7 +13,6 @@ export class ProdutoService {
       descricao: '50+ tokens de personagens únicos para suas campanhas',
       valorUnitario: 25.00,
       categoria: CategoriaProduto.TOKENS,
-      tags: ['tokens', 'personagens', 'fantasia'],
       imagens: ['/assets/images/50-tokens.png'],
       artesaoId: '1',
       nomeArtesao: 'Mestre Aldric',
@@ -31,7 +30,6 @@ export class ProdutoService {
       descricao: 'Mapas detalhados com variações de dia/noite',
       valorUnitario: 35.00,
       categoria: CategoriaProduto.MAPAS,
-      tags: ['mapas', 'masmorras', 'dungeon'],
       imagens: ['/assets/images/masmorras-ancestrais.png'],
       artesaoId: '2',
       nomeArtesao: 'Cartógrafa Luna',
@@ -49,7 +47,6 @@ export class ProdutoService {
       descricao: 'Aventura completa para personagens nível 5-8',
       valorUnitario: 45.00,
       categoria: CategoriaProduto.AVENTURAS,
-      tags: ['aventura', 'templo', 'fantasia'],
       imagens: ['/assets/images/aventura-templo-perdido.png'],
       artesaoId: '3',
       nomeArtesao: 'Narrador Sábio',
@@ -82,9 +79,7 @@ export class ProdutoService {
   buscarProdutos(termo: string) {
     return this.produtos().filter(produto => 
       produto.titulo.toLowerCase().includes(termo.toLowerCase()) ||
-      produto.descricao.toLowerCase().includes(termo.toLowerCase()) ||
-      produto.tags.some(tag => tag.toLowerCase().includes(termo.toLowerCase()))
-    );
+      produto.descricao.toLowerCase().includes(termo.toLowerCase()));
   }
 
   obterProdutosPorCategoria(categoria: CategoriaProduto) {

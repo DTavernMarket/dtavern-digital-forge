@@ -114,27 +114,6 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
               </div>
             </div>
 
-            <!-- Tags -->
-            <div class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl p-8">
-              <h2 class="text-xl font-semibold text-scroll-beige mb-6">Tags</h2>
-              
-              <div>
-                <label class="block text-scroll-beige font-medium mb-2">
-                  Tags (separadas por vírgula)
-                </label>
-                <input 
-                  type="text" 
-                  [(ngModel)]="tagsInput"
-                  name="tags"
-                  placeholder="fantasia, medieval, tokens, rpg..."
-                  class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60 focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
-                />
-                <p class="text-scroll-beige/60 text-sm mt-2">
-                  As tags ajudam os clientes a encontrar seu produto
-                </p>
-              </div>
-            </div>
-
             <!-- Imagens -->
             <div class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl p-8">
               <h2 class="text-xl font-semibold text-scroll-beige mb-6">Imagens</h2>
@@ -191,12 +170,10 @@ export class CadastroProdutoComponent {
     titulo: '',
     descricao: '',
     categoria: '' as CategoriaProduto,
-    tags: [],
     imagens: [],
     valorUnitario: 0
   };
 
-  tagsInput = '';
   imagensInput = '';
 
   categorias = Object.values(CategoriaProduto);
@@ -210,12 +187,6 @@ export class CadastroProdutoComponent {
       return;
     }
 
-    // Processar tags
-    const tags = this.tagsInput
-      .split(',')
-      .map(tag => tag.trim())
-      .filter(tag => tag.length > 0);
-
     // Processar imagens
     const imagens = this.imagensInput
       .split('\n')
@@ -225,7 +196,6 @@ export class CadastroProdutoComponent {
     // Atualizar produto com dados processados
     this.produto = {
       ...this.produto,
-      tags,
       imagens,
       // Dados simulados para demonstração
       uuid: this.gerarUUID(),
