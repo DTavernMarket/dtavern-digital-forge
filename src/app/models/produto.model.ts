@@ -1,9 +1,11 @@
+import { ArquivoProduto } from './arquivo-produto.model';
+
 export interface Produto {
   uuid: string;
   titulo: string;
   descricao: string;
   categoria: CategoriaProduto;
-  imagens: string[];
+  imagens: ArquivoProduto[];
   artesaoId: string;
   nomeArtesao: string;
   avaliacao: number;

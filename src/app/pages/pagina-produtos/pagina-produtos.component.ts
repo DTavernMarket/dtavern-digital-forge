@@ -7,6 +7,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
 import { ProdutoService } from '../../services/produto.service';
 import { ArtesaoService } from '../../services/artesao.service';
 import { Produto, CategoriaProduto } from '../../models/produto.model';
+import { ImageUtils } from '../../utils/image.utils';
 
 @Component({
   selector: 'app-pagina-produtos',
@@ -210,7 +211,7 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
                     <div class="flex-shrink-0">
                       <div class="relative">
                         <img
-                          [src]="produto.imagens[0]"
+                          [src]="ImageUtils.getFirstImagePreview(produto.imagens)"
                           [alt]="produto.titulo"
                           class="w-32 h-32 object-cover rounded-lg"
                         />
@@ -291,15 +292,6 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
                           </div>
                         </div>
 
-                        <!-- Tags -->
-                        <div class="flex flex-wrap gap-2">
-                          <span
-                            *ngFor="let tag of produto.tags.slice(0, 3)"
-                            class="px-2 py-1 bg-stone-gray/50 text-scroll-beige/70 text-xs rounded-full"
-                          >
-                            {{ tag }}
-                          </span>
-                        </div>
                       </div>
                     </div>
 
@@ -409,6 +401,9 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
 export class PaginaProdutosComponent implements OnInit {
   private produtoService = inject(ProdutoService);
   private artesaoService = inject(ArtesaoService);
+  
+  // Tornar ImageUtils acessível no template
+  ImageUtils = ImageUtils;
 
   // Estados reativos para filtros
   termoBusca = signal('');
@@ -447,7 +442,7 @@ export class PaginaProdutosComponent implements OnInit {
 
   // Signal computado que reage automaticamente aos filtros
   produtosFiltrados = computed(() => {
-    let produtos = this.produtoService.obterProdutos()();
+    let produtos = this.produtoService.obterProdutos();
 
     // Filtro por termo de busca
     if (this.termoBusca().trim()) {
@@ -573,4 +568,5 @@ export class PaginaProdutosComponent implements OnInit {
     const artesao = this.artesaoService.obterArtesoes()().find(a => a.nome === nomeArtesao);
     return artesao?.dominio || '';
   }
+
 }

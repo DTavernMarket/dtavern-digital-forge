@@ -6,6 +6,7 @@ import { ArtesaoService } from '../../services/artesao.service';
 import { ProdutoService } from '../../services/produto.service';
 import { Artesao } from '../../models/artesao.model';
 import { Produto } from '../../models/produto.model';
+import { ImageUtils } from '../../utils/image.utils';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 
 @Component({
@@ -175,7 +176,7 @@ import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-
               <!-- Imagem do Produto -->
               <div class="relative aspect-square overflow-hidden">
                 <img 
-                  [src]="produto.imagens[0]" 
+                  [src]="ImageUtils.getFirstImagePreview(produto.imagens)" 
                   [alt]="produto.titulo"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -408,6 +409,9 @@ export class LojaArtesaoComponent implements OnInit {
   private router = inject(Router);
   private artesaoService = inject(ArtesaoService);
   private produtoService = inject(ProdutoService);
+  
+  // Tornar ImageUtils acessível no template
+  ImageUtils = ImageUtils;
 
   artesao = signal<Artesao | undefined>(undefined);
   produtosArtesao = signal<Produto[]>([]);
@@ -491,4 +495,5 @@ export class LojaArtesaoComponent implements OnInit {
     }
     this.router.navigate(['/novo-produto']);
   }
+
 }

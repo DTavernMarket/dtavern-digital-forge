@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProdutoService } from '../../services/produto.service';
 import { ArtesaoService } from '../../services/artesao.service';
+import { ImageUtils } from '../../utils/image.utils';
 
 @Component({
   selector: 'app-exibicao-produtos',
@@ -35,7 +36,7 @@ import { ArtesaoService } from '../../services/artesao.service';
             <!-- Imagem do Produto -->
             <div class="relative overflow-hidden">
               <img 
-                [src]="produto.imagens[0]" 
+                [src]="ImageUtils.getFirstImagePreview(produto.imagens)" 
                 [alt]="produto.titulo"
                 class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
               />
@@ -139,7 +140,15 @@ export class ExibicaoProdutosComponent {
   private produtoService = inject(ProdutoService);
   private artesaoService = inject(ArtesaoService);
   
-  produtosEmDestaque = this.produtoService.obterProdutosEmDestaque();
+  // Tornar ImageUtils acessível no template
+  ImageUtils = ImageUtils;
+  
+  produtosEmDestaque = this.produtoService.produtosEmDestaque;
+  
+
+  constructor() {
+    console.log('produtosEmDestaque', this.produtosEmDestaque());
+  }
 
   rastrearProduto(index: number, produto: any) {
     return produto.uuid;
@@ -149,4 +158,5 @@ export class ExibicaoProdutosComponent {
     const artesao = this.artesaoService.obterArtesoes()().find(a => a.nome === nomeArtesao);
     return artesao?.dominio || '';
   }
+
 }
