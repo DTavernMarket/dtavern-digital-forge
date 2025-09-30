@@ -209,7 +209,7 @@ import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-
                 <!-- Preço e Botão -->
                 <div class="flex items-center justify-between">
                   <span class="text-candlelight-gold font-bold text-lg">
-                    R$ {{ produto.valorUnitario.toFixed(2) }}
+                    R$ {{ produto.valorUnitario }}
                   </span>
                   <button class="px-4 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors text-sm">
                     Comprar
