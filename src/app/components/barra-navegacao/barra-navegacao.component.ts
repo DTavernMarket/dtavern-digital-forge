@@ -4,7 +4,6 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProdutoService } from '../../services/produto.service';
 import { ArtesaoService } from '../../services/artesao.service';
-import { ImageUtils } from '../../utils/image.utils';
 import { Produto } from '../../models/produto.model';
 
 @Component({
@@ -63,7 +62,7 @@ import { Produto } from '../../models/produto.model';
                     (click)="selecionarProduto(produto)"
                     class="flex items-center space-x-3 p-3 hover:bg-tavern-wood/20 rounded-lg cursor-pointer transition-colors"
                   >
-                    <img [src]="ImageUtils.getFirstImagePreview(produto.imagens)" [alt]="produto.titulo" class="w-12 h-12 object-cover rounded-lg">
+                    <img [src]="produto.imagens[0].previewUrl" [alt]="produto.titulo" class="w-12 h-12 object-cover rounded-lg">
                     <div class="flex-1 min-w-0">
                       <h4 class="text-scroll-beige font-semibold truncate">{{ produto.titulo }}</h4>
                       <p class="text-scroll-beige/70 text-sm truncate">{{ produto.descricao }}</p>
@@ -170,8 +169,6 @@ export class BarraNavegacaoComponent {
   private artesaoService = inject(ArtesaoService);
   private router = inject(Router);
   
-  // Tornar ImageUtils acessível no template
-  ImageUtils = ImageUtils;
 
   menuAberto = signal(false);
   termoPesquisa = signal('');

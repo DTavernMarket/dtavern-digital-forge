@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,7 +6,6 @@ import { ArtesaoService } from '../../services/artesao.service';
 import { ProdutoService } from '../../services/produto.service';
 import { Artesao } from '../../models/artesao.model';
 import { Produto } from '../../models/produto.model';
-import { ImageUtils } from '../../utils/image.utils';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 
 @Component({
@@ -176,7 +175,7 @@ import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-
               <!-- Imagem do Produto -->
               <div class="relative aspect-square overflow-hidden">
                 <img 
-                  [src]="ImageUtils.getFirstImagePreview(produto.imagens)" 
+                  [src]="produto.imagens[0].previewUrl" 
                   [alt]="produto.titulo"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -404,14 +403,13 @@ import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-
     }
   `]
 })
-export class LojaArtesaoComponent implements OnInit {
+export class LojaArtesaoComponent implements OnInit{
+  
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private artesaoService = inject(ArtesaoService);
   private produtoService = inject(ProdutoService);
   
-  // Tornar ImageUtils acessível no template
-  ImageUtils = ImageUtils;
 
   artesao = signal<Artesao | undefined>(undefined);
   produtosArtesao = signal<Produto[]>([]);

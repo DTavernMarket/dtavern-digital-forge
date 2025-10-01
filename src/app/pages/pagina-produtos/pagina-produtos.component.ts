@@ -7,7 +7,6 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
 import { ProdutoService } from '../../services/produto.service';
 import { ArtesaoService } from '../../services/artesao.service';
 import { Produto, CategoriaProduto } from '../../models/produto.model';
-import { ImageUtils } from '../../utils/image.utils';
 
 @Component({
   selector: 'app-pagina-produtos',
@@ -211,7 +210,7 @@ import { ImageUtils } from '../../utils/image.utils';
                     <div class="flex-shrink-0">
                       <div class="relative">
                         <img
-                          [src]="ImageUtils.getFirstImagePreview(produto.imagens)"
+                          [src]="produto.imagens[0].previewUrl"
                           [alt]="produto.titulo"
                           class="w-32 h-32 object-cover rounded-lg"
                         />
@@ -402,8 +401,6 @@ export class PaginaProdutosComponent implements OnInit {
   private produtoService = inject(ProdutoService);
   private artesaoService = inject(ArtesaoService);
   
-  // Tornar ImageUtils acessível no template
-  ImageUtils = ImageUtils;
 
   // Estados reativos para filtros
   termoBusca = signal('');

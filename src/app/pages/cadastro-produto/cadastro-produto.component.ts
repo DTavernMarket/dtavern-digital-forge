@@ -272,7 +272,6 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
 
     // Artesão encontrado, definir como atual
     this.artesaoAtual = artesao;
-    console.log('Artesão validado:', artesao.nome);
   }
 
   private redirecionarParaInicio() {
@@ -324,8 +323,6 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
     };
 
     // Aqui você salvaria o produto no serviço
-    console.log('Produto a ser salvo:', this.produto);
-    console.log('Arquivos selecionados:', this.arquivosSelecionados);
 
     this.produtoService.adicionarProduto(this.produto as Produto);
 
@@ -394,7 +391,7 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
     }
 
     // Converter File[] para ArquivoProduto[] e adicionar
-    const arquivosProduto = imagens.map(file => ArquivoProduto.fromFile(file));
+    const arquivosProduto = imagens.map(file => ({ file, nome: file.name, previewUrl: URL.createObjectURL(file) }));
     this.arquivosSelecionados.push(...arquivosProduto);
   }
 
@@ -402,8 +399,8 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
     const arquivoProduto = this.arquivosSelecionados[index];
     
     // Revogar URL do ArquivoProduto
-    const url = arquivoProduto.getUrl();
-    arquivoProduto.revogarUrl(url);
+    const url = arquivoProduto.previewUrl;
+    URL.revokeObjectURL(url);
     
     this.arquivosSelecionados.splice(index, 1);
   }
@@ -417,7 +414,7 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
   }
 
   getPreviewUrl(arquivoProduto: ArquivoProduto): string {
-    return arquivoProduto.getUrl();
+    return arquivoProduto.previewUrl;
   }
 
 
@@ -432,8 +429,8 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     // Limpar cache de URLs quando o componente for destruído
     this.arquivosSelecionados.forEach(arquivo => {
-      const url = arquivo.getUrl();
-      arquivo.revogarUrl(url);
+      const url = arquivo.previewUrl;
+      URL.revokeObjectURL(url);
     });
   }
 }
