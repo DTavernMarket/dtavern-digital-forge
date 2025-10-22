@@ -1,19 +1,20 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 import { RodapeComponent } from '../../components/rodape/rodape.component';
 import { ProdutoService } from '../../services/produto.service';
+import { ArtesaoService } from '../../services/artesao.service';
 import { Produto, CategoriaProduto } from '../../models/produto.model';
 
 @Component({
   selector: 'app-pagina-produtos',
   standalone: true,
-  imports: [CommonModule, FormsModule, BarraNavegacaoComponent, RodapeComponent],
+  imports: [CommonModule, FormsModule, RouterModule, BarraNavegacaoComponent, RodapeComponent],
   template: `
     <div class="min-h-screen bg-tavern-wood font-body">
-      <app-barra-navegacao />
+      <app-barra-navegacao [isFixed]="false" />
 
       <!-- Layout Principal: Filtros + Produtos -->
       <section class="py-8">
@@ -209,7 +210,7 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
                     <div class="flex-shrink-0">
                       <div class="relative">
                         <img
-                          [src]="produto.imagens[0]"
+                          [src]="produto.imagens[0].previewUrl"
                           [alt]="produto.titulo"
                           class="w-32 h-32 object-cover rounded-lg"
                         />
@@ -234,7 +235,14 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
                             {{ produto.titulo }}
                           </h3>
                           <p class="text-sm text-scroll-beige/60 mt-1">
-                            por <span class="text-candlelight-gold">{{ produto.nomeArtesao }}</span>
+                            por 
+                            <a 
+                              [routerLink]="['/lojas', getArtesaoDominio(produto.nomeArtesao)]"
+                              class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-all duration-200 cursor-pointer"
+                              (click)="$event.stopPropagation()"
+                            >
+                              {{ produto.nomeArtesao }}
+                            </a>
                           </p>
                         </div>
 
@@ -283,15 +291,6 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
                           </div>
                         </div>
 
-                        <!-- Tags -->
-                        <div class="flex flex-wrap gap-2">
-                          <span
-                            *ngFor="let tag of produto.tags.slice(0, 3)"
-                            class="px-2 py-1 bg-stone-gray/50 text-scroll-beige/70 text-xs rounded-full"
-                          >
-                            {{ tag }}
-                          </span>
-                        </div>
                       </div>
                     </div>
 
@@ -400,6 +399,8 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
 })
 export class PaginaProdutosComponent implements OnInit {
   private produtoService = inject(ProdutoService);
+  private artesaoService = inject(ArtesaoService);
+  
 
   // Estados reativos para filtros
   termoBusca = signal('');
@@ -438,7 +439,7 @@ export class PaginaProdutosComponent implements OnInit {
 
   // Signal computado que reage automaticamente aos filtros
   produtosFiltrados = computed(() => {
-    let produtos = this.produtoService.obterProdutos()();
+    let produtos = this.produtoService.obterProdutos();
 
     // Filtro por termo de busca
     if (this.termoBusca().trim()) {
@@ -559,4 +560,10 @@ export class PaginaProdutosComponent implements OnInit {
   rastrearProduto(index: number, produto: Produto) {
     return produto.uuid;
   }
+
+  getArtesaoDominio(nomeArtesao: string): string {
+    const artesao = this.artesaoService.obterArtesoes()().find(a => a.nome === nomeArtesao);
+    return artesao?.dominio || '';
+  }
+
 }

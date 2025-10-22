@@ -95,10 +95,13 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
               </div>
             </div>
 
-                         <!-- Botão Ver Perfil -->
-             <app-botao-padrao class="w-full" [fullWidth]="true">
-               Ver Perfil Completo
-             </app-botao-padrao>
+                         <!-- Botão Ver Loja -->
+             <button 
+               class="w-full px-4 py-2 bg-candlelight-gold text-tavern-wood font-medium rounded-lg hover:bg-candlelight-gold/90 transition-colors"
+               [routerLink]="['/lojas', artesao.dominio]"
+             >
+               Ver Loja
+             </button>
           </div>
         </div>
 
