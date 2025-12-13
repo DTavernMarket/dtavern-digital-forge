@@ -10,6 +10,7 @@ import { ArquivoProduto } from '../../models/arquivo-produto.model';
 import { ArtesaoService } from '../../services/artesao.service';
 import { Artesao } from '../../models/artesao.model';
 import { ProdutoService } from '../../services/produto.service';
+import { CategoriaProdutoService, CategoriaProdutoResponse } from '../../services/categoria-produto.service';
 
 @Component({
   selector: 'app-cadastro-produto',
@@ -223,6 +224,7 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private artesaoService = inject(ArtesaoService);
   private produtoService = inject(ProdutoService);
+  private categoriaProdutoService = inject(CategoriaProdutoService);
 
   produto: Partial<Produto> = {
     titulo: '',
@@ -239,16 +241,27 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
   // Artesão atual
   artesaoAtual: Artesao | null = null;
 
-  categorias = Object.values(CategoriaProduto);
-  
-  // Opções para o select de categoria
-  opcoesCategoria: OpcaoSelect[] = this.categorias.map(categoria => ({
-    value: categoria,
-    label: categoria
-  }));
+  // Opções para o select de categoria (será preenchido com dados da API)
+  opcoesCategoria: OpcaoSelect[] = [];
 
   ngOnInit() {
     this.validarAcessoArtesao();
+    this.carregarCategorias();
+  }
+
+  private carregarCategorias() {
+    this.categoriaProdutoService.buscarCategorias().subscribe({
+      next: (categorias: CategoriaProdutoResponse[]) => {
+        this.opcoesCategoria = categorias.map(categoria => ({
+          value: categoria.codigo,
+          label: categoria.nome
+        }));
+      },
+      error: (error) => {
+        console.error('Erro ao carregar categorias:', error);
+        // Em caso de erro, manter array vazio ou usar valores padrão se necessário
+      }
+    });
   }
 
   private validarAcessoArtesao() {

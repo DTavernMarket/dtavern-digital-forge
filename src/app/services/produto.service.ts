@@ -1,10 +1,9 @@
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { computed, Injectable, OnDestroy, OnInit, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { computed, inject, Injectable, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import { firstValueFrom, Observable } from 'rxjs';
 import { ArquivoProduto } from '../models/arquivo-produto.model';
 import { CategoriaProduto, Produto } from '../models/produto.model';
-import { isPlatformBrowser } from '@angular/common';
-import { inject, PLATFORM_ID } from '@angular/core';
 
 const produtosMockados: Produto[] = [
   {
@@ -15,7 +14,7 @@ const produtosMockados: Produto[] = [
     categoria: CategoriaProduto.TOKENS,
     imagens: [], // Será preenchido quando necessário
     artesaoId: '1',
-    nomeArtesao: 'mestre-aldric',
+    nomeArtesao: 'Mestre Aldric',
     avaliacao: 4.9,
     numeroAvaliacoes: 1250,
     numeroDownloads: 1250,
@@ -187,5 +186,11 @@ export class ProdutoService implements OnInit, OnDestroy {
     // evita vazamento de memória dos Object URLs
     for (const url of this.createdUrls) URL.revokeObjectURL(url);
     this.createdUrls = [];
+  }
+
+  // A partir daqui, são métodos de comunicação com o backend DE VERDADE. Não são mockados.
+
+  buscarProdutosPorArtesao(dominioArtesao: string): Observable<Produto[]> {
+    return this.http.get<Produto[]>(`http://localhost:8080/api/v1/lojas/${dominioArtesao}/produtos`);
   }
 }

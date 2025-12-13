@@ -12,7 +12,7 @@ export class ArtesaoService {
   private artesoes = signal<Artesao[]>([
     {
       uuid: '1',
-      dominio: 'mestre-aldric',
+      dominio: 'mestrealdric',
       nome: 'Mestre Aldric',
       biografia: 'Criador de tokens únicos e personagens memoráveis para suas aventuras épicas.',
       avatar: '/assets/images/foto-mestre-aldric.png',
