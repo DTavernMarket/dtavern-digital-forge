@@ -3,19 +3,32 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
-import { SelectCustomizadoComponent, OpcaoSelect } from '../../components/select-customizado/select-customizado.component';
+import {
+  SelectCustomizadoComponent,
+  OpcaoSelect,
+} from '../../components/select-customizado/select-customizado.component';
 import { InputCustomizadoComponent } from '../../components/input-customizado/input-customizado.component';
 import { Produto, CategoriaProduto } from '../../models/produto.model';
 import { ArquivoProduto } from '../../models/arquivo-produto.model';
 import { ArtesaoService } from '../../services/artesao.service';
 import { Artesao } from '../../models/artesao.model';
 import { ProdutoService } from '../../services/produto.service';
-import { CategoriaProdutoService, CategoriaProdutoResponse } from '../../services/categoria-produto.service';
+import {
+  CategoriaProdutoService,
+  CategoriaProdutoResponse,
+} from '../../services/categoria-produto.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-cadastro-produto',
   standalone: true,
-  imports: [CommonModule, FormsModule, BarraNavegacaoComponent, SelectCustomizadoComponent, InputCustomizadoComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    BarraNavegacaoComponent,
+    SelectCustomizadoComponent,
+    InputCustomizadoComponent,
+  ],
   template: `
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
       <app-barra-navegacao [isFixed]="false" />
@@ -28,7 +41,9 @@ import { CategoriaProdutoService, CategoriaProdutoResponse } from '../../service
               <h1 class="text-3xl font-medieval font-bold text-scroll-beige mb-2">Novo Produto</h1>
               <p class="text-scroll-beige/70">Crie um novo produto para sua loja</p>
               <div *ngIf="artesaoAtual" class="mt-2">
-                <span class="text-candlelight-gold font-medium">Artesão: {{ artesaoAtual.nome }}</span>
+                <span class="text-candlelight-gold font-medium"
+                  >Artesão: {{ artesaoAtual.nome }}</span
+                >
               </div>
             </div>
             <button
@@ -237,7 +252,7 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
   imagensInput = '';
   arquivosSelecionados: ArquivoProduto[] = [];
   isDragOver = false;
-  
+
   // Artesão atual
   artesaoAtual: Artesao | null = null;
 
@@ -252,22 +267,22 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
   private carregarCategorias() {
     this.categoriaProdutoService.buscarCategorias().subscribe({
       next: (categorias: CategoriaProdutoResponse[]) => {
-        this.opcoesCategoria = categorias.map(categoria => ({
+        this.opcoesCategoria = categorias.map((categoria) => ({
           value: categoria.codigo,
-          label: categoria.nome
+          label: categoria.nome,
         }));
       },
       error: (error) => {
         console.error('Erro ao carregar categorias:', error);
         // Em caso de erro, manter array vazio ou usar valores padrão se necessário
-      }
+      },
     });
   }
 
   private validarAcessoArtesao() {
     // Buscar domínio do artesão no sessionStorage
     const lojaDominio = sessionStorage.getItem('lojaDominio');
-    
+
     if (!lojaDominio) {
       console.warn('Nenhum domínio de loja encontrado no sessionStorage');
       this.redirecionarParaInicio();
@@ -276,7 +291,7 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
 
     // Buscar artesão pelo domínio
     const artesao = this.artesaoService.obterArtesaoPorDominio(lojaDominio);
-    
+
     if (!artesao) {
       console.warn(`Artesão com domínio '${lojaDominio}' não encontrado`);
       this.redirecionarParaInicio();
@@ -290,11 +305,10 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
   private redirecionarParaInicio() {
     // Limpar sessionStorage
     sessionStorage.removeItem('lojaDominio');
-    
+
     // Redirecionar para página inicial
     this.router.navigate(['/']);
   }
-
 
   formularioValido(): boolean {
     return !!(
@@ -305,43 +319,33 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
     );
   }
 
-  salvarProduto() {
+  async salvarProduto() {
     if (!this.formularioValido()) {
       return;
     }
 
-    // ✅ CAPTURA DE VALORES COM TWO-WAY DATA BINDING
-    // Todos os valores dos componentes customizados já estão disponíveis automaticamente:
-    // - this.produto.titulo (do InputCustomizado)
-    // - this.produto.categoria (do SelectCustomizado) 
-    // - this.produto.valorUnitario (do InputCustomizado)
-    // - this.produto.descricao (do InputCustomizado)
-    // - this.arquivosSelecionados (do drag and drop)
+    if (!this.artesaoAtual) {
+      return;
+    }
 
-    // Atualizar produto com dados processados
-    this.produto = {
-      ...this.produto,
-      imagens: this.arquivosSelecionados,
-      // Dados do artesão atual
-      uuid: this.gerarUUID(),
-      artesaoId: this.artesaoAtual?.uuid || '',
-      nomeArtesao: this.artesaoAtual?.nome || '',
-      avaliacao: 0,
-      numeroAvaliacoes: 0,
-      numeroDownloads: 0,
-      tamanhoArquivo: 'N/A',
-      requisitos: 'N/A',
-      dataCriacao: new Date(),
-      dataAtualizacao: new Date(),
+    const dtoProduto = {
+      nome: this.produto.titulo,
+      descricao: this.produto.descricao,
+      resumo: this.produto.descricao?.substring(0, 200) || '',
+      categoriaCodigo: this.produto.categoria,
+      valorUnitario: this.produto.valorUnitario,
+      promocaoPorcentagem: 0,
     };
 
-    // Aqui você salvaria o produto no serviço
+    console.log(dtoProduto);
 
-    this.produtoService.adicionarProduto(this.produto as Produto);
+    await firstValueFrom(
+      this.produtoService.adicionarProdutoDTO(dtoProduto, this.artesaoAtual.dominio)
+    );
 
     // Simular salvamento e redirecionar
     alert('Produto salvo com sucesso!');
-    
+
     this.voltar();
   }
 
@@ -404,17 +408,21 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
     }
 
     // Converter File[] para ArquivoProduto[] e adicionar
-    const arquivosProduto = imagens.map(file => ({ file, nome: file.name, previewUrl: URL.createObjectURL(file) }));
+    const arquivosProduto = imagens.map((file) => ({
+      file,
+      nome: file.name,
+      previewUrl: URL.createObjectURL(file),
+    }));
     this.arquivosSelecionados.push(...arquivosProduto);
   }
 
   removerArquivo(index: number) {
     const arquivoProduto = this.arquivosSelecionados[index];
-    
+
     // Revogar URL do ArquivoProduto
     const url = arquivoProduto.previewUrl;
     URL.revokeObjectURL(url);
-    
+
     this.arquivosSelecionados.splice(index, 1);
   }
 
@@ -430,7 +438,6 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
     return arquivoProduto.previewUrl;
   }
 
-
   private gerarUUID(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       const r = (Math.random() * 16) | 0;
@@ -441,7 +448,7 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     // Limpar cache de URLs quando o componente for destruído
-    this.arquivosSelecionados.forEach(arquivo => {
+    this.arquivosSelecionados.forEach((arquivo) => {
       const url = arquivo.previewUrl;
       URL.revokeObjectURL(url);
     });

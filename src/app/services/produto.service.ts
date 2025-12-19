@@ -1,6 +1,14 @@
 import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { computed, inject, Injectable, OnDestroy, OnInit, PLATFORM_ID, signal } from '@angular/core';
+import {
+  computed,
+  inject,
+  Injectable,
+  OnDestroy,
+  OnInit,
+  PLATFORM_ID,
+  signal,
+} from '@angular/core';
 import { firstValueFrom, Observable } from 'rxjs';
 import { ArquivoProduto } from '../models/arquivo-produto.model';
 import { CategoriaProduto, Produto } from '../models/produto.model';
@@ -166,6 +174,13 @@ export class ProdutoService implements OnInit, OnDestroy {
     this.produtos.set([...produtosAtuais, produto]);
   }
 
+  adicionarProdutoDTO(dtoProduto: any, dominioArtesao: string): Observable<any> {
+    return this.http.post<any>(
+      `http://localhost:8080/api/v1/produtos?dominio=${dominioArtesao}`,
+      dtoProduto
+    );
+  }
+
   atualizarProduto(produtoAtualizado: Produto): void {
     const produtosAtuais = this.produtos();
     const indice = produtosAtuais.findIndex((p) => p.uuid === produtoAtualizado.uuid);
@@ -191,6 +206,8 @@ export class ProdutoService implements OnInit, OnDestroy {
   // A partir daqui, são métodos de comunicação com o backend DE VERDADE. Não são mockados.
 
   buscarProdutosPorArtesao(dominioArtesao: string): Observable<Produto[]> {
-    return this.http.get<Produto[]>(`http://localhost:8080/api/v1/lojas/${dominioArtesao}/produtos`);
+    return this.http.get<Produto[]>(
+      `http://localhost:8080/api/v1/lojas/${dominioArtesao}/produtos`
+    );
   }
 }
