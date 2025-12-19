@@ -340,7 +340,7 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
     console.log(dtoProduto);
 
     await firstValueFrom(
-      this.produtoService.adicionarProdutoDTO(dtoProduto, this.artesaoAtual.dominio)
+      this.produtoService.adicionarProduto(dtoProduto, this.artesaoAtual.dominio)
     );
 
     // Simular salvamento e redirecionar

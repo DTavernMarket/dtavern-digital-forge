@@ -229,12 +229,31 @@ import { ProdutoService } from '../../services/produto.service';
               (click)="verProduto(produto)"
             >
               <!-- Imagem do Produto -->
-              <div class="relative aspect-square overflow-hidden">
+              <div class="relative aspect-square overflow-hidden bg-tavern-wood/20">
                 <img
+                  *ngIf="produto.imagens && produto.imagens.length > 0 && produto.imagens[0]?.previewUrl"
                   [src]="produto.imagens[0].previewUrl"
                   [alt]="produto.titulo"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
+                <div
+                  *ngIf="!produto.imagens || produto.imagens.length === 0 || !produto.imagens[0]?.previewUrl"
+                  class="w-full h-full flex items-center justify-center"
+                >
+                  <svg
+                    class="w-16 h-16 text-scroll-beige/30"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    />
+                  </svg>
+                </div>
                 <div class="absolute top-3 left-3">
                   <span
                     class="px-2 py-1 bg-candlelight-gold text-tavern-wood text-xs font-semibold rounded"
@@ -529,8 +548,6 @@ export class LojaArtesaoComponent implements OnInit {
   categoriaFiltro = signal('');
   ordenacao = signal('recentes');
 
-  produtosNamoral: Produto[] = [];
-
   produtosFiltrados = computed(() => {
     let produtos = this.produtosArtesao();
 
@@ -577,14 +594,23 @@ export class LojaArtesaoComponent implements OnInit {
     const artesao = this.artesaoService.obterArtesaoPorDominio(dominio);
     if (artesao) {
       this.artesao.set(artesao);
-      this.produtoService.buscarProdutosPorArtesao(dominio).subscribe((response) => {
-        this.produtosNamoral = response;
-        console.log(this.produtosNamoral);
-      });
+      this.carregarProdutosPorDominio(dominio);
     } else {
       // Redirecionar para página não encontrada
       this.router.navigate(['/404']);
     }
+  }
+
+  private carregarProdutosPorDominio(dominio: string) {
+    this.produtoService.listarProdutosPorDominio(dominio).subscribe({
+      next: (produtos) => {
+        this.produtosArtesao.set(produtos);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar produtos:', error);
+        this.produtosArtesao.set([]);
+      }
+    });
   }
 
   private carregarProdutos(artesaoId: string) {

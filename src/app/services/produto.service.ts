@@ -169,15 +169,16 @@ export class ProdutoService implements OnInit, OnDestroy {
     );
   }
 
-  adicionarProduto(produto: Produto): void {
-    const produtosAtuais = this.produtos();
-    this.produtos.set([...produtosAtuais, produto]);
-  }
-
-  adicionarProdutoDTO(dtoProduto: any, dominioArtesao: string): Observable<any> {
+  adicionarProduto(dtoProduto: any, dominioArtesao: string): Observable<any> {
     return this.http.post<any>(
       `http://localhost:8080/api/v1/produtos?dominio=${dominioArtesao}`,
       dtoProduto
+    );
+  }
+
+  listarProdutosPorDominio(dominioArtesao: string): Observable<Produto[]> {
+    return this.http.get<Produto[]>(
+      `http://localhost:8080/api/v1/lojas/${dominioArtesao}/produtos`
     );
   }
 
