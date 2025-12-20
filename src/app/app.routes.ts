@@ -10,5 +10,6 @@ export const routes: Routes = [
   { path: 'produtos', component: PaginaProdutosComponent },
   { path: 'lojas/:dominio', component: LojaArtesaoComponent },
   { path: 'novo-produto', component: CadastroProdutoComponent },
+  { path: 'editar-produto', component: CadastroProdutoComponent },
   { path: '**', component: PaginaNaoEncontradaComponent }
 ];

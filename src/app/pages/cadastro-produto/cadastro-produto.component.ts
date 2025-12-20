@@ -1,14 +1,19 @@
-import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  signal,
+  inject,
+  OnInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 import {
   SelectCustomizadoComponent,
   OpcaoSelect,
 } from '../../components/select-customizado/select-customizado.component';
 import { InputCustomizadoComponent } from '../../components/input-customizado/input-customizado.component';
-import { Produto } from '../../models/produto.model';
 import { ArtesaoService } from '../../services/artesao.service';
 import { Artesao } from '../../models/artesao.model';
 import { ProdutoService } from '../../services/produto.service';
@@ -37,8 +42,16 @@ import { firstValueFrom } from 'rxjs';
         <div class="container mx-auto px-4 py-8">
           <div class="flex items-center justify-between">
             <div>
-              <h1 class="text-3xl font-medieval font-bold text-scroll-beige mb-2">Novo Produto</h1>
-              <p class="text-scroll-beige/70">Crie um novo produto para sua loja</p>
+              <h1 class="text-3xl font-medieval font-bold text-scroll-beige mb-2">
+                {{ isModoEdicao() ? 'Editar Produto' : 'Novo Produto' }}
+              </h1>
+              <p class="text-scroll-beige/70">
+                {{
+                  isModoEdicao()
+                    ? 'Edite o produto da sua loja'
+                    : 'Crie um novo produto para sua loja'
+                }}
+              </p>
               <div *ngIf="artesaoAtual" class="mt-2">
                 <span class="text-candlelight-gold font-medium"
                   >Artesão: {{ artesaoAtual.nome }}</span
@@ -137,7 +150,7 @@ import { firstValueFrom } from 'rxjs';
 
               <div class="space-y-4">
                 <!-- Input de arquivo -->
-                <div>
+                <div *ngIf="!imagemPreview || imagemPreview === null">
                   <label class="block text-sm font-medium text-scroll-beige mb-2">
                     Selecione uma imagem
                   </label>
@@ -232,13 +245,15 @@ import { firstValueFrom } from 'rxjs';
     `,
   ],
 })
-export class CadastroProdutoComponent implements OnInit, OnDestroy {
+export class CadastroProdutoComponent implements OnInit {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private artesaoService = inject(ArtesaoService);
   private produtoService = inject(ProdutoService);
   private categoriaProdutoService = inject(CategoriaProdutoService);
+  private cdr = inject(ChangeDetectorRef);
 
-  produto: Partial<Produto> = {
+  produto: any = {
     nome: '',
     descricao: '',
     resumo: '',
@@ -258,9 +273,20 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
   imagemSelecionada: File | null = null;
   imagemPreview: string | null = null;
 
-  ngOnInit() {
+  // Modo de edição
+  isModoEdicao = signal(false);
+  nomeNormalizadoProduto: string | null = null;
+
+  async ngOnInit() {
     this.validarAcessoArtesao();
     this.carregarCategorias();
+
+    // Verificar se está em modo de edição (síncrono usando snapshot)
+    const nomeNormalizado = this.route.snapshot.queryParams['produto'];
+    if (nomeNormalizado) {
+      console.log('Entrou no if');
+      await this.carregarProdutoParaEdicao(nomeNormalizado);
+    }
   }
 
   private carregarCategorias() {
@@ -276,6 +302,18 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
         // Em caso de erro, manter array vazio ou usar valores padrão se necessário
       },
     });
+  }
+
+  async carregarProdutoParaEdicao(nomeNormalizado: string) {
+    this.isModoEdicao.set(true);
+    this.nomeNormalizadoProduto = nomeNormalizado;
+
+    const produto = await firstValueFrom(
+      this.produtoService.buscarProdutoPorNomeNormalizado(nomeNormalizado)
+    );
+    this.produto = produto;
+    this.imagemPreview = produto.urlPreview;
+    this.cdr.detectChanges();
   }
 
   private validarAcessoArtesao() {
@@ -301,7 +339,7 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.warn(`Artesão com domínio '${lojaDominio}' não encontrado:`, error);
         this.redirecionarParaInicio();
-      }
+      },
     });
   }
 
@@ -336,36 +374,60 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
         descricao: this.produto.descricao || '',
         resumo: this.produto.resumo || this.produto.descricao?.substring(0, 200) || '',
         categoriaCodigo: this.produto.categoriaCodigo,
-        valorUnitario: this.produto.gratuito ? 0 : (this.produto.valorUnitario || 0),
+        valorUnitario: this.produto.gratuito ? 0 : this.produto.valorUnitario || 0,
         promocaoPorcentagem: this.produto.promocaoPorcentagem || 0,
         gratuito: this.produto.gratuito || false,
       };
 
-      // Salvar o produto primeiro
-      const resposta = await firstValueFrom(
-        this.produtoService.adicionarProduto(dtoProduto, this.artesaoAtual.dominio)
-      );
+      let nomeNormalizado: string;
+
+      if (this.isModoEdicao() && this.nomeNormalizadoProduto) {
+        // Modo de edição: atualizar produto existente
+        await firstValueFrom(
+          this.produtoService.atualizarProduto(this.nomeNormalizadoProduto, dtoProduto)
+        );
+        nomeNormalizado = this.nomeNormalizadoProduto;
+      } else {
+        // Modo de criação: criar novo produto
+        const resposta = await firstValueFrom(
+          this.produtoService.adicionarProduto(dtoProduto, this.artesaoAtual.dominio)
+        );
+        nomeNormalizado = resposta?.nomeNormalizado;
+      }
 
       // Se houver imagem selecionada, fazer upload
-      if (this.imagemSelecionada) {
-        
-        const nomeNormalizado = resposta?.nomeNormalizado;
-        
+      if (this.imagemSelecionada && nomeNormalizado) {
         try {
           await firstValueFrom(
-            this.produtoService.uploadImagemProduto(nomeNormalizado, this.imagemSelecionada, 'preview')
+            this.produtoService.uploadImagemProduto(
+              nomeNormalizado,
+              this.imagemSelecionada,
+              'preview'
+            )
           );
         } catch (uploadError) {
           console.error('Erro ao fazer upload da imagem:', uploadError);
-          alert('Produto salvo, mas houve erro ao fazer upload da imagem.');
+          alert(
+            this.isModoEdicao()
+              ? 'Produto atualizado, mas houve erro ao fazer upload da imagem.'
+              : 'Produto salvo, mas houve erro ao fazer upload da imagem.'
+          );
         }
       }
 
-      alert('Produto salvo com sucesso!');
+      alert(
+        this.isModoEdicao()
+          ? 'Produto atualizado com sucesso!'
+          : 'Produto salvo com sucesso!'
+      );
       this.voltar();
     } catch (error) {
       console.error('Erro ao salvar produto:', error);
-      alert('Erro ao salvar produto. Tente novamente.');
+      alert(
+        this.isModoEdicao()
+          ? 'Erro ao atualizar produto. Tente novamente.'
+          : 'Erro ao salvar produto. Tente novamente.'
+      );
     }
   }
 
@@ -373,7 +435,7 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const arquivo = input.files[0];
-      
+
       // Validar se é uma imagem
       if (!arquivo.type.startsWith('image/')) {
         alert('Por favor, selecione um arquivo de imagem.');
@@ -396,7 +458,6 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
     this.imagemPreview = null;
   }
 
-
   voltar() {
     // Verificar se há um domínio de loja salvo no sessionStorage
     const lojaDominio = sessionStorage.getItem('lojaDominio');
@@ -407,14 +468,6 @@ export class CadastroProdutoComponent implements OnInit, OnDestroy {
     } else {
       // Se não houver domínio salvo, ir para a página inicial
       this.router.navigate(['/']);
-    }
-  }
-
-  ngOnDestroy() {
-    // Limpar URL do preview para evitar vazamento de memória
-    if (this.imagemPreview && this.imagemPreview.startsWith('data:')) {
-      // URLs data: não precisam ser revogadas
-      // Mas se fosse uma URL.createObjectURL, precisaria fazer URL.revokeObjectURL()
     }
   }
 }

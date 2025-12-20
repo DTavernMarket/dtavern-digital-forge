@@ -16,6 +16,13 @@ export class ProdutoService {
     );
   }
 
+  atualizarProduto(nomeProdutoNormalizado: string, dtoProduto: any): Observable<any> {
+    return this.http.put<any>(
+      `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}`,
+      dtoProduto
+    );
+  }
+
   listarProdutosPorDominio(dominioArtesao: string): Observable<Produto[]> {
     return this.http.get<Produto[]>(
       `http://localhost:8080/api/v1/lojas/${dominioArtesao}/produtos`
@@ -44,6 +51,16 @@ export class ProdutoService {
     return this.http.get<PagedResult<Produto>>('http://localhost:8080/api/v1/produtos', {
       params,
     });
+  }
+
+  /**
+   * Busca um produto pelo nome normalizado (slug)
+   * @param nomeProdutoNormalizado Nome normalizado do produto
+   */
+  buscarProdutoPorNomeNormalizado(nomeProdutoNormalizado: string): Observable<any> {
+    return this.http.get<any>(
+      `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}`
+    );
   }
 
   /**

@@ -22,7 +22,7 @@ import { firstValueFrom } from 'rxjs';
         <!-- Imagem de Fundo -->
         <div
           class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          [style.background-image]="'url(' + 'https://via.placeholder.com/150' + ')'"
+          [style.background-image]="'url(' + 'http://localhost:8080/cdn/default.png' + ')'"
         >
           <div class="absolute inset-0 bg-black/50"></div>
         </div>
@@ -33,7 +33,7 @@ import { firstValueFrom } from 'rxjs';
             <!-- Avatar do Artesão -->
             <div class="relative">
               <img
-                [src]="'https://via.placeholder.com/150'"
+                [src]="'http://localhost:8080/cdn/default.png'"
                 [alt]="artesao()?.nome"
                 class="w-32 h-32 rounded-full border-4 border-candlelight-gold shadow-xl object-cover"
               />
@@ -65,9 +65,7 @@ import { firstValueFrom } from 'rxjs';
                       d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
                     />
                   </svg>
-                  <span
-                    >{{ 0 }} ({{ 0 }} avaliações)</span
-                  >
+                  <span>{{ 0 }} ({{ 0 }} avaliações)</span>
                 </div>
                 <div class="flex items-center space-x-2">
                   <svg
@@ -228,7 +226,9 @@ import { firstValueFrom } from 'rxjs';
               (click)="verProduto(produto)"
             >
               <!-- Imagem do Produto -->
-              <div class="relative aspect-square overflow-hidden bg-gradient-to-br from-midnight-brown/40 to-tavern-wood/20">
+              <div
+                class="relative aspect-square overflow-hidden bg-gradient-to-br from-midnight-brown/40 to-tavern-wood/20"
+              >
                 <!-- Imagem de Preview ou Placeholder -->
                 <div class="w-full h-full">
                   <img
@@ -256,7 +256,7 @@ import { firstValueFrom } from 'rxjs';
                     </svg>
                   </div>
                 </div>
-                
+
                 <!-- Badge de Categoria -->
                 <div class="absolute top-3 left-3">
                   <span
@@ -265,7 +265,7 @@ import { firstValueFrom } from 'rxjs';
                     {{ produto.categoriaCodigo }}
                   </span>
                 </div>
-                
+
                 <!-- Badge Grátis -->
                 <div *ngIf="produto.gratuito" class="absolute top-3 right-3">
                   <span
@@ -274,24 +274,45 @@ import { firstValueFrom } from 'rxjs';
                     Grátis
                   </span>
                 </div>
-                
+
                 <!-- Badge de Promoção -->
-                <div *ngIf="produto.promocaoPorcentagem > 0 && !produto.gratuito" class="absolute bottom-3 right-3">
+                <div
+                  *ngIf="produto.promocaoPorcentagem > 0 && !produto.gratuito"
+                  class="absolute bottom-3 right-3"
+                >
                   <span
                     class="px-3 py-1.5 bg-red-500/90 text-white text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
                   >
                     -{{ produto.promocaoPorcentagem }}%
                   </span>
                 </div>
+
+                <!-- Ícone de Edição -->
+                <button
+                  (click)="editarProduto(produto); $event.stopPropagation()"
+                  class="absolute top-3 right-3 w-8 h-8 bg-candlelight-gold/90 hover:bg-candlelight-gold text-tavern-wood rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors z-10"
+                  title="Editar produto"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </button>
               </div>
 
               <!-- Informações do Produto -->
               <div class="p-5 space-y-3">
                 <!-- Nome do Produto -->
-                <h3 class="font-semibold text-scroll-beige text-lg group-hover:text-candlelight-gold transition-colors line-clamp-2 min-h-[3.5rem]">
+                <h3
+                  class="font-semibold text-scroll-beige text-lg group-hover:text-candlelight-gold transition-colors line-clamp-2 min-h-[3.5rem]"
+                >
                   {{ produto.nome }}
                 </h3>
-                
+
                 <!-- Resumo/Descrição -->
                 <p class="text-scroll-beige/70 text-sm line-clamp-3 min-h-[4rem]">
                   {{ produto.resumo || produto.descricao }}
@@ -311,7 +332,12 @@ import { firstValueFrom } from 'rxjs';
                         *ngIf="produto.promocaoPorcentagem > 0"
                         class="text-scroll-beige/50 text-sm line-through"
                       >
-                        R$ {{ (produto.valorUnitario / (1 - produto.promocaoPorcentagem / 100)).toFixed(2).replace('.', ',') }}
+                        R$
+                        {{
+                          (produto.valorUnitario / (1 - produto.promocaoPorcentagem / 100))
+                            .toFixed(2)
+                            .replace('.', ',')
+                        }}
                       </span>
                     </div>
                   </div>
@@ -376,27 +402,19 @@ import { firstValueFrom } from 'rxjs';
               <!-- Estatísticas Detalhadas -->
               <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                 <div class="text-center">
-                  <div class="text-3xl font-bold text-candlelight-gold">
-                    0
-                  </div>
+                  <div class="text-3xl font-bold text-candlelight-gold">0</div>
                   <div class="text-scroll-beige/70">Avaliação Média</div>
                 </div>
                 <div class="text-center">
-                  <div class="text-3xl font-bold text-candlelight-gold">
-                    0
-                  </div>
+                  <div class="text-3xl font-bold text-candlelight-gold">0</div>
                   <div class="text-scroll-beige/70">Produtos</div>
                 </div>
                 <div class="text-center">
-                  <div class="text-3xl font-bold text-candlelight-gold">
-                    0
-                  </div>
+                  <div class="text-3xl font-bold text-candlelight-gold">0</div>
                   <div class="text-scroll-beige/70">Seguidores</div>
                 </div>
                 <div class="text-center">
-                  <div class="text-3xl font-bold text-candlelight-gold">
-                    0
-                  </div>
+                  <div class="text-3xl font-bold text-candlelight-gold">0</div>
                   <div class="text-scroll-beige/70">Avaliações</div>
                 </div>
               </div>
@@ -439,9 +457,7 @@ import { firstValueFrom } from 'rxjs';
 
                   <a
                     *ngIf="false"
-                    [href]="
-                      'https://twitter.com/' + 'https://www.google.com'
-                    "
+                    [href]="'https://twitter.com/' + 'https://www.google.com'"
                     target="_blank"
                     class="flex items-center space-x-3 text-scroll-beige hover:text-candlelight-gold transition-colors"
                   >
@@ -455,10 +471,7 @@ import { firstValueFrom } from 'rxjs';
 
                   <a
                     *ngIf="false"
-                    [href]="
-                      'https://instagram.com/' +
-                      'https://www.google.com'
-                    "
+                    [href]="'https://instagram.com/' + 'https://www.google.com'"
                     target="_blank"
                     class="flex items-center space-x-3 text-scroll-beige hover:text-candlelight-gold transition-colors"
                   >
@@ -626,7 +639,19 @@ export class LojaArtesaoComponent implements OnInit {
         console.error('Erro ao carregar artesão:', error);
         // Redirecionar para página não encontrada
         this.router.navigate(['/404']);
-      }
+      },
+    });
+  }
+
+  editarProduto(produto: Produto) {
+    // Salvar o domínio da loja atual no sessionStorage
+    const dominioAtual = this.artesao()?.dominio;
+    if (dominioAtual) {
+      sessionStorage.setItem('lojaDominio', dominioAtual);
+    }
+    // Navegar para o formulário de edição com o nome normalizado do produto
+    this.router.navigate(['/editar-produto'], {
+      queryParams: { produto: produto.nomeNormalizado }
     });
   }
 
@@ -638,10 +663,9 @@ export class LojaArtesaoComponent implements OnInit {
       error: (error) => {
         console.error('Erro ao carregar produtos:', error);
         this.produtosArtesao.set([]);
-      }
+      },
     });
   }
-
 
   verProduto(produto: Produto) {
     // Navegar para página de detalhes do produto usando nomeNormalizado

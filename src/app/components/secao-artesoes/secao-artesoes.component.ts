@@ -36,13 +36,13 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
                <!-- Background do Artesão -->
                <div
                  class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-70"
-                 [style.background-image]="'url(https://via.placeholder.com/150)'"
+                 [style.background-image]="'url(http://localhost:8080/cdn/default.png)'"
                ></div>
 
                <div class="relative z-10 h-full flex items-center justify-center">
                  <div class="relative">
                    <img
-                     [src]="'https://via.placeholder.com/150'"
+                     [src]="'http://localhost:8080/cdn/default.png'"
                      [alt]="artesao.nome"
                      class="bg-scroll-beige w-24 h-24 rounded-lg object-cover mx-auto border-4 border-brass-accent/30"
                    />
