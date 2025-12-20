@@ -7,6 +7,7 @@ import { Artesao } from '../../models/artesao.model';
 import { Produto } from '../../models/produto.model';
 import { ArtesaoService } from '../../services/artesao.service';
 import { ProdutoService } from '../../services/produto.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-loja-artesao',
@@ -21,7 +22,7 @@ import { ProdutoService } from '../../services/produto.service';
         <!-- Imagem de Fundo -->
         <div
           class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          [style.background-image]="'url(' + artesao()?.planoFundo + ')'"
+          [style.background-image]="'url(' + 'https://via.placeholder.com/150' + ')'"
         >
           <div class="absolute inset-0 bg-black/50"></div>
         </div>
@@ -32,7 +33,7 @@ import { ProdutoService } from '../../services/produto.service';
             <!-- Avatar do Artesão -->
             <div class="relative">
               <img
-                [src]="artesao()?.avatar"
+                [src]="'https://via.placeholder.com/150'"
                 [alt]="artesao()?.nome"
                 class="w-32 h-32 rounded-full border-4 border-candlelight-gold shadow-xl object-cover"
               />
@@ -65,7 +66,7 @@ import { ProdutoService } from '../../services/produto.service';
                     />
                   </svg>
                   <span
-                    >{{ artesao()?.avaliacao }} ({{ artesao()?.numeroAvaliacoes }} avaliações)</span
+                    >{{ 0 }} ({{ 0 }} avaliações)</span
                   >
                 </div>
                 <div class="flex items-center space-x-2">
@@ -82,7 +83,7 @@ import { ProdutoService } from '../../services/produto.service';
                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                     />
                   </svg>
-                  <span>{{ artesao()?.numeroProdutos }} produtos</span>
+                  <span>{{ 0 }} produtos</span>
                 </div>
                 <div class="flex items-center space-x-2">
                   <svg
@@ -98,7 +99,7 @@ import { ProdutoService } from '../../services/produto.service';
                       d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                     />
                   </svg>
-                  <span>{{ artesao()?.numeroSeguidores }} seguidores</span>
+                  <span>{{ 0 }} seguidores</span>
                 </div>
               </div>
             </div>
@@ -196,23 +197,21 @@ import { ProdutoService } from '../../services/produto.service';
                 class="px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
               >
                 <option value="">Todas as categorias</option>
-                <option value="Tokens">Tokens</option>
-                <option value="Mapas">Mapas</option>
-                <option value="Aventuras">Aventuras</option>
-                <option value="Trilhas Sonoras">Trilhas Sonoras</option>
-                <option value="Ferramentas">Ferramentas</option>
-                <option value="Outros">Outros</option>
+                <option value="token">Token</option>
+                <option value="mapa">Mapa</option>
+                <option value="aventura">Aventura</option>
+                <option value="trilha-sonora">Trilha Sonora</option>
+                <option value="ferramenta">Ferramenta</option>
+                <option value="outro">Outro</option>
               </select>
 
               <select
                 [(ngModel)]="ordenacao"
                 class="px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
               >
-                <option value="recentes">Mais recentes</option>
-                <option value="avaliacao">Melhor avaliados</option>
+                <option value="recentes">Nome (A-Z)</option>
                 <option value="preco-menor">Menor preço</option>
                 <option value="preco-maior">Maior preço</option>
-                <option value="popularidade">Mais populares</option>
               </select>
             </div>
 
@@ -225,84 +224,102 @@ import { ProdutoService } from '../../services/produto.service';
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div
               *ngFor="let produto of produtosFiltrados()"
-              class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl overflow-hidden hover:border-candlelight-gold/50 transition-all duration-300 group cursor-pointer"
+              class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl overflow-hidden hover:border-candlelight-gold/50 hover:shadow-lg transition-all duration-300 group cursor-pointer"
               (click)="verProduto(produto)"
             >
               <!-- Imagem do Produto -->
-              <div class="relative aspect-square overflow-hidden bg-tavern-wood/20">
-                <img
-                  *ngIf="produto.imagens && produto.imagens.length > 0 && produto.imagens[0]?.previewUrl"
-                  [src]="produto.imagens[0].previewUrl"
-                  [alt]="produto.titulo"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div
-                  *ngIf="!produto.imagens || produto.imagens.length === 0 || !produto.imagens[0]?.previewUrl"
-                  class="w-full h-full flex items-center justify-center"
-                >
-                  <svg
-                    class="w-16 h-16 text-scroll-beige/30"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                    />
-                  </svg>
-                </div>
-                <div class="absolute top-3 left-3">
-                  <span
-                    class="px-2 py-1 bg-candlelight-gold text-tavern-wood text-xs font-semibold rounded"
-                  >
-                    {{ produto.categoria }}
-                  </span>
-                </div>
-                <div class="absolute top-3 right-3">
+              <div class="relative aspect-square overflow-hidden bg-gradient-to-br from-midnight-brown/40 to-tavern-wood/20">
+                <!-- Imagem de Preview ou Placeholder -->
+                <div class="w-full h-full">
+                  <img
+                    *ngIf="produto.urlPreview"
+                    [src]="produto.urlPreview"
+                    [alt]="produto.nome"
+                    class="w-full h-full object-cover"
+                  />
                   <div
-                    class="flex items-center space-x-1 bg-black/50 backdrop-blur-sm rounded px-2 py-1"
+                    *ngIf="!produto.urlPreview"
+                    class="w-full h-full flex items-center justify-center"
                   >
                     <svg
-                      class="w-3 h-3 text-candlelight-gold"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
+                      class="w-20 h-20 text-scroll-beige/20 group-hover:text-scroll-beige/30 transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
                       <path
-                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>
-                    <span class="text-white text-xs">{{ produto.avaliacao }}</span>
                   </div>
+                </div>
+                
+                <!-- Badge de Categoria -->
+                <div class="absolute top-3 left-3">
+                  <span
+                    class="px-3 py-1.5 bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
+                  >
+                    {{ produto.categoriaCodigo }}
+                  </span>
+                </div>
+                
+                <!-- Badge Grátis -->
+                <div *ngIf="produto.gratuito" class="absolute top-3 right-3">
+                  <span
+                    class="px-3 py-1.5 bg-green-500/90 text-white text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
+                  >
+                    Grátis
+                  </span>
+                </div>
+                
+                <!-- Badge de Promoção -->
+                <div *ngIf="produto.promocaoPorcentagem > 0 && !produto.gratuito" class="absolute bottom-3 right-3">
+                  <span
+                    class="px-3 py-1.5 bg-red-500/90 text-white text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
+                  >
+                    -{{ produto.promocaoPorcentagem }}%
+                  </span>
                 </div>
               </div>
 
               <!-- Informações do Produto -->
-              <div class="p-4">
-                <h3 class="font-semibold text-scroll-beige mb-2 line-clamp-2">
-                  {{ produto.titulo }}
+              <div class="p-5 space-y-3">
+                <!-- Nome do Produto -->
+                <h3 class="font-semibold text-scroll-beige text-lg group-hover:text-candlelight-gold transition-colors line-clamp-2 min-h-[3.5rem]">
+                  {{ produto.nome }}
                 </h3>
-                <p class="text-scroll-beige/70 text-sm mb-3 line-clamp-2">
-                  {{ produto.descricao }}
+                
+                <!-- Resumo/Descrição -->
+                <p class="text-scroll-beige/70 text-sm line-clamp-3 min-h-[4rem]">
+                  {{ produto.resumo || produto.descricao }}
                 </p>
 
-                <!-- Estatísticas -->
-                <div class="flex items-center justify-between text-xs text-scroll-beige/60 mb-3">
-                  <span>{{ produto.numeroDownloads }} downloads</span>
-                  <span>{{ produto.tamanhoArquivo }}</span>
-                </div>
-
                 <!-- Preço e Botão -->
-                <div class="flex items-center justify-between">
-                  <span class="text-candlelight-gold font-bold text-lg">
-                    R$ {{ produto.valorUnitario }}
-                  </span>
+                <div class="flex items-center justify-between pt-2 border-t border-brass-accent/20">
+                  <div class="flex flex-col">
+                    <span *ngIf="produto.gratuito" class="text-candlelight-gold font-bold text-xl">
+                      Grátis
+                    </span>
+                    <div *ngIf="!produto.gratuito" class="flex items-baseline gap-2">
+                      <span class="text-candlelight-gold font-bold text-xl">
+                        R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                      </span>
+                      <span
+                        *ngIf="produto.promocaoPorcentagem > 0"
+                        class="text-scroll-beige/50 text-sm line-through"
+                      >
+                        R$ {{ (produto.valorUnitario / (1 - produto.promocaoPorcentagem / 100)).toFixed(2).replace('.', ',') }}
+                      </span>
+                    </div>
+                  </div>
                   <button
-                    class="px-4 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors text-sm"
+                    (click)="$event.stopPropagation()"
+                    class="px-5 py-2.5 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 active:scale-95 transition-all text-sm shadow-md hover:shadow-lg"
                   >
-                    Comprar
+                    {{ produto.gratuito ? 'Baixar' : 'Comprar' }}
                   </button>
                 </div>
               </div>
@@ -348,10 +365,10 @@ import { ProdutoService } from '../../services/produto.service';
                 <h3 class="text-xl font-semibold text-scroll-beige mb-4">Especialidades</h3>
                 <div class="flex flex-wrap gap-3">
                   <span
-                    *ngFor="let especialidade of artesao()?.especialidades"
+                    *ngFor="let especialidade of []"
                     class="px-4 py-2 bg-candlelight-gold/20 border border-candlelight-gold/30 rounded-lg text-candlelight-gold font-medium"
                   >
-                    {{ especialidade }}
+                    {{ '' }}
                   </span>
                 </div>
               </div>
@@ -360,25 +377,25 @@ import { ProdutoService } from '../../services/produto.service';
               <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                 <div class="text-center">
                   <div class="text-3xl font-bold text-candlelight-gold">
-                    {{ artesao()?.avaliacao }}
+                    0
                   </div>
                   <div class="text-scroll-beige/70">Avaliação Média</div>
                 </div>
                 <div class="text-center">
                   <div class="text-3xl font-bold text-candlelight-gold">
-                    {{ artesao()?.numeroProdutos }}
+                    0
                   </div>
                   <div class="text-scroll-beige/70">Produtos</div>
                 </div>
                 <div class="text-center">
                   <div class="text-3xl font-bold text-candlelight-gold">
-                    {{ artesao()?.numeroSeguidores }}
+                    0
                   </div>
                   <div class="text-scroll-beige/70">Seguidores</div>
                 </div>
                 <div class="text-center">
                   <div class="text-3xl font-bold text-candlelight-gold">
-                    {{ artesao()?.numeroAvaliacoes }}
+                    0
                   </div>
                   <div class="text-scroll-beige/70">Avaliações</div>
                 </div>
@@ -387,7 +404,7 @@ import { ProdutoService } from '../../services/produto.service';
               <!-- Data de Entrada -->
               <div class="text-scroll-beige/70">
                 <strong class="text-scroll-beige">Membro desde:</strong>
-                {{ artesao()?.dataEntrada ? (artesao()?.dataEntrada | date : 'MMMM yyyy') : '' }}
+                {{ '' }}
               </div>
             </div>
           </div>
@@ -404,8 +421,8 @@ import { ProdutoService } from '../../services/produto.service';
                 <h3 class="text-xl font-semibold text-scroll-beige mb-4">Redes Sociais</h3>
                 <div class="space-y-4">
                   <a
-                    *ngIf="artesao()?.redesSociais?.website"
-                    [href]="artesao()?.redesSociais?.website"
+                    *ngIf="false"
+                    [href]="'https://www.google.com'"
                     target="_blank"
                     class="flex items-center space-x-3 text-scroll-beige hover:text-candlelight-gold transition-colors"
                   >
@@ -421,9 +438,9 @@ import { ProdutoService } from '../../services/produto.service';
                   </a>
 
                   <a
-                    *ngIf="artesao()?.redesSociais?.twitter"
+                    *ngIf="false"
                     [href]="
-                      'https://twitter.com/' + artesao()?.redesSociais?.twitter?.replace('@', '')
+                      'https://twitter.com/' + 'https://www.google.com'
                     "
                     target="_blank"
                     class="flex items-center space-x-3 text-scroll-beige hover:text-candlelight-gold transition-colors"
@@ -433,14 +450,14 @@ import { ProdutoService } from '../../services/produto.service';
                         d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.1-2.827-.384a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"
                       />
                     </svg>
-                    <span>{{ artesao()?.redesSociais?.twitter }}</span>
+                    <span>{{ 'https://www.google.com' }}</span>
                   </a>
 
                   <a
-                    *ngIf="artesao()?.redesSociais?.instagram"
+                    *ngIf="false"
                     [href]="
                       'https://instagram.com/' +
-                      artesao()?.redesSociais?.instagram?.replace('@', '')
+                      'https://www.google.com'
                     "
                     target="_blank"
                     class="flex items-center space-x-3 text-scroll-beige hover:text-candlelight-gold transition-colors"
@@ -450,12 +467,12 @@ import { ProdutoService } from '../../services/produto.service';
                         d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987s11.987-5.367 11.987-11.987C24.004 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.348-1.051-2.348-2.348s1.051-2.348 2.348-2.348 2.348 1.051 2.348 2.348-1.051 2.348-2.348 2.348zm7.718 0c-1.297 0-2.348-1.051-2.348-2.348s1.051-2.348 2.348-2.348 2.348 1.051 2.348 2.348-1.051 2.348-2.348 2.348z"
                       />
                     </svg>
-                    <span>{{ artesao()?.redesSociais?.instagram }}</span>
+                    <span>{{ 'https://www.google.com' }}</span>
                   </a>
 
                   <a
-                    *ngIf="artesao()?.redesSociais?.youtube"
-                    [href]="getYouTubeUrl(artesao()?.redesSociais?.youtube)"
+                    *ngIf="false"
+                    [href]="getYouTubeUrl('https://www.google.com')"
                     target="_blank"
                     class="flex items-center space-x-3 text-scroll-beige hover:text-candlelight-gold transition-colors"
                   >
@@ -464,11 +481,11 @@ import { ProdutoService } from '../../services/produto.service';
                         d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
                       />
                     </svg>
-                    <span>{{ artesao()?.redesSociais?.youtube }}</span>
+                    <span>{{ 'https://www.google.com' }}</span>
                   </a>
 
                   <a
-                    *ngIf="artesao()?.redesSociais?.discord"
+                    *ngIf="false"
                     href="#"
                     class="flex items-center space-x-3 text-scroll-beige hover:text-candlelight-gold transition-colors"
                   >
@@ -477,7 +494,7 @@ import { ProdutoService } from '../../services/produto.service';
                         d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0002 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1568 2.4189Z"
                       />
                     </svg>
-                    <span>{{ artesao()?.redesSociais?.discord }}</span>
+                    <span>{{ 'https://www.google.com' }}</span>
                   </a>
                 </div>
               </div>
@@ -553,28 +570,31 @@ export class LojaArtesaoComponent implements OnInit {
 
     // Filtrar por categoria
     if (this.categoriaFiltro()) {
-      produtos = produtos.filter((p) => p.categoria === this.categoriaFiltro());
+      produtos = produtos.filter((p) => p.categoriaCodigo === this.categoriaFiltro());
     }
 
     // Ordenar
     switch (this.ordenacao()) {
-      case 'avaliacao':
-        produtos = produtos.sort((a, b) => b.avaliacao - a.avaliacao);
-        break;
       case 'preco-menor':
-        produtos = produtos.sort((a, b) => a.valorUnitario - b.valorUnitario);
+        produtos = produtos.sort((a, b) => {
+          const precoA = a.gratuito ? 0 : a.valorUnitario * (1 - a.promocaoPorcentagem / 100);
+          const precoB = b.gratuito ? 0 : b.valorUnitario * (1 - b.promocaoPorcentagem / 100);
+          return precoA - precoB;
+        });
         break;
       case 'preco-maior':
-        produtos = produtos.sort((a, b) => b.valorUnitario - a.valorUnitario);
-        break;
-      case 'popularidade':
-        produtos = produtos.sort((a, b) => b.numeroDownloads - a.numeroDownloads);
+        produtos = produtos.sort((a, b) => {
+          const precoA = a.gratuito ? 0 : a.valorUnitario * (1 - a.promocaoPorcentagem / 100);
+          const precoB = b.gratuito ? 0 : b.valorUnitario * (1 - b.promocaoPorcentagem / 100);
+          return precoB - precoA;
+        });
         break;
       case 'recentes':
+      case 'avaliacao':
+      case 'popularidade':
       default:
-        produtos = produtos.sort(
-          (a, b) => new Date(b.dataCriacao).getTime() - new Date(a.dataCriacao).getTime()
-        );
+        // Ordenação padrão por nome
+        produtos = produtos.sort((a, b) => a.nome.localeCompare(b.nome));
         break;
     }
 
@@ -591,14 +611,23 @@ export class LojaArtesaoComponent implements OnInit {
   }
 
   private carregarArtesao(dominio: string) {
-    const artesao = this.artesaoService.obterArtesaoPorDominio(dominio);
-    if (artesao) {
-      this.artesao.set(artesao);
-      this.carregarProdutosPorDominio(dominio);
-    } else {
-      // Redirecionar para página não encontrada
-      this.router.navigate(['/404']);
-    }
+    this.artesaoService.buscarLojaPorDominio(dominio).subscribe({
+      next: (lojaResponse) => {
+        // Converter LojaResponse para Artesao com valores padrão para campos não disponíveis
+        const artesao: Artesao = {
+          dominio: lojaResponse.dominio,
+          nome: lojaResponse.nome,
+          biografia: lojaResponse.descricao, // descricao do backend vira biografia
+        };
+        this.artesao.set(artesao);
+        this.carregarProdutosPorDominio(dominio);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar artesão:', error);
+        // Redirecionar para página não encontrada
+        this.router.navigate(['/404']);
+      }
+    });
   }
 
   private carregarProdutosPorDominio(dominio: string) {
@@ -613,15 +642,11 @@ export class LojaArtesaoComponent implements OnInit {
     });
   }
 
-  private carregarProdutos(artesaoId: string) {
-    const produtos = this.produtoService.obterProdutosPorArtesao(artesaoId);
-    this.produtosArtesao.set(produtos);
-  }
 
   verProduto(produto: Produto) {
-    // Navegar para página de detalhes do produto
+    // Navegar para página de detalhes do produto usando nomeNormalizado
     this.router.navigate(['/produtos'], {
-      queryParams: { produto: produto.uuid },
+      queryParams: { produto: produto.nomeNormalizado },
     });
   }
 

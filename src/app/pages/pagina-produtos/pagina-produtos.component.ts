@@ -6,7 +6,7 @@ import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-
 import { RodapeComponent } from '../../components/rodape/rodape.component';
 import { ProdutoService } from '../../services/produto.service';
 import { ArtesaoService } from '../../services/artesao.service';
-import { Produto, CategoriaProduto } from '../../models/produto.model';
+import { Produto } from '../../models/produto.model';
 
 @Component({
   selector: 'app-pagina-produtos',
@@ -208,17 +208,44 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
                   <div class="flex space-x-6">
                     <!-- Imagem do Produto -->
                     <div class="flex-shrink-0">
-                      <div class="relative">
+                      <div class="relative w-32 h-32 bg-tavern-wood/20 rounded-lg overflow-hidden">
+                        <!-- Imagem de Preview ou Placeholder -->
                         <img
-                          [src]="produto.imagens[0].previewUrl"
-                          [alt]="produto.titulo"
-                          class="w-32 h-32 object-cover rounded-lg"
+                          *ngIf="produto.urlPreview"
+                          [src]="produto.urlPreview"
+                          [alt]="produto.nome"
+                          class="w-full h-full object-cover"
                         />
+                        <div
+                          *ngIf="!produto.urlPreview"
+                          class="w-full h-full flex items-center justify-center"
+                        >
+                          <svg
+                            class="w-16 h-16 text-scroll-beige/30"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                            />
+                          </svg>
+                        </div>
                         <div class="absolute top-2 left-2">
                           <span
                             class="bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold px-2 py-1 rounded-full"
                           >
-                            {{ produto.categoria }}
+                            {{ produto.categoriaCodigo }}
+                          </span>
+                        </div>
+                        <div *ngIf="produto.gratuito" class="absolute top-2 right-2">
+                          <span
+                            class="bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full"
+                          >
+                            Grátis
                           </span>
                         </div>
                       </div>
@@ -227,68 +254,32 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
                     <!-- Informações do Produto -->
                     <div class="flex-1 min-w-0">
                       <div class="space-y-3">
-                        <!-- Título e Artesão -->
+                        <!-- Nome -->
                         <div>
                           <h3
                             class="text-xl font-semibold text-scroll-beige hover:text-candlelight-gold transition-colors cursor-pointer"
                           >
-                            {{ produto.titulo }}
+                            {{ produto.nome }}
                           </h3>
-                          <p class="text-sm text-scroll-beige/60 mt-1">
-                            por 
-                            <a 
-                              [routerLink]="['/lojas', getArtesaoDominio(produto.nomeArtesao)]"
-                              class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-all duration-200 cursor-pointer"
-                              (click)="$event.stopPropagation()"
-                            >
-                              {{ produto.nomeArtesao }}
-                            </a>
-                          </p>
                         </div>
 
                         <!-- Descrição -->
                         <p class="text-sm text-scroll-beige/70 line-clamp-2">
-                          {{ produto.descricao }}
+                          {{ produto.resumo || produto.descricao }}
                         </p>
 
-                        <!-- Avaliação e Downloads -->
-                        <div class="flex items-center space-x-6 text-sm">
-                          <div class="flex items-center space-x-1">
-                            <div class="flex items-center">
-                              <svg
-                                class="w-4 h-4 text-candlelight-gold"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <span class="ml-1 text-scroll-beige/80">{{ produto.avaliacao }}</span>
-                              <span class="text-scroll-beige/60"
-                                >({{ produto.numeroAvaliacoes }})</span
-                              >
-                            </div>
-                          </div>
-                          <div class="flex items-center space-x-1 text-scroll-beige/60">
-                            <svg
-                              class="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
+                        <!-- Nome da Loja -->
+                        <div *ngIf="produto.nomeLoja && produto.dominioLoja" class="pt-1">
+                          <p class="text-sm text-scroll-beige/60">
+                            por
+                            <a
+                              [routerLink]="['/lojas', produto.dominioLoja]"
+                              class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-all duration-200 cursor-pointer"
+                              (click)="$event.stopPropagation()"
                             >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                              />
-                            </svg>
-                            <span>{{ produto.numeroDownloads }} downloads</span>
-                          </div>
-                          <div class="text-scroll-beige/60">
-                            <span class="text-xs">{{ produto.tamanhoArquivo }}</span>
-                          </div>
+                              {{ produto.nomeLoja }}
+                            </a>
+                          </p>
                         </div>
 
                       </div>
@@ -298,10 +289,20 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
                     <div class="flex-shrink-0 flex flex-col items-end justify-between">
                       <!-- Preço -->
                       <div class="text-right">
-                        <div class="text-2xl font-bold text-scroll-beige">
-                          R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                        <div *ngIf="produto.gratuito" class="text-2xl font-bold text-green-500">
+                          Grátis
                         </div>
-                        <div class="text-sm text-scroll-beige/60">Download digital</div>
+                        <div *ngIf="!produto.gratuito" class="text-right">
+                          <div class="text-2xl font-bold text-scroll-beige">
+                            R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                          </div>
+                          <div
+                            *ngIf="produto.promocaoPorcentagem > 0"
+                            class="text-sm text-scroll-beige/60 line-through"
+                          >
+                            R$ {{ (produto.valorUnitario / (1 - produto.promocaoPorcentagem / 100)).toFixed(2).replace('.', ',') }}
+                          </div>
+                        </div>
                       </div>
 
                       <!-- Botões de Ação -->
@@ -398,9 +399,62 @@ import { Produto, CategoriaProduto } from '../../models/produto.model';
   ],
 })
 export class PaginaProdutosComponent implements OnInit {
-  private produtoService = inject(ProdutoService);
   private artesaoService = inject(ArtesaoService);
-  
+  private produtoService = inject(ProdutoService);
+  private produtos = signal<Produto[]>([]);
+  private resultadoPaginado = signal<any>(null);
+
+  // Computed para produtos filtrados
+  produtosFiltrados = computed(() => {
+    let produtos = this.produtos();
+
+    // Filtrar por categoria
+    if (this.categoriaSelecionada()) {
+      produtos = produtos.filter((p) => p.categoriaCodigo === this.categoriaSelecionada());
+    }
+
+    // Filtrar por preço
+    if (this.precoMinimo() !== null) {
+      produtos = produtos.filter((p) => {
+        const precoFinal = p.gratuito ? 0 : p.valorUnitario * (1 - p.promocaoPorcentagem / 100);
+        return precoFinal >= this.precoMinimo()!;
+      });
+    }
+    if (this.precoMaximo() !== null) {
+      produtos = produtos.filter((p) => {
+        const precoFinal = p.gratuito ? 0 : p.valorUnitario * (1 - p.promocaoPorcentagem / 100);
+        return precoFinal <= this.precoMaximo()!;
+      });
+    }
+
+    // Ordenar
+    switch (this.ordenacaoSelecionada()) {
+      case 'preco-menor':
+        produtos = produtos.sort((a, b) => {
+          const precoA = a.gratuito ? 0 : a.valorUnitario * (1 - a.promocaoPorcentagem / 100);
+          const precoB = b.gratuito ? 0 : b.valorUnitario * (1 - b.promocaoPorcentagem / 100);
+          return precoA - precoB;
+        });
+        break;
+      case 'preco-maior':
+        produtos = produtos.sort((a, b) => {
+          const precoA = a.gratuito ? 0 : a.valorUnitario * (1 - a.promocaoPorcentagem / 100);
+          const precoB = b.gratuito ? 0 : b.valorUnitario * (1 - b.promocaoPorcentagem / 100);
+          return precoB - precoA;
+        });
+        break;
+      case 'relevancia':
+      default:
+        produtos = produtos.sort((a, b) => a.nome.localeCompare(b.nome));
+        break;
+    }
+
+    return produtos;
+  });
+
+  rastrearProduto(index: number, produto: Produto) {
+    return produto.nomeNormalizado || produto.nome;
+  }
 
   // Estados reativos para filtros
   termoBusca = signal('');
@@ -413,17 +467,14 @@ export class PaginaProdutosComponent implements OnInit {
   precoMinimo = signal<number | null>(null);
   precoMaximo = signal<number | null>(null);
 
-  // Categorias disponíveis
-  categorias = Object.values(CategoriaProduto);
+  // Categorias disponíveis (hardcoded por enquanto, pode vir do backend depois)
+  categorias = ['token', 'mapa', 'aventura', 'trilha-sonora', 'ferramenta', 'outro'];
 
   // Opções de ordenação
   opcoesOrdenacao = [
     { value: 'relevancia', label: 'Mais Relevantes' },
     { value: 'preco-menor', label: 'Menor Preço' },
     { value: 'preco-maior', label: 'Maior Preço' },
-    { value: 'avaliacao', label: 'Melhor Avaliação' },
-    { value: 'downloads', label: 'Mais Downloads' },
-    { value: 'recente', label: 'Mais Recentes' },
   ];
 
   // Signals formatados para exibição
@@ -437,32 +488,6 @@ export class PaginaProdutosComponent implements OnInit {
     return valor ? this.formatarPreco(valor) : '';
   });
 
-  // Signal computado que reage automaticamente aos filtros
-  produtosFiltrados = computed(() => {
-    let produtos = this.produtoService.obterProdutos();
-
-    // Filtro por termo de busca
-    if (this.termoBusca().trim()) {
-      produtos = this.produtoService.buscarProdutos(this.termoBusca());
-    }
-
-    // Filtro por categoria
-    if (this.categoriaSelecionada()) {
-      produtos = produtos.filter((produto) => produto.categoria === this.categoriaSelecionada());
-    }
-
-    // Filtro por preço
-    if (this.precoMinimo() !== null) {
-      produtos = produtos.filter((produto) => produto.valorUnitario >= this.precoMinimo()!);
-    }
-
-    if (this.precoMaximo() !== null) {
-      produtos = produtos.filter((produto) => produto.valorUnitario <= this.precoMaximo()!);
-    }
-
-    // Ordenação
-    return this.ordenarProdutos(produtos);
-  });
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -477,15 +502,32 @@ export class PaginaProdutosComponent implements OnInit {
         // Por exemplo, rolar para o produto ou aplicar um filtro especial
       }
     });
+    this.carregarProdutos();
   }
 
   atualizarBusca(termo: string) {
     this.termoBusca.set(termo);
+    this.paginaAtual.set(1); // Resetar para primeira página ao buscar
     // Atualizar a URL com o termo de busca
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { pesquisa: termo || null },
       queryParamsHandling: 'merge',
+    });
+    this.carregarProdutos();
+  }
+
+  private carregarProdutos() {
+    const page = this.paginaAtual() - 1; // Backend usa indexação baseada em 0
+    this.produtoService.buscarProdutos(this.termoBusca(), page, 10).subscribe({
+      next: (resultado) => {
+        this.resultadoPaginado.set(resultado);
+        this.produtos.set(resultado.content);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar produtos:', error);
+        this.produtos.set([]);
+      }
     });
   }
 
@@ -544,25 +586,14 @@ export class PaginaProdutosComponent implements OnInit {
         return produtos.sort((a, b) => a.valorUnitario - b.valorUnitario);
       case 'preco-maior':
         return produtos.sort((a, b) => b.valorUnitario - a.valorUnitario);
-      case 'avaliacao':
-        return produtos.sort((a, b) => b.avaliacao - a.avaliacao);
-      case 'downloads':
-        return produtos.sort((a, b) => b.numeroDownloads - a.numeroDownloads);
-      case 'recente':
-        return produtos.sort(
-          (a, b) => new Date(b.dataCriacao).getTime() - new Date(a.dataCriacao).getTime()
-        );
       default:
         return produtos;
     }
   }
 
-  rastrearProduto(index: number, produto: Produto) {
-    return produto.uuid;
-  }
-
   getArtesaoDominio(nomeArtesao: string): string {
-    const artesao = this.artesaoService.obterArtesoes()().find(a => a.nome === nomeArtesao);
+    const artesaos = this.artesaoService.buscarArtesoes(nomeArtesao);
+    const artesao = artesaos.find((a) => a.nome === nomeArtesao);
     return artesao?.dominio || '';
   }
 

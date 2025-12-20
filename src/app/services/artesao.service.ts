@@ -1,114 +1,106 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
-import { Artesao } from '../models/artesao.model';
-import { ProdutoService } from './produto.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, signal, computed } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Artesao, LojaResponse } from '../models/artesao.model';
+import { PagedResult } from '../models/produto.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ArtesaoService {
-  private produtoService = inject(ProdutoService);
+  private lojasCache = signal<LojaResponse[]>([]);
 
-  // Dados mockados dos artesãos
-  private artesoes = signal<Artesao[]>([
-    {
-      uuid: '1',
-      dominio: 'mestrealdric',
-      nome: 'Mestre Aldric',
-      biografia: 'Criador de tokens únicos e personagens memoráveis para suas aventuras épicas.',
-      avatar: '/assets/images/foto-mestre-aldric.png',
-      planoFundo: '/assets/images/bg-mestre-aldric.png',
-      especialidades: ['Tokens', 'Personagens', 'Fantasia'],
-      avaliacao: 4.9,
-      numeroAvaliacoes: 1250,
-      numeroProdutos: 15,
-      numeroSeguidores: 2340,
-      dataEntrada: new Date('2023-06-15'),
-      redesSociais: {
-        website: 'https://mestrealdric.com',
-        twitter: '@mestrealdric',
-        discord: 'MestreAldric#1234'
-      },
-      produtos: []
-    },
-    {
-      uuid: '2',
-      dominio: 'cartografa-luna',
-      nome: 'Cartógrafa Luna',
-      biografia: 'Especialista em mapas detalhados e mundos fantásticos que ganham vida em suas campanhas.',
-      avatar: '/assets/images/foto-cartografa-luna.png',
-      planoFundo: '/assets/images/bg-cartografa-luna.png',
-      especialidades: ['Mapas', 'Mundos', 'Dungeons'],
-      avaliacao: 4.8,
-      numeroAvaliacoes: 890,
-      numeroProdutos: 8,
-      numeroSeguidores: 1567,
-      dataEntrada: new Date('2023-08-22'),
-      redesSociais: {
-        website: 'https://cartografaluna.com',
-        instagram: '@cartografaluna',
-        youtube: 'Cartógrafa Luna'
-      },
-      produtos: []
-    },
-    {
-      uuid: '3',
-      dominio: 'narrador-sabio',
-      nome: 'Narrador Sábio',
-      biografia: 'Criador de aventuras épicas e histórias que ficarão na memória de seus jogadores.',
-      avatar: '/assets/images/foto-narrador-sabio.png',
-      planoFundo: '/assets/images/bg-narrador-sabio.png',
-      especialidades: ['Aventuras', 'Histórias', 'Narrativa'],
-      avaliacao: 5.0,
-      numeroAvaliacoes: 567,
-      numeroProdutos: 12,
-      numeroSeguidores: 890,
-      dataEntrada: new Date('2023-05-10'),
-      redesSociais: {
-        website: 'https://narradorsabio.com',
-        twitter: '@narradorsabio',
-        discord: 'NarradorSábio#5678'
-      },
-      produtos: []
+  constructor(private http: HttpClient) {}
+
+  /**
+   * Lista lojas paginadas do backend
+   * @param filtroGeral Termo de busca opcional
+   * @param page Número da página (baseado em 0)
+   * @param size Tamanho da página
+   */
+  listarLojas(
+    filtroGeral?: string,
+    page: number = 0,
+    size: number = 10
+  ): Observable<PagedResult<LojaResponse>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    if (filtroGeral && filtroGeral.trim()) {
+      params = params.set('filtroGeral', filtroGeral.trim());
     }
-  ]);
 
-  // Computed signals para dados derivados
-  artesoesEmDestaque = computed(() => this.artesoes().slice(0, 3));
-
-  constructor() {
-    this.inicializarProdutosArtesoes();
+    return this.http.get<PagedResult<LojaResponse>>('http://localhost:8080/api/v1/lojas', {
+      params,
+    });
   }
 
-  private inicializarProdutosArtesoes() {
-    const artesoesAtualizados = this.artesoes().map(artesao => ({
-      ...artesao,
-      produtos: this.produtoService.obterProdutosPorArtesao(artesao.uuid)
-    }));
-    this.artesoes.set(artesoesAtualizados);
-  }
-
-  // Métodos para acessar os artesãos
-  obterArtesoes() {
-    return this.artesoes;
-  }
-
-  obterArtesaoPorUuid(uuid: string) {
-    return this.artesoes().find(artesao => artesao.uuid === uuid);
-  }
-
-  obterArtesaoPorDominio(dominio: string) {
-    return this.artesoes().find(artesao => artesao.dominio === dominio);
-  }
-
-  obterArtesoesEmDestaque() {
-    return this.artesoesEmDestaque;
-  }
-
-  buscarArtesoes(termo: string) {
-    return this.artesoes().filter(artesao => 
-      artesao.nome.toLowerCase().includes(termo.toLowerCase()) ||
-      artesao.biografia.toLowerCase().includes(termo.toLowerCase()) ||
-      artesao.especialidades.some(esp => esp.toLowerCase().includes(termo.toLowerCase()))
+  /**
+   * Busca uma loja específica pelo domínio
+   * @param dominio Domínio da loja
+   */
+  buscarLojaPorDominio(dominio: string): Observable<LojaResponse> {
+    return this.http.get<LojaResponse>(
+      `http://localhost:8080/api/v1/lojas/${dominio}`
     );
+  }
+
+  /**
+   * Converte LojaResponse para Artesao (para compatibilidade)
+   */
+  private converterLojaParaArtesao(loja: LojaResponse): Artesao {
+    return {
+      dominio: loja.dominio,
+      nome: loja.nome,
+      biografia: loja.descricao, // descricao do backend vira biografia
+    };
+  }
+
+  /**
+   * Busca artesão por domínio (método de compatibilidade)
+   * @deprecated Use buscarLojaPorDominio() e converterLojaParaArtesao() se necessário
+   */
+  obterArtesaoPorDominio(dominio: string): Artesao | undefined {
+    // Tenta buscar no cache primeiro
+    const lojaCache = this.lojasCache().find(l => l.dominio === dominio);
+    if (lojaCache) {
+      return this.converterLojaParaArtesao(lojaCache);
+    }
+    return undefined;
+  }
+
+  /**
+   * Retorna artesões em destaque (primeiras 3 lojas)
+   * @deprecated Use listarLojas() diretamente
+   */
+  obterArtesoesEmDestaque() {
+    return computed(() => {
+      const lojas = this.lojasCache();
+      return lojas.slice(0, 3).map(loja => this.converterLojaParaArtesao(loja));
+    });
+  }
+
+  /**
+   * Busca artesões localmente (método de compatibilidade)
+   * @deprecated Use listarLojas() com filtroGeral
+   */
+  buscarArtesoes(termo: string): Artesao[] {
+    return this.lojasCache()
+      .filter(loja => 
+        loja.nome.toLowerCase().includes(termo.toLowerCase()) ||
+        loja.descricao.toLowerCase().includes(termo.toLowerCase())
+      )
+      .map(loja => this.converterLojaParaArtesao(loja));
+  }
+
+  /**
+   * Retorna todas as lojas em cache (método de compatibilidade)
+   * @deprecated Use listarLojas() diretamente
+   */
+  obterArtesoes() {
+    return computed(() => {
+      return this.lojasCache().map(loja => this.converterLojaParaArtesao(loja));
+    });
   }
 }

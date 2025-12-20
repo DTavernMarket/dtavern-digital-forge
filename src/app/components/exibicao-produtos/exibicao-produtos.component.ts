@@ -28,18 +28,36 @@ import { Produto } from '../../models/produto.model';
         <!-- Grid de Produtos -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           <div
-            *ngFor="let produto of produtosEmDestaque(); trackBy: rastrearProduto"
+            *ngFor="let produto of produtosEmDestaque"
             class="group bg-midnight-brown/50 backdrop-blur-sm border-brass-accent/30 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-lg"
           >
             <!-- Imagem do Produto -->
-            <div class="relative overflow-hidden">
-              @if (produto.imagens && produto.imagens[0] && produto.imagens[0].previewUrl) {
+            <div class="relative overflow-hidden bg-tavern-wood/20 h-48">
+              <!-- Imagem de Preview ou Placeholder -->
               <img
-                [src]="produto.imagens[0].previewUrl"
-                [alt]="produto.titulo"
-                class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                *ngIf="produto.urlPreview"
+                [src]="produto.urlPreview"
+                [alt]="produto.nome"
+                class="w-full h-full object-cover"
               />
-              }
+              <div
+                *ngIf="!produto.urlPreview"
+                class="w-full h-full flex items-center justify-center"
+              >
+                <svg
+                  class="w-16 h-16 text-scroll-beige/30"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                  />
+                </svg>
+              </div>
               <div
                 class="absolute inset-0 bg-tavern-wood/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
               ></div>
@@ -49,7 +67,14 @@ import { Produto } from '../../models/produto.model';
                 <span
                   class="bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold px-3 py-1 rounded-full"
                 >
-                  {{ produto.categoria }}
+                  {{ produto.categoriaCodigo }}
+                </span>
+              </div>
+              <div *ngIf="produto.gratuito" class="absolute top-3 right-3">
+                <span
+                  class="bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full"
+                >
+                  Grátis
                 </span>
               </div>
 
@@ -79,63 +104,34 @@ import { Produto } from '../../models/produto.model';
                 <h3
                   class="text-lg font-semibold text-scroll-beige group-hover:text-candlelight-gold transition-colors"
                 >
-                  {{ produto.titulo }}
+                  {{ produto.nome }}
                 </h3>
-                <p class="text-sm text-scroll-beige/60">
-                  por
-                  <a
-                    [routerLink]="['/lojas', getArtesaoDominio(produto.nomeArtesao)]"
-                    class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-all duration-200 cursor-pointer"
-                    (click)="$event.stopPropagation()"
-                  >
-                    {{ produto.nomeArtesao }}
-                  </a>
-                </p>
               </div>
 
               <p class="text-sm text-scroll-beige/70 line-clamp-2">
-                {{ produto.descricao }}
+                {{ produto.descricao || '' }}
               </p>
-
-              <!-- Avaliação e Downloads -->
-              <div class="flex items-center justify-between text-sm">
-                <div class="flex items-center space-x-1">
-                  <div class="flex items-center">
-                    <svg
-                      class="w-4 h-4 text-candlelight-gold"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                      />
-                    </svg>
-                    <span class="ml-1 text-scroll-beige/80">{{ produto.avaliacao }}</span>
-                    <span class="text-scroll-beige/60">({{ produto.numeroAvaliacoes }})</span>
-                  </div>
-                </div>
-                <div class="flex items-center space-x-1 text-scroll-beige/60">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    />
-                  </svg>
-                  <span>{{ produto.numeroDownloads }}</span>
-                </div>
-              </div>
 
               <!-- Preço e Botão de Compra -->
               <div class="flex items-center justify-between pt-2">
-                <div class="text-lg font-bold text-scroll-beige">
-                  R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                <div>
+                  <span *ngIf="false" class="text-lg font-bold text-scroll-beige">
+                    Grátis
+                  </span>
+                  <span *ngIf="!false" class="text-lg font-bold text-scroll-beige">
+                    R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                  </span>
+                  <span
+                    *ngIf="0 > 0 && !false"
+                    class="text-scroll-beige/60 text-sm line-through ml-2"
+                  >
+                    R$ {{ (produto.valorUnitario / (1 - produto.promocaoPorcentagem / 100)).toFixed(2).replace('.', ',') }}
+                  </span>
                 </div>
                 <button
                   class="px-4 py-2 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-sm"
                 >
-                  Adicionar ao Carrinho
+                  {{ false ? 'Baixar' : 'Adicionar ao Carrinho' }}
                 </button>
               </div>
             </div>
@@ -178,14 +174,15 @@ import { Produto } from '../../models/produto.model';
   ],
 })
 export class ExibicaoProdutosComponent {
-  produtosEmDestaque: Signal<Produto[]>;
+  produtosEmDestaque: Produto[] = [];
 
   constructor(private produtoService: ProdutoService, private artesaoService: ArtesaoService) {
-    this.produtosEmDestaque = this.produtoService.produtosEmDestaque;
+    // Por enquanto, deixar vazio até ter uma API para buscar produtos em destaque
+    // TODO: Implementar busca de produtos em destaque do backend
   }
 
-  rastrearProduto(index: number, produto: any) {
-    return produto.uuid;
+  rastrearProduto(index: number, produto: Produto) {
+    return produto.nomeNormalizado || produto.nome;
   }
 
   getArtesaoDominio(nomeArtesao: string): string {

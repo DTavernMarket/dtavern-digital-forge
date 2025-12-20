@@ -62,22 +62,17 @@ import { Produto } from '../../models/produto.model';
                     (click)="selecionarProduto(produto)"
                     class="flex items-center space-x-3 p-3 hover:bg-tavern-wood/20 rounded-lg cursor-pointer transition-colors"
                   >
-                    <img [src]="produto.imagens[0].previewUrl" [alt]="produto.titulo" class="w-12 h-12 object-cover rounded-lg">
+                    <div class="w-12 h-12 bg-tavern-wood/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg class="w-6 h-6 text-scroll-beige/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                      </svg>
+                    </div>
                     <div class="flex-1 min-w-0">
-                      <h4 class="text-scroll-beige font-semibold truncate">{{ produto.titulo }}</h4>
-                      <p class="text-scroll-beige/70 text-sm truncate">{{ produto.descricao }}</p>
+                      <h4 class="text-scroll-beige font-semibold truncate">{{ produto.nome }}</h4>
+                      <p class="text-scroll-beige/70 text-sm truncate">{{ produto.resumo || produto.descricao }}</p>
                       <div class="flex items-center space-x-2 mt-1">
-                        <span class="text-candlelight-gold font-bold">R$ {{ produto.valorUnitario.toFixed(2) }}</span>
-                        <span class="text-scroll-beige/60 text-xs">
-                          por 
-                          <a 
-                            [routerLink]="['/lojas', getArtesaoDominio(produto.nomeArtesao)]"
-                            class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-all duration-200 cursor-pointer"
-                            (click)="$event.stopPropagation()"
-                          >
-                            {{ produto.nomeArtesao }}
-                          </a>
-                        </span>
+                        <span *ngIf="produto.gratuito" class="text-green-500 font-bold text-sm">Grátis</span>
+                        <span *ngIf="!produto.gratuito" class="text-candlelight-gold font-bold">R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}</span>
                       </div>
                     </div>
                   </div>
@@ -173,12 +168,7 @@ export class BarraNavegacaoComponent {
   menuAberto = signal(false);
   termoPesquisa = signal('');
   mostrarResultados = signal(false);
-  
-  resultadosPesquisa = computed(() => {
-    const termo = this.termoPesquisa();
-    if (!termo || termo.length < 2) return [];
-    return this.produtoService.buscarProdutos(termo).slice(0, 5);
-  });
+  resultadosPesquisa = signal<Produto[]>([]);
 
   constructor() {
     // Esconder resultados quando clicar fora
@@ -190,10 +180,22 @@ export class BarraNavegacaoComponent {
   }
 
   onPesquisaChange() {
-    if (this.termoPesquisa().length >= 2) {
+    const termo = this.termoPesquisa();
+    if (termo.length >= 2) {
       this.mostrarResultados.set(true);
+      // Buscar produtos com paginação (primeira página, 5 resultados)
+      this.produtoService.buscarProdutos(termo, 0, 5).subscribe({
+        next: (resultado) => {
+          this.resultadosPesquisa.set(resultado.content);
+        },
+        error: (error) => {
+          console.error('Erro ao buscar produtos:', error);
+          this.resultadosPesquisa.set([]);
+        }
+      });
     } else {
       this.mostrarResultados.set(false);
+      this.resultadosPesquisa.set([]);
     }
   }
 
@@ -211,7 +213,7 @@ export class BarraNavegacaoComponent {
   selecionarProduto(produto: Produto) {
     this.router.navigate(['/produtos'], { 
       queryParams: { 
-        produto: produto.uuid 
+        produto: produto.nomeNormalizado 
       } 
     });
     this.mostrarResultados.set(false);
