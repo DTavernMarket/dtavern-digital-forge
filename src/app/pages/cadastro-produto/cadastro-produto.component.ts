@@ -16,6 +16,8 @@ import {
   CategoriaProdutoResponse,
 } from '../../services/categoria-produto.service';
 import { firstValueFrom } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, PLATFORM_ID } from '@angular/core';
 
 @Component({
   selector: 'app-cadastro-produto',
@@ -285,7 +287,6 @@ import { firstValueFrom } from 'rxjs';
   ],
 })
 export class CadastroProdutoComponent implements OnInit {
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
   private artesaoService = inject(ArtesaoService);
   private produtoService = inject(ProdutoService);
@@ -320,14 +321,24 @@ export class CadastroProdutoComponent implements OnInit {
   // Dialog de confirmação de exclusão
   mostrarDialogDeletar = signal(false);
 
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.router = inject(Router);
+    }
+  }
+
   async ngOnInit() {
+    if (!isPlatformBrowser(this.platformId)) {
+      // Está rodando fora do browser (Node / SSR / Vite)
+      return;
+    }
+
     this.validarAcessoArtesao();
     this.carregarCategorias();
 
     // Verificar se está em modo de edição (síncrono usando snapshot)
     const nomeNormalizado = this.route.snapshot.queryParams['produto'];
     if (nomeNormalizado) {
-      console.log('Entrou no if');
       await this.carregarProdutoParaEdicao(nomeNormalizado);
     }
   }
@@ -436,6 +447,10 @@ export class CadastroProdutoComponent implements OnInit {
           this.produtoService.adicionarProduto(dtoProduto, this.artesaoAtual.dominio)
         );
         nomeNormalizado = resposta?.nomeNormalizado;
+      }
+
+      if (this.imagemAlterada) {
+        await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.idMidiaPreview!));
       }
 
       // Se houver imagem selecionada, fazer upload

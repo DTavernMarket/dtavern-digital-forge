@@ -9,6 +9,7 @@ export interface Produto {
   valorUnitario: number;
   nomeLoja: string;
   dominioLoja: string;
+  idMidiaPreview?: string;
   urlPreview?: string;
 }
 
