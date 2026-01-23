@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ArtesaoService } from '../../services/artesao.service';
+import { Artesao } from '../../models/artesao.model';
 import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
 
 @Component({
@@ -35,13 +36,13 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
                <!-- Background do Artesão -->
                <div
                  class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-70"
-                 [style.background-image]="'url(' + artesao.planoFundo + ')'"
+                 [style.background-image]="'url(http://localhost:8080/cdn/default.png)'"
                ></div>
 
                <div class="relative z-10 h-full flex items-center justify-center">
                  <div class="relative">
                    <img
-                     [src]="artesao.avatar"
+                     [src]="'http://localhost:8080/cdn/default.png'"
                      [alt]="artesao.nome"
                      class="bg-scroll-beige w-24 h-24 rounded-lg object-cover mx-auto border-4 border-brass-accent/30"
                    />
@@ -65,15 +66,15 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
                     d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
                   />
                 </svg>
-                <span class="text-scroll-beige/80">{{ artesao.avaliacao }}</span>
-                <span class="text-scroll-beige/60">({{ artesao.numeroAvaliacoes }} avaliações)</span>
+                <span class="text-scroll-beige/80">0</span>
+                <span class="text-scroll-beige/60">(0 avaliações)</span>
               </div>
              <!-- Especialidades -->
              <div class="mb-6">
                <h4 class="text-sm font-semibold text-scroll-beige mb-3">Especialidades:</h4>
                <div class="flex flex-wrap gap-2">
                  <span
-                   *ngFor="let especialidade of artesao.especialidades"
+                   *ngFor="let especialidade of []"
                    class="px-3 py-1 bg-candlelight-gold/20 text-candlelight-gold text-xs rounded-full border border-candlelight-gold/30"
                  >
                    {{ especialidade }}
@@ -84,12 +85,12 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
             <!-- Estatísticas -->
             <div class="grid grid-cols-2 gap-4 mb-6 text-center">
               <div class="bg-stone-gray/50 rounded-lg p-3">
-                <div class="text-lg font-bold text-scroll-beige">{{ artesao.numeroProdutos }}</div>
+                <div class="text-lg font-bold text-scroll-beige">0</div>
                 <div class="text-xs text-scroll-beige/60">Produtos</div>
               </div>
               <div class="bg-stone-gray/50 rounded-lg p-3">
                 <div class="text-lg font-bold text-scroll-beige">
-                  {{ artesao.numeroSeguidores }}
+                  0
                 </div>
                 <div class="text-xs text-scroll-beige/60">Seguidores</div>
               </div>
@@ -137,12 +138,30 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
      `,
    ],
 })
-export class SecaoArtesoesComponent {
+export class SecaoArtesoesComponent implements OnInit {
   private artesaoService = inject(ArtesaoService);
+  
+  artesoesEmDestaque = signal<Artesao[]>([]);
 
-  artesoesEmDestaque = this.artesaoService.obterArtesoesEmDestaque();
+  ngOnInit() {
+    // Carregar artesões em destaque (primeira página, 3 resultados)
+    this.artesaoService.listarLojas(undefined, 0, 3).subscribe({
+      next: (resultado) => {
+        const artesoes = resultado.content.map(loja => ({
+          dominio: loja.dominio,
+          nome: loja.nome,
+          biografia: loja.descricao,
+        }));
+        this.artesoesEmDestaque.set(artesoes);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar artesões:', error);
+        this.artesoesEmDestaque.set([]);
+      }
+    });
+  }
 
-  rastrearArtesao(index: number, artesao: any) {
-    return artesao.uuid;
+  rastrearArtesao(index: number, artesao: Artesao) {
+    return artesao.dominio;
   }
 }

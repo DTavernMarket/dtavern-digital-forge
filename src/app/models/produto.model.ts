@@ -1,28 +1,27 @@
-import { ArquivoProduto } from './arquivo-produto.model';
-
 export interface Produto {
-  uuid: string;
-  titulo: string;
+  categoriaCodigo: string;
   descricao: string;
-  categoria: CategoriaProduto;
-  imagens: ArquivoProduto[];
-  artesaoId: string;
-  nomeArtesao: string;
-  avaliacao: number;
-  numeroAvaliacoes: number;
-  numeroDownloads: number;
-  tamanhoArquivo: string;
-  requisitos: string;
-  dataCriacao: Date;
-  dataAtualizacao: Date;
+  gratuito: boolean;
+  nome: string;
+  nomeNormalizado: string;
+  promocaoPorcentagem: number;
+  resumo: string;
   valorUnitario: number;
+  nomeLoja: string;
+  dominioLoja: string;
+  idMidiaPreview?: string;
+  urlPreview?: string;
 }
 
-export enum CategoriaProduto {
-  TOKENS = 'Tokens',
-  MAPAS = 'Mapas',
-  AVENTURAS = 'Aventuras',
-  TRILHAS_SONORAS = 'Trilhas Sonoras',
-  FERRAMENTAS = 'Ferramentas',
-  OUTROS = 'Outros'
+export interface PagedResult<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  page: number;
+  size: number;
+  first: boolean;
+  last: boolean;
+  numberOfElements: number;
 }
+
+

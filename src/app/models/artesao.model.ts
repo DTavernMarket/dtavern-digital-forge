@@ -1,20 +1,19 @@
-import { Produto } from "./produto.model";
+import { PagedResult } from "./produto.model";
 
+// Interface para a resposta do backend (LojaResponse)
+export interface LojaResponse {
+  dominio: string;
+  nome: string;
+  email: string;
+  descricao: string;
+}
+
+// Interface mantida para compatibilidade com código existente
+// Campos adicionais são opcionais e podem ser preenchidos com valores padrão
 export interface Artesao {
-  uuid: string;
-  dominio: string; // identificador amigavel da loja do artesao
+  dominio: string;
   nome: string;
   biografia: string;
-  avatar: string;
-  planoFundo: string; // caminho da imagem de fundo do artesão
-  especialidades: string[];
-  avaliacao: number;
-  numeroAvaliacoes: number;
-  numeroProdutos: number;
-  numeroSeguidores: number;
-  dataEntrada: Date;
-  redesSociais: RedesSociais;
-  produtos: Produto[];
 }
 
 export interface RedesSociais {
