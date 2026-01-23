@@ -1,10 +1,4 @@
-import {
-  Component,
-  signal,
-  inject,
-  OnInit,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { Component, signal, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -22,6 +16,8 @@ import {
   CategoriaProdutoResponse,
 } from '../../services/categoria-produto.service';
 import { firstValueFrom } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, PLATFORM_ID } from '@angular/core';
 
 @Component({
   selector: 'app-cadastro-produto',
@@ -217,23 +213,68 @@ import { firstValueFrom } from 'rxjs';
           </div>
 
           <!-- Botões de Ação -->
-          <div class="flex items-center justify-end space-x-4 max-w-4xl mx-auto">
-            <button
-              type="button"
-              (click)="voltar()"
-              class="px-6 py-3 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
-            >
-              Voltar para loja
-            </button>
-            <button
-              type="submit"
-              [disabled]="!formularioValido()"
-              class="px-8 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Salvar Produto
-            </button>
+          <div class="flex items-center justify-between space-x-4 max-w-4xl mx-auto">
+            <div>
+              <button
+                *ngIf="isModoEdicao()"
+                type="button"
+                (click)="abrirDialogDeletar()"
+                class="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Deletar
+              </button>
+            </div>
+            <div class="flex items-center space-x-4">
+              <button
+                type="button"
+                (click)="voltar()"
+                class="px-6 py-3 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
+              >
+                Voltar para loja
+              </button>
+              <button
+                type="submit"
+                [disabled]="!formularioValido()"
+                class="px-8 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Salvar Produto
+              </button>
+            </div>
           </div>
         </form>
+      </div>
+
+      <!-- Dialog de Confirmação de Exclusão -->
+      <div
+        *ngIf="mostrarDialogDeletar()"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+        (click)="fecharDialogDeletar()"
+      >
+        <div
+          class="bg-midnight-brown border border-brass-accent/40 rounded-xl p-6 max-w-md w-full mx-4"
+          (click)="$event.stopPropagation()"
+        >
+          <h3 class="text-xl font-semibold text-scroll-beige mb-4">Confirmar Exclusão</h3>
+          <p class="text-scroll-beige/80 mb-6">
+            Você realmente deseja deletar este produto? Esta ação não pode ser desfeita.
+          </p>
+          <div class="flex justify-end space-x-4">
+            <button
+              type="button"
+              (click)="fecharDialogDeletar()"
+              class="px-6 py-2 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
+            >
+              Não
+            </button>
+            <button
+              type="button"
+              (click)="confirmarDeletar()"
+              class="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Sim
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   `,
@@ -246,7 +287,6 @@ import { firstValueFrom } from 'rxjs';
   ],
 })
 export class CadastroProdutoComponent implements OnInit {
-  private router = inject(Router);
   private route = inject(ActivatedRoute);
   private artesaoService = inject(ArtesaoService);
   private produtoService = inject(ProdutoService);
@@ -272,19 +312,33 @@ export class CadastroProdutoComponent implements OnInit {
   // Imagem de preview
   imagemSelecionada: File | null = null;
   imagemPreview: string | null = null;
+  imagemAlterada: boolean = false;
 
   // Modo de edição
   isModoEdicao = signal(false);
   nomeNormalizadoProduto: string | null = null;
 
+  // Dialog de confirmação de exclusão
+  mostrarDialogDeletar = signal(false);
+
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.router = inject(Router);
+    }
+  }
+
   async ngOnInit() {
+    if (!isPlatformBrowser(this.platformId)) {
+      // Está rodando fora do browser (Node / SSR / Vite)
+      return;
+    }
+
     this.validarAcessoArtesao();
     this.carregarCategorias();
 
     // Verificar se está em modo de edição (síncrono usando snapshot)
     const nomeNormalizado = this.route.snapshot.queryParams['produto'];
     if (nomeNormalizado) {
-      console.log('Entrou no if');
       await this.carregarProdutoParaEdicao(nomeNormalizado);
     }
   }
@@ -395,8 +449,12 @@ export class CadastroProdutoComponent implements OnInit {
         nomeNormalizado = resposta?.nomeNormalizado;
       }
 
+      if (this.imagemAlterada) {
+        await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.idMidiaPreview!));
+      }
+
       // Se houver imagem selecionada, fazer upload
-      if (this.imagemSelecionada && nomeNormalizado) {
+      if (this.imagemSelecionada && nomeNormalizado && this.imagemAlterada) {
         try {
           await firstValueFrom(
             this.produtoService.uploadImagemProduto(
@@ -415,11 +473,7 @@ export class CadastroProdutoComponent implements OnInit {
         }
       }
 
-      alert(
-        this.isModoEdicao()
-          ? 'Produto atualizado com sucesso!'
-          : 'Produto salvo com sucesso!'
-      );
+      alert(this.isModoEdicao() ? 'Produto atualizado com sucesso!' : 'Produto salvo com sucesso!');
       this.voltar();
     } catch (error) {
       console.error('Erro ao salvar produto:', error);
@@ -432,6 +486,7 @@ export class CadastroProdutoComponent implements OnInit {
   }
 
   onImagemSelecionada(event: Event) {
+    this.imagemAlterada = true;
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const arquivo = input.files[0];
@@ -456,6 +511,7 @@ export class CadastroProdutoComponent implements OnInit {
   removerImagem() {
     this.imagemSelecionada = null;
     this.imagemPreview = null;
+    this.imagemAlterada = true;
   }
 
   voltar() {
@@ -468,6 +524,32 @@ export class CadastroProdutoComponent implements OnInit {
     } else {
       // Se não houver domínio salvo, ir para a página inicial
       this.router.navigate(['/']);
+    }
+  }
+
+  abrirDialogDeletar() {
+    this.mostrarDialogDeletar.set(true);
+  }
+
+  fecharDialogDeletar() {
+    this.mostrarDialogDeletar.set(false);
+  }
+
+  async confirmarDeletar() {
+    if (!this.nomeNormalizadoProduto) {
+      return;
+    }
+    this.fecharDialogDeletar();
+
+    try {
+      await firstValueFrom(this.produtoService.deletarProduto(this.nomeNormalizadoProduto!));
+      alert('Produto deletado com sucesso!');
+      this.fecharDialogDeletar();
+      this.voltar();
+    } catch (error) {
+      console.error('Erro ao deletar produto:', error);
+      alert('Erro ao deletar produto. Tente novamente.');
+      this.fecharDialogDeletar();
     }
   }
 }

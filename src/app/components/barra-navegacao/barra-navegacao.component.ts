@@ -1,10 +1,12 @@
-import { Component, signal, computed, effect, inject, Input } from '@angular/core';
+import { Component, signal, computed, effect, inject, Input, HostListener, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProdutoService } from '../../services/produto.service';
 import { ArtesaoService } from '../../services/artesao.service';
+import { AuthService } from '../../services/auth.service';
 import { Produto } from '../../models/produto.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-barra-navegacao',
@@ -99,22 +101,75 @@ import { Produto } from '../../models/produto.model';
 
           <!-- SEÇÃO DIREITA: Ações -->
           <div class="flex items-center space-x-4">
-            <!-- Carrinho -->
-            <button class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors relative">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-              </svg>
-              <span class="absolute -top-1 -right-1 w-5 h-5 bg-candlelight-gold text-tavern-wood text-xs rounded-full flex items-center justify-center font-semibold">
-                3
-              </span>
-            </button>
+            <!-- Elementos para usuário logado -->
+            <ng-container *ngIf="estaAutenticado()">
+              <!-- Carrinho -->
+              <button class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors relative">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+                <!-- <span class="absolute -top-1 -right-1 w-5 h-5 bg-candlelight-gold text-tavern-wood text-xs rounded-full flex items-center justify-center font-semibold">
+                  3
+                </span> -->
+              </button>
 
-            <!-- Perfil -->
-            <button class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-              </svg>
-            </button>
+              <!-- Perfil -->
+              <div class="relative" #menuPerfilContainer>
+                <button 
+                  (click)="menuPerfilAberto.set(!menuPerfilAberto())"
+                  class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                </button>
+                
+                <!-- Menu Dropdown -->
+                <div 
+                  *ngIf="menuPerfilAberto()"
+                  class="absolute right-0 mt-2 w-48 bg-midnight-brown/95 border border-brass-accent/40 rounded-lg shadow-xl z-50"
+                >
+                  <div class="py-2">
+                    <button 
+                      (click)="fecharMenuPerfil()"
+                      class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                    >
+                      Minha conta
+                    </button>
+                    <button 
+                      (click)="fecharMenuPerfil()"
+                      class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                    >
+                      Meus Pedidos
+                    </button>
+                    <div class="border-t border-brass-accent/30 my-1"></div>
+                    <button 
+                      (click)="realizarLogout()"
+                      class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                    >
+                      Sair
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <!-- Elementos para usuário não logado -->
+            <ng-container *ngIf="!estaAutenticado()">
+              <button 
+                (click)="irParaCadastro()"
+                class="px-4 py-2 text-scroll-beige hover:text-candlelight-gold transition-colors text-sm font-medium"
+              >
+                Criar minha conta
+              </button>
+              <span class="text-scroll-beige/60 text-sm">ou</span>
+              <button 
+                (click)="irParaLogin()"
+                class="px-4 py-2 border-2 border-candlelight-gold text-candlelight-gold rounded-lg font-medium hover:bg-candlelight-gold hover:text-tavern-wood transition-all duration-300 text-sm"
+              >
+                Fazer login
+              </button>
+            </ng-container>
 
             <!-- Menu Mobile -->
             <button 
@@ -157,18 +212,21 @@ import { Produto } from '../../models/produto.model';
     }
   `]
 })
-export class BarraNavegacaoComponent {
+export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   @Input() isFixed: boolean = true;
 
   private produtoService = inject(ProdutoService);
   private artesaoService = inject(ArtesaoService);
+  private authService = inject(AuthService);
   private router = inject(Router);
-  
+  private authSubscription?: Subscription;
 
   menuAberto = signal(false);
+  menuPerfilAberto = signal(false);
   termoPesquisa = signal('');
   mostrarResultados = signal(false);
   resultadosPesquisa = signal<Produto[]>([]);
+  estaAutenticado = signal(false);
 
   constructor() {
     // Esconder resultados quando clicar fora
@@ -177,6 +235,22 @@ export class BarraNavegacaoComponent {
         this.mostrarResultados.set(true);
       }
     });
+  }
+
+  ngOnInit() {
+    // Verificar estado inicial de autenticação
+    this.estaAutenticado.set(this.authService.isAuthenticated());
+    
+    // Observar mudanças no estado de autenticação
+    this.authSubscription = this.authService.currentUser$.subscribe(user => {
+      this.estaAutenticado.set(user !== null);
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
   }
 
   onPesquisaChange() {
@@ -228,6 +302,43 @@ export class BarraNavegacaoComponent {
   getArtesaoDominio(nomeArtesao: string): string {
     const artesao = this.artesaoService.obterArtesoes()().find(a => a.nome === nomeArtesao);
     return artesao?.dominio || '';
+  }
+
+  fecharMenuPerfil() {
+    this.menuPerfilAberto.set(false);
+  }
+
+  realizarLogout() {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.fecharMenuPerfil();
+        this.router.navigate(['/']);
+      },
+      error: (error) => {
+        console.error('Erro ao realizar logout:', error);
+        this.fecharMenuPerfil();
+      }
+    });
+  }
+
+  irParaLogin() {
+    this.router.navigate(['/login']);
+  }
+
+  irParaCadastro() {
+    this.router.navigate(['/cadastro']);
+  }
+
+  @ViewChild('menuPerfilContainer') menuPerfilContainer!: ElementRef;
+
+  @HostListener('document:click', ['$event'])
+  fecharMenuPerfilAoClicarFora(event: Event) {
+    if (this.menuPerfilContainer && this.menuPerfilAberto()) {
+      const target = event.target as HTMLElement;
+      if (!this.menuPerfilContainer.nativeElement.contains(target)) {
+        this.menuPerfilAberto.set(false);
+      }
+    }
   }
 
 }

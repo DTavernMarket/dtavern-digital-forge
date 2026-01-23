@@ -150,7 +150,7 @@ export class SecaoArtesoesComponent implements OnInit {
         const artesoes = resultado.content.map(loja => ({
           dominio: loja.dominio,
           nome: loja.nome,
-          biografia: loja.descricao, // descricao do backend vira biografia
+          biografia: loja.descricao,
         }));
         this.artesoesEmDestaque.set(artesoes);
       },

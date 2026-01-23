@@ -85,4 +85,24 @@ export class ProdutoService {
       { params }
     );
   }
+
+  /**
+   * Deleta um produto pelo nome normalizado
+   * @param nomeProdutoNormalizado Nome normalizado do produto
+   */
+  deletarProduto(nomeProdutoNormalizado: string): Observable<void> {
+    return this.http.delete<void>(
+      `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}`
+    );
+  }
+
+  /**
+   * Deleta uma mídia de um produto pelo id da mídia
+   * @param idMidia Id da mídia
+   */
+  deleteMidiaProduto(idMidia: string): Observable<void> {
+    return this.http.delete<void>(
+      `http://localhost:8080/api/v1/produtos/files/${idMidia}`
+    );
+  }
 }
