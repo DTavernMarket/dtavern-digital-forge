@@ -6,6 +6,7 @@ import { ProdutoService } from '../../services/produto.service';
 import { ArtesaoService } from '../../services/artesao.service';
 import { AuthService } from '../../services/auth.service';
 import { Produto } from '../../models/produto.model';
+import { MeResponse } from '../../models/auth.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -103,24 +104,20 @@ import { Subscription } from 'rxjs';
           <div class="flex items-center space-x-4">
             <!-- Elementos para usuário logado -->
             <ng-container *ngIf="estaAutenticado()">
-              <!-- Carrinho -->
-              <button class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors relative">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                </svg>
-                <!-- <span class="absolute -top-1 -right-1 w-5 h-5 bg-candlelight-gold text-tavern-wood text-xs rounded-full flex items-center justify-center font-semibold">
-                  3
-                </span> -->
-              </button>
-
               <!-- Perfil -->
               <div class="relative" #menuPerfilContainer>
                 <button 
                   (click)="menuPerfilAberto.set(!menuPerfilAberto())"
-                  class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors"
+                  class="flex items-center space-x-2 px-3 py-2 text-scroll-beige hover:text-candlelight-gold transition-colors rounded-lg hover:bg-tavern-wood/10"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                  <span *ngIf="displayName()" class="font-medium text-sm">
+                    {{ displayName() }}
+                  </span>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                   </svg>
                 </button>
                 
@@ -136,12 +133,27 @@ import { Subscription } from 'rxjs';
                     >
                       Minha conta
                     </button>
-                    <button 
-                      (click)="fecharMenuPerfil()"
-                      class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
-                    >
-                      Meus Pedidos
-                    </button>
+                    
+                    <!-- Opções específicas para LOJA -->
+                    <ng-container *ngIf="obterTipoUsuario() === 'LOJA'">
+                      <button 
+                        (click)="irParaMinhaLoja()"
+                        class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                      >
+                        Minha loja
+                      </button>
+                    </ng-container>
+                    
+                    <!-- Opções específicas para COMPRADOR -->
+                    <ng-container *ngIf="obterTipoUsuario() === 'COMPRADOR'">
+                      <button 
+                        (click)="fecharMenuPerfil()"
+                        class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                      >
+                        Meus Pedidos
+                      </button>
+                    </ng-container>
+                    
                     <div class="border-t border-brass-accent/30 my-1"></div>
                     <button 
                       (click)="realizarLogout()"
@@ -227,6 +239,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   mostrarResultados = signal(false);
   resultadosPesquisa = signal<Produto[]>([]);
   estaAutenticado = signal(false);
+  displayName = signal<string | null>(null);
 
   constructor() {
     // Esconder resultados quando clicar fora
@@ -241,9 +254,62 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
     // Verificar estado inicial de autenticação
     this.estaAutenticado.set(this.authService.isAuthenticated());
     
+    // Carregar informações do usuário do sessionStorage ou buscar do backend
+    this.carregarInformacoesUsuario();
+    
     // Observar mudanças no estado de autenticação
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.estaAutenticado.set(user !== null);
+      
+      // Se o usuário estiver autenticado, verificar se precisa buscar informações
+      if (user !== null) {
+        this.carregarInformacoesUsuario();
+      } else {
+        // Limpar informações se não estiver autenticado
+        this.displayName.set(null);
+        sessionStorage.removeItem('userInfo');
+      }
+    });
+  }
+
+  carregarInformacoesUsuario() {
+    if (!this.estaAutenticado()) {
+      return;
+    }
+
+    // Verificar se há informações no sessionStorage
+    const userInfoStr = sessionStorage.getItem('userInfo');
+    
+    if (userInfoStr) {
+      try {
+        const userInfo: MeResponse = JSON.parse(userInfoStr);
+        this.displayName.set(userInfo.displayName);
+      } catch (error) {
+        console.error('Erro ao parsear informações do usuário:', error);
+        sessionStorage.removeItem('userInfo');
+        this.buscarInformacoesUsuario();
+      }
+    } else {
+      // Se não houver informações no sessionStorage, buscar do backend
+      this.buscarInformacoesUsuario();
+    }
+  }
+
+  buscarInformacoesUsuario() {
+    if (!this.estaAutenticado()) {
+      return;
+    }
+
+    this.authService.getMe().subscribe({
+      next: (response: MeResponse) => {
+        // Salvar no sessionStorage
+        sessionStorage.setItem('userInfo', JSON.stringify(response));
+        // Atualizar displayName
+        this.displayName.set(response.displayName);
+      },
+      error: (error) => {
+        console.error('Erro ao buscar informações do usuário:', error);
+      }
     });
   }
 
@@ -312,6 +378,9 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
     this.authService.logout().subscribe({
       next: () => {
         this.fecharMenuPerfil();
+        // Limpar informações do usuário
+        this.displayName.set(null);
+        sessionStorage.removeItem('userInfo');
         this.router.navigate(['/']);
       },
       error: (error) => {
@@ -327,6 +396,46 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   irParaCadastro() {
     this.router.navigate(['/cadastro']);
+  }
+
+  obterTipoUsuario(): 'LOJA' | 'COMPRADOR' | null {
+    const userInfoStr = sessionStorage.getItem('userInfo');
+    console.log(userInfoStr);
+    if (userInfoStr) {
+      try {
+        const userInfo: MeResponse = JSON.parse(userInfoStr);
+        return userInfo.tipo;
+      } catch (error) {
+        console.error('Erro ao parsear informações do usuário:', error);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  obterDominioLoja(): string | null {
+    const userInfoStr = sessionStorage.getItem('userInfo');
+    if (userInfoStr) {
+      try {
+        const userInfo: MeResponse = JSON.parse(userInfoStr);
+        return userInfo.dominio || null;
+      } catch (error) {
+        console.error('Erro ao parsear informações do usuário:', error);
+        return null;
+      }
+    }
+    return null;
+  }
+
+  irParaMinhaLoja() {
+    const dominio = this.obterDominioLoja();
+    if (dominio) {
+      this.fecharMenuPerfil();
+      this.router.navigate(['/lojas', dominio]);
+    } else {
+      console.error('Domínio da loja não encontrado');
+      this.fecharMenuPerfil();
+    }
   }
 
   @ViewChild('menuPerfilContainer') menuPerfilContainer!: ElementRef;

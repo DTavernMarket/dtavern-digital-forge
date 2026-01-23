@@ -31,7 +31,7 @@ export class ArtesaoService {
       params = params.set('filtroGeral', filtroGeral.trim());
     }
 
-    return this.http.get<PagedResult<LojaResponse>>('http://localhost:8080/api/v1/lojas', {
+    return this.http.get<PagedResult<LojaResponse>>('http://localhost:8080/api/v1/client/lojas', {
       params,
     });
   }

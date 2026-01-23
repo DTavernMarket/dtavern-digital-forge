@@ -1,8 +1,8 @@
 // src/app/services/auth.service.ts
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { 
-  signInWithEmailAndPassword, 
+import {
+  signInWithEmailAndPassword,
   signOut,
   User as FirebaseUser,
   onAuthStateChanged
@@ -10,7 +10,7 @@ import {
 import { auth } from '../config/firebase.config';
 import { Observable, from, BehaviorSubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { AuthResponse, LoginRequest, User } from '../models/auth.model';
+import { AuthResponse, LoginRequest, MeResponse, User } from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +18,11 @@ import { AuthResponse, LoginRequest, User } from '../models/auth.model';
 export class AuthService {
   private http = inject(HttpClient);
   private readonly API_URL = 'http://localhost:8080/api/v1/auth';
-  
+
   // Estado de autenticação
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-  
+
   // Token atual
   private idToken = signal<string | null>(null);
   public idToken$ = this.idToken.asReadonly();
@@ -34,7 +34,7 @@ export class AuthService {
         // Obter token do Firebase
         const token = await firebaseUser.getIdToken();
         this.idToken.set(token);
-        
+
         // Converter para nosso modelo de User
         const user: User = {
           uid: firebaseUser.uid,
@@ -42,12 +42,10 @@ export class AuthService {
           displayName: firebaseUser.displayName || null
         };
         this.currentUserSubject.next(user);
-        
+
         // Verificar token no backend
         this.verifyToken(token).subscribe({
-          next: (response) => {
-            console.log('Token verificado no backend:', response);
-          },
+
           error: (error) => {
             console.error('Erro ao verificar token:', error);
           }
@@ -67,7 +65,7 @@ export class AuthService {
       switchMap(async (userCredential) => {
         const token = await userCredential.user.getIdToken();
         this.idToken.set(token);
-        
+
         // Verificar token no backend
         return this.verifyToken(token).toPromise() || Promise.resolve({
           idToken: token,
@@ -100,6 +98,10 @@ export class AuthService {
         }
       }
     );
+  }
+
+  getMe() {
+    return this.http.get<MeResponse>('http://localhost:8080/api/v1/auth/me');
   }
 
   /**
