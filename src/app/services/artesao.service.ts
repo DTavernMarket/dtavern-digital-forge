@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, signal, computed } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Artesao, LojaResponse } from '../models/artesao.model';
+import { Artesao, CadastroLojaRequest, LojaResponse } from '../models/artesao.model';
 import { PagedResult } from '../models/produto.model';
 
 @Injectable({
@@ -10,7 +10,7 @@ import { PagedResult } from '../models/produto.model';
 export class ArtesaoService {
   private lojasCache = signal<LojaResponse[]>([]);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Lista lojas paginadas do backend
@@ -87,7 +87,7 @@ export class ArtesaoService {
    */
   buscarArtesoes(termo: string): Artesao[] {
     return this.lojasCache()
-      .filter(loja => 
+      .filter(loja =>
         loja.nome.toLowerCase().includes(termo.toLowerCase()) ||
         loja.descricao.toLowerCase().includes(termo.toLowerCase())
       )
@@ -102,5 +102,9 @@ export class ArtesaoService {
     return computed(() => {
       return this.lojasCache().map(loja => this.converterLojaParaArtesao(loja));
     });
+  }
+
+  criarLoja(loja: CadastroLojaRequest): Observable<LojaResponse> {
+    return this.http.post<LojaResponse>('http://localhost:8080/api/v1/lojas', loja);
   }
 }

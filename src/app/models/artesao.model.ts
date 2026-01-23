@@ -23,3 +23,9 @@ export interface RedesSociais {
   youtube?: string;
   discord?: string;
 }
+
+export interface CadastroLojaRequest {
+  nomeLoja: string;
+  email: string;
+  password: string;
+}
