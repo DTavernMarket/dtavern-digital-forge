@@ -252,7 +252,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Verificar estado inicial de autenticação
-    this.estaAutenticado.set(this.authService.isAuthenticated());
+    this.estaAutenticado.set(this.authService.getCurrentUser() !== null);
     
     // Carregar informações do usuário do sessionStorage ou buscar do backend
     this.carregarInformacoesUsuario();

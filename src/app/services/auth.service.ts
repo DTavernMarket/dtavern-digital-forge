@@ -5,13 +5,12 @@ import {
   signInWithEmailAndPassword,
   signOut,
   User as FirebaseUser,
-  onAuthStateChanged
+  onAuthStateChanged,
 } from 'firebase/auth';
 import { auth } from '../config/firebase.config';
 import { Observable, from, BehaviorSubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthResponse, LoginRequest, MeResponse, User } from '../models/auth.model';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -34,7 +33,6 @@ export class AuthService {
         // Obter token do Firebase
         const token = await firebaseUser.getIdToken();
         this.idToken.set(token);
-
         // Converter para nosso modelo de User
         const user: User = {
           uid: firebaseUser.uid,
@@ -42,6 +40,7 @@ export class AuthService {
           displayName: firebaseUser.displayName || null
         };
         this.currentUserSubject.next(user);
+        this.getCurrentToken();
 
         // Verificar token no backend
         this.verifyToken(token).subscribe({
@@ -55,6 +54,16 @@ export class AuthService {
         this.currentUserSubject.next(null);
       }
     });
+  }
+
+  async getCurrentToken(): Promise<string | null> {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      const token = await currentUser.getIdToken();
+      return token;
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -121,20 +130,7 @@ export class AuthService {
    * Obter usuário atual
    */
   getCurrentUser(): User | null {
-    return this.currentUserSubject.value;
+    return auth.currentUser;
   }
 
-  /**
-   * Obter token atual
-   */
-  getCurrentToken(): string | null {
-    return this.idToken();
-  }
-
-  /**
-   * Verificar se está autenticado
-   */
-  isAuthenticated(): boolean {
-    return this.idToken() !== null;
-  }
 }

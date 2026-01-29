@@ -1,9 +1,10 @@
 // src/app/pages/login/login.component.ts
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
 
 @Component({
   selector: 'app-login',
@@ -39,16 +40,18 @@ import { AuthService } from '../../services/auth.service';
             />
           </div>
           
-          <div *ngIf="errorMessage" class="text-red-400 text-sm">
-            {{ errorMessage }}
-          </div>
+          @if (errorMessage) {
+            <div class="text-red-400 text-sm">
+              {{ errorMessage }}
+            </div>
+          }
           
           <button
             type="submit"
-            [disabled]="loading"
+            [disabled]="loading()"
             class="w-full px-6 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ loading ? 'Entrando...' : 'Entrar' }}
+            {{ loading() ? 'Entrando...' : 'Entrar' }}
           </button>
         </form>
         
@@ -65,28 +68,29 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
-  
+
   email = '';
   password = '';
-  loading = false;
-  errorMessage = '';
+  loading = signal<boolean>(false);
+  errorMessage: string = '';
 
   onLogin() {
-    this.loading = true;
+    this.loading.set(true);
     this.errorMessage = '';
-    
+
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
         console.log('Login realizado:', response);
         this.router.navigate(['/']); // Redirecionar após login
       },
       error: (error) => {
-        console.error('Erro no login:', error);
-        this.errorMessage = error.message || 'Erro ao fazer login. Verifique suas credenciais.';
-        this.loading = false;
+        console.log('error:', error);
+        this.errorMessage = getFirebaseErrorMessage(error.code);
+
+        this.loading.set(false);
       },
       complete: () => {
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }

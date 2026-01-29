@@ -1,14 +1,16 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, Injectable, signal, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Artesao, CadastroLojaRequest, LojaResponse } from '../models/artesao.model';
 import { PagedResult } from '../models/produto.model';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ArtesaoService {
   private lojasCache = signal<LojaResponse[]>([]);
+  private authService = inject(AuthService);
 
   constructor(private http: HttpClient) { }
 
@@ -42,7 +44,7 @@ export class ArtesaoService {
    */
   buscarLojaPorDominio(dominio: string): Observable<LojaResponse> {
     return this.http.get<LojaResponse>(
-      `http://localhost:8080/api/v1/lojas/${dominio}`
+      `http://localhost:8080/api/v1/client/lojas/${dominio}`
     );
   }
 
@@ -105,6 +107,19 @@ export class ArtesaoService {
   }
 
   criarLoja(loja: CadastroLojaRequest): Observable<LojaResponse> {
-    return this.http.post<LojaResponse>('http://localhost:8080/api/v1/lojas', loja);
+    return this.http.post<LojaResponse>('http://localhost:8080/api/v1/client/lojas/register', loja);
+  }
+
+  verifyOwner(dominio: string): Observable<boolean> {
+    const token = this.authService.getCurrentToken();
+
+    return this.http.get<boolean>(
+      `http://localhost:8080/api/v1/client/lojas/verify-owner/${dominio}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
   }
 }

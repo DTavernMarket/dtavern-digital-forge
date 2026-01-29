@@ -23,15 +23,9 @@ export class ProdutoService {
     );
   }
 
-  listarProdutosPorDominio(dominioArtesao: string): Observable<Produto[]> {
-    return this.http.get<Produto[]>(
-      `http://localhost:8080/api/v1/lojas/${dominioArtesao}/produtos`
-    );
-  }
-
   buscarProdutosPorArtesao(dominioArtesao: string): Observable<Produto[]> {
     return this.http.get<Produto[]>(
-      `http://localhost:8080/api/v1/lojas/${dominioArtesao}/produtos`
+      `http://localhost:8080/api/v1/client/lojas/${dominioArtesao}/produtos`
     );
   }
 

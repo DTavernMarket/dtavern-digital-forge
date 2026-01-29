@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
@@ -7,8 +7,8 @@ import { Artesao } from '../../models/artesao.model';
 import { Produto } from '../../models/produto.model';
 import { ArtesaoService } from '../../services/artesao.service';
 import { ProdutoService } from '../../services/produto.service';
-import { firstValueFrom } from 'rxjs';
-
+import { AuthService } from '../../services/auth.service';
+import { auth } from '../../config/firebase.config';
 @Component({
   selector: 'app-loja-artesao',
   standalone: true,
@@ -147,12 +147,14 @@ import { firstValueFrom } from 'rxjs';
 
             <!-- Botões de Ação -->
             <div class="flex items-center space-x-4">
-              <button
+            @if (isOwner() === true) {
+            <button
                 (click)="novoProduto()"
                 class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-brass-accent/90 transition-colors"
               >
                 Novo produto
               </button>
+            }
               <button
                 class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors"
               >
@@ -566,17 +568,20 @@ import { firstValueFrom } from 'rxjs';
     `,
   ],
 })
-export class LojaArtesaoComponent implements OnInit {
+export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
+
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private artesaoService = inject(ArtesaoService);
   private produtoService = inject(ProdutoService);
-
+  private authService = inject(AuthService);
   artesao = signal<Artesao | undefined>(undefined);
   produtosArtesao = signal<Produto[]>([]);
   abaAtiva = signal('produtos');
   categoriaFiltro = signal('');
   ordenacao = signal('recentes');
+  isOwner = signal(false);
 
   produtosFiltrados = computed(() => {
     let produtos = this.produtosArtesao();
@@ -614,13 +619,44 @@ export class LojaArtesaoComponent implements OnInit {
     return produtos;
   });
 
-  ngOnInit() {
+  ngOnDestroy(): void {
+    sessionStorage.removeItem('userInfo');
+  }
+
+  ngAfterViewInit() {
     this.route.params.subscribe((params) => {
       const dominio = params['dominio'];
       if (dominio) {
         this.carregarArtesao(dominio);
+        this.verificarDonoLoja(dominio);
       }
     });
+  }
+
+  private async verificarDonoLoja(dominio: string) {
+    // Verificar se há token disponível (mais confiável que isAuthenticated)
+    const user = auth.currentUser;
+    console.log('user:', user);
+    const token = await this.authService.getCurrentToken();
+    console.log('token:', token);
+    if (token) {
+      console.log('está autenticado');
+      this.artesaoService.verifyOwner(dominio).subscribe({
+        next: (isOwner) => {
+          if (isOwner) {
+            console.log('dono da loja');
+          } else {
+            console.log('é visitante');
+          }
+          this.isOwner.set(isOwner);
+        },
+        error: (error) => {
+          console.error('Erro na conexão ao verificar dono da loja:', error);
+        }
+      });
+    } else {
+      console.log('não está autenticado');
+    }
   }
 
   private carregarArtesao(dominio: string) {
@@ -656,7 +692,7 @@ export class LojaArtesaoComponent implements OnInit {
   }
 
   private carregarProdutosPorDominio(dominio: string) {
-    this.produtoService.listarProdutosPorDominio(dominio).subscribe({
+    this.produtoService.buscarProdutosPorArtesao(dominio).subscribe({
       next: (produtos) => {
         this.produtosArtesao.set(produtos);
       },
