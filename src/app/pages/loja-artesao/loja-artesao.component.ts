@@ -635,28 +635,20 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
 
   private async verificarDonoLoja(dominio: string) {
     // Verificar se há token disponível (mais confiável que isAuthenticated)
-    const user = auth.currentUser;
-    console.log('user:', user);
-    const token = await this.authService.getCurrentToken();
-    console.log('token:', token);
-    if (token) {
-      console.log('está autenticado');
-      this.artesaoService.verifyOwner(dominio).subscribe({
-        next: (isOwner) => {
-          if (isOwner) {
-            console.log('dono da loja');
-          } else {
-            console.log('é visitante');
-          }
-          this.isOwner.set(isOwner);
-        },
-        error: (error) => {
-          console.error('Erro na conexão ao verificar dono da loja:', error);
-        }
-      });
-    } else {
-      console.log('não está autenticado');
-    }
+    this.authService.getCurrentToken().subscribe((token) => {
+      if (token) {
+        this.artesaoService.verifyOwner(dominio).subscribe({
+          next: (isOwner) => {
+            if (isOwner) {
+              console.log('dono da loja');
+            } else {
+              console.log('é visitante');
+            }
+            this.isOwner.set(isOwner);
+          },
+        });
+      }
+    });
   }
 
   private carregarArtesao(dominio: string) {

@@ -6,7 +6,6 @@ import { ProdutoService } from '../../services/produto.service';
 import { ArtesaoService } from '../../services/artesao.service';
 import { AuthService } from '../../services/auth.service';
 import { Produto } from '../../models/produto.model';
-import { MeResponse } from '../../models/auth.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -240,6 +239,8 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   resultadosPesquisa = signal<Produto[]>([]);
   estaAutenticado = signal(false);
   displayName = signal<string | null>(null);
+  userRole = signal<'LOJA' | 'COMPRADOR' | null>(null);
+  userDominio = signal<string | null>(null);
 
   constructor() {
     // Esconder resultados quando clicar fora
@@ -251,67 +252,44 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Verificar estado inicial de autenticação
-    this.estaAutenticado.set(this.authService.getCurrentUser() !== null);
-    
-    // Carregar informações do usuário do sessionStorage ou buscar do backend
-    this.carregarInformacoesUsuario();
-    
     // Observar mudanças no estado de autenticação
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.estaAutenticado.set(user !== null);
       
-      // Se o usuário estiver autenticado, verificar se precisa buscar informações
       if (user !== null) {
-        this.carregarInformacoesUsuario();
+        // Pegar displayName diretamente do Firebase User
+        this.displayName.set(user.displayName || user.email || null);
+        
+        // Carregar role do token
+        this.authService.getUserRole().subscribe({
+          next: (role) => {
+            this.userRole.set(role);
+          },
+          error: (error) => {
+            console.error('Erro ao obter role do token:', error);
+            this.userRole.set(null);
+          }
+        });
+        
+        // Carregar domínio do token (se disponível)
+        this.authService.getUserDominio().subscribe({
+          next: (dominio) => {
+            this.userDominio.set(dominio);
+          },
+          error: (error) => {
+            console.error('Erro ao obter domínio do token:', error);
+            this.userDominio.set(null);
+          }
+        });
       } else {
         // Limpar informações se não estiver autenticado
         this.displayName.set(null);
-        sessionStorage.removeItem('userInfo');
+        this.userRole.set(null);
+        this.userDominio.set(null);
       }
     });
   }
 
-  carregarInformacoesUsuario() {
-    if (!this.estaAutenticado()) {
-      return;
-    }
-
-    // Verificar se há informações no sessionStorage
-    const userInfoStr = sessionStorage.getItem('userInfo');
-    
-    if (userInfoStr) {
-      try {
-        const userInfo: MeResponse = JSON.parse(userInfoStr);
-        this.displayName.set(userInfo.displayName);
-      } catch (error) {
-        console.error('Erro ao parsear informações do usuário:', error);
-        sessionStorage.removeItem('userInfo');
-        this.buscarInformacoesUsuario();
-      }
-    } else {
-      // Se não houver informações no sessionStorage, buscar do backend
-      this.buscarInformacoesUsuario();
-    }
-  }
-
-  buscarInformacoesUsuario() {
-    if (!this.estaAutenticado()) {
-      return;
-    }
-
-    this.authService.getMe().subscribe({
-      next: (response: MeResponse) => {
-        // Salvar no sessionStorage
-        sessionStorage.setItem('userInfo', JSON.stringify(response));
-        // Atualizar displayName
-        this.displayName.set(response.displayName);
-      },
-      error: (error) => {
-        console.error('Erro ao buscar informações do usuário:', error);
-      }
-    });
-  }
 
   ngOnDestroy() {
     if (this.authSubscription) {
@@ -380,7 +358,8 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
         this.fecharMenuPerfil();
         // Limpar informações do usuário
         this.displayName.set(null);
-        sessionStorage.removeItem('userInfo');
+        this.userRole.set(null);
+        this.userDominio.set(null);
         this.router.navigate(['/']);
       },
       error: (error) => {
@@ -399,32 +378,13 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   }
 
   obterTipoUsuario(): 'LOJA' | 'COMPRADOR' | null {
-    const userInfoStr = sessionStorage.getItem('userInfo');
-    console.log(userInfoStr);
-    if (userInfoStr) {
-      try {
-        const userInfo: MeResponse = JSON.parse(userInfoStr);
-        return userInfo.tipo;
-      } catch (error) {
-        console.error('Erro ao parsear informações do usuário:', error);
-        return null;
-      }
-    }
-    return null;
+    // Retornar a role do signal (que é carregada do token)
+    return this.userRole();
   }
 
   obterDominioLoja(): string | null {
-    const userInfoStr = sessionStorage.getItem('userInfo');
-    if (userInfoStr) {
-      try {
-        const userInfo: MeResponse = JSON.parse(userInfoStr);
-        return userInfo.dominio || null;
-      } catch (error) {
-        console.error('Erro ao parsear informações do usuário:', error);
-        return null;
-      }
-    }
-    return null;
+    // Retornar o domínio do signal (que é carregado do token)
+    return this.userDominio();
   }
 
   irParaMinhaLoja() {

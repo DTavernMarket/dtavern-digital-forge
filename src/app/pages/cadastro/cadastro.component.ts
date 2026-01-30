@@ -300,6 +300,8 @@ export class CadastroComponent {
   senhaError = '';
   confirmacaoSenhaError = '';
 
+  displayName = '';
+
   selecionarTipoUsuario(tipo: 'artesao' | 'cliente') {
     this.tipoUsuario = tipo;
   }
@@ -411,18 +413,20 @@ export class CadastroComponent {
 
   formularioValido(): boolean {
     if (this.tipoUsuario === 'artesao') {
-      return this.validarNomeLoja() &&
-             this.validarEmail() && 
-             this.validarSenha() && 
-             this.validarConfirmacaoSenha() &&
+      const nomeLojaValido = this.validarNomeLoja();
+      const emailValido = this.validarEmail();
+      const senhaValida = this.validarSenha();
+      const confirmacaoValida = this.validarConfirmacaoSenha();
+      return nomeLojaValido && emailValido && senhaValida && confirmacaoValida &&
              this.nomeLoja !== '' &&
              this.email !== '' &&
              this.password !== '' &&
              this.confirmPassword !== '';
     } else {
-      return this.validarEmail() && 
-             this.validarSenha() && 
-             this.validarConfirmacaoSenha() &&
+      const emailValido = this.validarEmail();
+      const senhaValida = this.validarSenha();
+      const confirmacaoValida = this.validarConfirmacaoSenha();
+      return emailValido && senhaValida && confirmacaoValida &&
              this.email !== '' &&
              this.password !== '' &&
              this.confirmPassword !== '';
@@ -491,7 +495,7 @@ export class CadastroComponent {
       });
     } else {
       // Criar conta de cliente
-      this.authService.register(this.email, this.password).subscribe({
+      this.authService.registerComprador(this.displayName, this.email, this.password).subscribe({
         next: (response) => {
           console.log('Conta criada:', response);
           this.router.navigate(['/login']); // Redirecionar após cadastro

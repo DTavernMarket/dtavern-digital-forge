@@ -10,6 +10,7 @@ import { BehaviorSubject, Observable, from, of } from 'rxjs';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { auth } from '../config/firebase.config';
 import { AuthResponse, LoginRequest, MeResponse, User } from '../models/auth.model';
+import { CadastroLojaRequest } from '../models/artesao.model';
 @Injectable({
   providedIn: 'root'
 })
@@ -75,9 +76,9 @@ export class AuthService {
   /**
    * Registrar novo usuário
    */
-  register(email: string, password: string): Observable<AuthResponse> {
-    const request: LoginRequest = { email, password };
-    return this.http.post<AuthResponse>(`${this.API_URL}/register`, request);
+  registerComprador(displayName: string, email: string, password: string): Observable<AuthResponse> {
+    const request: CadastroLojaRequest = { nomeLoja: displayName, email, password };
+    return this.http.post<AuthResponse>(`http://localhost:8080/api/v1/client/compradores/register`, request);
   }
 
   /**
@@ -109,6 +110,57 @@ export class AuthService {
   getCurrentToken(): Observable<string> {
     return this.idToken$.pipe(
       filter(token => token !== null)
+    );
+  }
+
+  /**
+   * Decodifica o token JWT e retorna os claims
+   */
+  getTokenClaims(): Observable<any> {
+    return this.idToken$.pipe(
+      filter(token => token !== null),
+      map(token => {
+        if (!token) return null;
+        try {
+          // Decodificar o payload do JWT (sem verificar assinatura)
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split('')
+              .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+              .join('')
+          );
+          return JSON.parse(jsonPayload);
+        } catch (error) {
+          console.error('Erro ao decodificar token:', error);
+          return null;
+        }
+      })
+    );
+  }
+
+  /**
+   * Obtém a role do usuário a partir dos claims do token
+   */
+  getUserRole(): Observable<'LOJA' | 'COMPRADOR' | null> {
+    return this.getTokenClaims().pipe(
+      map(claims => {
+        if (!claims || !claims.role) return null;
+        return claims.role as 'LOJA' | 'COMPRADOR';
+      })
+    );
+  }
+
+  /**
+   * Obtém o domínio da loja a partir dos claims do token (se disponível)
+   */
+  getUserDominio(): Observable<string | null> {
+    return this.getTokenClaims().pipe(
+      map(claims => {
+        if (!claims || !claims.dominio) return null;
+        return claims.dominio as string;
+      })
     );
   }
 }

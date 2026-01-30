@@ -80,7 +80,6 @@ export class LoginComponent {
 
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
-        console.log('Login realizado:', response);
         this.router.navigate(['/']); // Redirecionar após login
       },
       error: (error) => {
