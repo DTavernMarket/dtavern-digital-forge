@@ -26,7 +26,8 @@ export interface Compra {
 
 export interface CadastroClienteRequest {
   nomeCompleto: string;
+  apelido: string;
   email: string;
   password: string;
-  dataNascimento: Date;
+  dataNascimento: string;
 }

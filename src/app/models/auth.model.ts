@@ -17,9 +17,21 @@ export interface User {
   displayName?: string | null;
 }
 
-export interface MeResponse {
-  tipo: 'LOJA' | 'COMPRADOR';
-  displayName: string;
-  dominio?: string | null;
+export interface MeResponseLoja {
+
+  nomeLoja: string;
+  email: string;
+  dominio: string;
+  dataCriacaoConta: string;
+
+}
+
+export interface MeResponseCliente {
+
+  nomeCompleto: string;
+  apelido: string;
+  email: string;
+  dataNascimento: string;
+  dataCriacaoConta: string;
 
 }

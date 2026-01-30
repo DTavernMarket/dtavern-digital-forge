@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ArtesaoService } from '../../services/artesao.service';
+import { ClienteService } from '../../services/cliente.service';
+import { MeResponseLoja, MeResponseCliente } from '../../models/auth.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -30,45 +32,120 @@ import { Subscription } from 'rxjs';
               Informações da Conta
             </h2>
 
-            <div class="space-y-6">
-              <!-- Nome de Usuário / Nome da Loja -->
-              <div>
-                <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
-                  {{ userRole() === 'LOJA' ? 'Nome da Loja' : 'Nome de Usuário' }}
-                </label>
-                <div  class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
-                  <span class="text-scroll-beige/80" readonly>{{ displayName() || 'Não informado' }}</span>
-                </div>
+            @if (loading()) {
+              <div class="flex items-center justify-center py-8">
+                <svg class="animate-spin w-8 h-8 text-candlelight-gold" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="ml-3 text-scroll-beige">Carregando dados...</span>
               </div>
+            } @else {
+              <div class="space-y-6">
+                @if (userRole() === 'LOJA' && lojaData()) {
+                  <!-- Campos para Loja -->
+                  <div>
+                    <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
+                      Nome da Loja
+                    </label>
+                    <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
+                      <span class="text-scroll-beige/80">{{ lojaData()?.nomeLoja || 'Não informado' }}</span>
+                    </div>
+                  </div>
 
-              <!-- Email -->
-              <div>
-                <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
-                  Email
-                </label>
-                <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
-                  <span class="text-scroll-beige/80" readonly>{{ email() || 'Não informado' }}</span>
-                </div>
-              </div>
+                  <div>
+                    <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
+                      Email
+                    </label>
+                    <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
+                      <span class="text-scroll-beige/80">{{ lojaData()?.email || 'Não informado' }}</span>
+                    </div>
+                  </div>
 
-              <!-- Tipo da Conta -->
-              <div>
-                <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
-                  Tipo da Conta
-                </label>
-                <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg">
-                  <span 
-                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                    [ngClass]="{
-                      'bg-candlelight-gold/20 text-candlelight-gold border border-candlelight-gold/30': userRole() === 'LOJA',
-                      'bg-blue-500/20 text-blue-400 border border-blue-500/30': userRole() === 'COMPRADOR'
-                    }"
-                  >
-                    {{ userRole() === 'LOJA' ? 'Loja' : userRole() === 'COMPRADOR' ? 'Comprador' : 'Não definido' }}
-                  </span>
+                  <div>
+                    <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
+                      Domínio
+                    </label>
+                    <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
+                      <span class="text-scroll-beige/80">{{ lojaData()?.dominio || 'Não informado' }}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
+                      Data de Criação da Conta
+                    </label>
+                    <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
+                      <span class="text-scroll-beige/80">{{ formatarData(lojaData()?.dataCriacaoConta) || 'Não informado' }}</span>
+                    </div>
+                  </div>
+                } @else if (userRole() === 'COMPRADOR' && clienteData()) {
+                  <!-- Campos para Cliente -->
+                  <div>
+                    <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
+                      Nome Completo
+                    </label>
+                    <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
+                      <span class="text-scroll-beige/80">{{ clienteData()?.nomeCompleto || 'Não informado' }}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
+                      Apelido
+                    </label>
+                    <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
+                      <span class="text-scroll-beige/80">{{ clienteData()?.apelido || 'Não informado' }}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
+                      Email
+                    </label>
+                    <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
+                      <span class="text-scroll-beige/80">{{ clienteData()?.email || 'Não informado' }}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
+                      Data de Nascimento
+                    </label>
+                    <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
+                      <span class="text-scroll-beige/80">{{ formatarData(clienteData()?.dataNascimento) || 'Não informado' }}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
+                      Data de Criação da Conta
+                    </label>
+                    <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
+                      <span class="text-scroll-beige/80">{{ formatarData(clienteData()?.dataCriacaoConta) || 'Não informado' }}</span>
+                    </div>
+                  </div>
+                }
+
+                <!-- Tipo da Conta -->
+                <div>
+                  <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
+                    Tipo da Conta
+                  </label>
+                  <div class="px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg">
+                    <span 
+                      class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                      [ngClass]="{
+                        'bg-candlelight-gold/20 text-candlelight-gold border border-candlelight-gold/30': userRole() === 'LOJA',
+                        'bg-blue-500/20 text-blue-400 border border-blue-500/30': userRole() === 'COMPRADOR'
+                      }"
+                    >
+                      {{ userRole() === 'LOJA' ? 'Loja' : userRole() === 'COMPRADOR' ? 'Comprador' : 'Não definido' }}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            }
           </div>
 
           <!-- Botões de Ação -->
@@ -136,38 +213,63 @@ import { Subscription } from 'rxjs';
 export class MeuPerfilComponent implements OnInit, OnDestroy {
     private authService = inject(AuthService);
     private artesaoService = inject(ArtesaoService);
+    private clienteService = inject(ClienteService);
     private router = inject(Router);
     private authSubscription?: Subscription;
 
-    displayName = signal<string | null>(null);
-    email = signal<string | null>(null);
+    // Dados da loja
+    lojaData = signal<MeResponseLoja | null>(null);
+    
+    // Dados do cliente
+    clienteData = signal<MeResponseCliente | null>(null);
+    
     userRole = signal<'LOJA' | 'COMPRADOR' | null>(null);
     deletando = signal<boolean>(false);
     errorMessage = signal<string | null>(null);
+    loading = signal<boolean>(false);
 
     ngOnInit() {
-        // Observar mudanças no estado de autenticação
-        this.authSubscription = this.authService.currentUser$.subscribe(user => {
-            if (user !== null) {
-                // Pegar displayName e email diretamente do Firebase User
-                this.displayName.set(user.displayName || user.email || null);
-                this.email.set(user.email || null);
-
-                // Carregar role do token
-                this.authService.getUserRole().subscribe({
-                    next: (role) => {
-                        this.userRole.set(role);
-                    },
-                    error: (error) => {
-                        console.error('Erro ao obter role do token:', error);
-                        this.userRole.set(null);
-                    }
-                });
-            } else {
-                // Se não estiver autenticado, limpar dados
-                this.displayName.set(null);
-                this.email.set(null);
+        this.loading.set(true);
+        
+        // Carregar role do token primeiro
+        this.authService.getUserRole().subscribe({
+            next: (role) => {
+                this.userRole.set(role);
+                
+                if (role === 'LOJA') {
+                    // Carregar dados da loja
+                    this.artesaoService.getMeLoja().subscribe({
+                        next: (data) => {
+                            this.lojaData.set(data);
+                            this.loading.set(false);
+                        },
+                        error: (error) => {
+                            console.error('Erro ao carregar dados da loja:', error);
+                            this.errorMessage.set('Erro ao carregar dados da conta. Tente novamente.');
+                            this.loading.set(false);
+                        }
+                    });
+                } else if (role === 'COMPRADOR') {
+                    // Carregar dados do cliente
+                    this.clienteService.getMeCliente().subscribe({
+                        next: (data) => {
+                            this.clienteData.set(data);
+                            this.loading.set(false);
+                        },
+                        error: (error) => {
+                            console.error('Erro ao carregar dados do cliente:', error);
+                            this.errorMessage.set('Erro ao carregar dados da conta. Tente novamente.');
+                            this.loading.set(false);
+                        }
+                    });
+                } else {
+                    this.loading.set(false);
+                }
+            },
+            error: (error) => {
+                console.error('Erro ao obter role do token:', error);
                 this.userRole.set(null);
+                this.loading.set(false);
             }
         });
     }
@@ -175,6 +277,20 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         if (this.authSubscription) {
             this.authSubscription.unsubscribe();
+        }
+    }
+
+    formatarData(data: string | undefined): string {
+        if (!data) return '';
+        try {
+            const date = new Date(data);
+            return date.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        } catch {
+            return data;
         }
     }
 

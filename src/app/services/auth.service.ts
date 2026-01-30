@@ -9,7 +9,7 @@ import {
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
 import { filter, map, switchMap, tap } from 'rxjs/operators';
 import { auth } from '../config/firebase.config';
-import { AuthResponse, LoginRequest, MeResponse, User } from '../models/auth.model';
+import { AuthResponse, User } from '../models/auth.model';
 import { CadastroLojaRequest } from '../models/artesao.model';
 @Injectable({
   providedIn: 'root'
@@ -95,11 +95,6 @@ export class AuthService {
       }
     );
   }
-
-  getMe() {
-    return this.http.get<MeResponse>('http://localhost:8080/api/v1/auth/me');
-  }
-
 
   getCurrentUser(): Observable<User> {
     return this.currentUser$.pipe(

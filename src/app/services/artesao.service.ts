@@ -5,6 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import { Artesao, CadastroLojaRequest, LojaResponse } from '../models/artesao.model';
 import { PagedResult } from '../models/produto.model';
 import { AuthService } from './auth.service';
+import { MeResponseLoja } from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,7 @@ import { AuthService } from './auth.service';
 export class ArtesaoService {
   private lojasCache = signal<LojaResponse[]>([]);
   private authService = inject(AuthService);
-
-  constructor(private http: HttpClient) { }
+  private http = inject(HttpClient);
 
   /**
    * Lista lojas paginadas do backend
@@ -121,6 +121,18 @@ export class ArtesaoService {
           'Authorization': `Bearer ${token}`
         }
       }
+    );
+  }
+
+  getMeLoja(): Observable<MeResponseLoja> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.get<MeResponseLoja>('http://localhost:8080/api/v1/lojas/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      })
     );
   }
 
