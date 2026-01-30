@@ -127,7 +127,7 @@ import { Subscription } from 'rxjs';
                 >
                   <div class="py-2">
                     <button 
-                      (click)="fecharMenuPerfil()"
+                      (click)="irParaMeuPerfil()"
                       class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
                     >
                       Minha conta
@@ -375,6 +375,11 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   irParaCadastro() {
     this.router.navigate(['/cadastro']);
+  }
+
+  irParaMeuPerfil() {
+    this.fecharMenuPerfil();
+    this.router.navigate(['/meu-perfil']);
   }
 
   obterTipoUsuario(): 'LOJA' | 'COMPRADOR' | null {

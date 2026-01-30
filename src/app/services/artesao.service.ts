@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, Injectable, signal, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { Artesao, CadastroLojaRequest, LojaResponse } from '../models/artesao.model';
 import { PagedResult } from '../models/produto.model';
 import { AuthService } from './auth.service';
@@ -120,6 +121,18 @@ export class ArtesaoService {
           'Authorization': `Bearer ${token}`
         }
       }
+    );
+  }
+
+  deletarLoja(): Observable<void> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.delete<void>('http://localhost:8080/api/v1/lojas/deletar-loja', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      })
     );
   }
 }

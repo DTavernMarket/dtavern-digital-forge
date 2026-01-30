@@ -163,4 +163,17 @@ export class AuthService {
       })
     );
   }
+
+  deleteComprador(): Observable<void> {
+    return this.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.delete<void>(`http://localhost:8080/api/v1/clientes/deletar-comprador`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      })
+    );
+  }
+
 }
