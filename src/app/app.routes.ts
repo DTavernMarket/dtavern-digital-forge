@@ -12,7 +12,21 @@ import { MeuPerfilComponent } from './pages/meu-perfil/meu-perfil.component';
 export const routes: Routes = [
   { path: '', component: PaginaInicialComponent },
   { path: 'produtos', component: PaginaProdutosComponent },
-  { path: 'lojas/:dominio', component: LojaArtesaoComponent },
+  {
+    path: 'lojas/:dominio',
+    component: LojaArtesaoComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: 'produtos',
+        pathMatch: 'full'
+      },
+      {
+        path: ':aba',
+        component: LojaArtesaoComponent
+      }
+    ]
+  },
   { path: 'novo-produto', component: CadastroProdutoComponent, canActivate: [authGuard] },
   { path: 'editar-produto', component: CadastroProdutoComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },

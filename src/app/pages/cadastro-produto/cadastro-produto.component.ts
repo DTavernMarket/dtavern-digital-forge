@@ -55,7 +55,7 @@ import { Inject, PLATFORM_ID } from '@angular/core';
               </div>
             </div>
             <button
-              (click)="voltar()"
+              (click)="irParaLoja()"
               class="px-6 py-2 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
             >
               Voltar para loja
@@ -227,7 +227,7 @@ import { Inject, PLATFORM_ID } from '@angular/core';
             <div class="flex items-center space-x-4">
               <button
                 type="button"
-                (click)="voltar()"
+                (click)="irParaLoja()"
                 class="px-6 py-3 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
               >
                 Voltar para loja
@@ -306,6 +306,9 @@ export class CadastroProdutoComponent implements OnInit {
   // Artesão atual
   artesaoAtual: Artesao | null = null;
 
+  // Domínio da loja atual (para redirecionamento)
+  lojaDominio: string | null = null;
+
   // Opções para o select de categoria (será preenchido com dados da API)
   opcoesCategoria: OpcaoSelect[] = [];
 
@@ -371,35 +374,30 @@ export class CadastroProdutoComponent implements OnInit {
   }
 
   private validarAcessoArtesao() {
-    // Buscar domínio do artesão no sessionStorage
-    const lojaDominio = sessionStorage.getItem('lojaDominio');
+    // Buscar informações da loja logada usando getMeLoja()
+    this.artesaoService.getMeLoja().subscribe({
+      next: (meResponseLoja) => {
+        // Armazenar o domínio da loja para uso na função voltar()
+        this.lojaDominio = meResponseLoja.dominio;
 
-    if (!lojaDominio) {
-      console.warn('Nenhum domínio de loja encontrado no sessionStorage');
-      this.redirecionarParaInicio();
-      return;
-    }
-
-    // Buscar artesão pelo domínio
-    this.artesaoService.buscarLojaPorDominio(lojaDominio).subscribe({
-      next: (lojaResponse) => {
-        // Converter LojaResponse para Artesao com valores padrão para campos não disponíveis
+        // Converter MeResponseLoja para Artesao
         this.artesaoAtual = {
-          dominio: lojaResponse.dominio,
-          nome: lojaResponse.nome,
-          biografia: lojaResponse.descricao, // descricao do backend vira biografia
+          dominio: meResponseLoja.dominio,
+          nome: meResponseLoja.nomeLoja,
+          biografia: '', // MeResponseLoja não tem descrição/biografia
         };
       },
       error: (error) => {
-        console.warn(`Artesão com domínio '${lojaDominio}' não encontrado:`, error);
+        console.warn('Erro ao buscar informações da loja logada:', error);
         this.redirecionarParaInicio();
       },
     });
   }
 
   private redirecionarParaInicio() {
-    // Limpar sessionStorage
-    sessionStorage.removeItem('lojaDominio');
+    // Limpar dados locais
+    this.lojaDominio = null;
+    this.artesaoAtual = null;
 
     // Redirecionar para página inicial
     this.router.navigate(['/']);
@@ -474,7 +472,8 @@ export class CadastroProdutoComponent implements OnInit {
       }
 
       alert(this.isModoEdicao() ? 'Produto atualizado com sucesso!' : 'Produto salvo com sucesso!');
-      this.voltar();
+      // Redirecionar para a loja específica
+      this.irParaLoja();
     } catch (error) {
       console.error('Erro ao salvar produto:', error);
       alert(
@@ -514,15 +513,13 @@ export class CadastroProdutoComponent implements OnInit {
     this.imagemAlterada = true;
   }
 
-  voltar() {
-    // Verificar se há um domínio de loja salvo no sessionStorage
-    const lojaDominio = sessionStorage.getItem('lojaDominio');
-    if (lojaDominio) {
+  irParaLoja() {
+    // Usar o domínio da loja atual armazenado na propriedade do componente
+    if (this.lojaDominio) {
       // Redirecionar para a loja específica
-      this.router.navigate(['/lojas', lojaDominio]);
-      // Manter o sessionStorage para futuras navegações
+      this.router.navigate(['/lojas', this.lojaDominio]);
     } else {
-      // Se não houver domínio salvo, ir para a página inicial
+      // Se não houver domínio, ir para a página inicial
       this.router.navigate(['/']);
     }
   }
@@ -545,7 +542,7 @@ export class CadastroProdutoComponent implements OnInit {
       await firstValueFrom(this.produtoService.deletarProduto(this.nomeNormalizadoProduto!));
       alert('Produto deletado com sucesso!');
       this.fecharDialogDeletar();
-      this.voltar();
+      this.irParaLoja();
     } catch (error) {
       console.error('Erro ao deletar produto:', error);
       alert('Erro ao deletar produto. Tente novamente.');

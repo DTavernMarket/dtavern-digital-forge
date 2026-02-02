@@ -5,7 +5,7 @@ import { switchMap } from 'rxjs/operators';
 import { Artesao, CadastroLojaRequest, LojaResponse } from '../models/artesao.model';
 import { PagedResult } from '../models/produto.model';
 import { AuthService } from './auth.service';
-import { MeResponseLoja } from '../models/auth.model';
+import { EditarLojaRequest, MeResponseLoja } from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -144,6 +144,36 @@ export class ArtesaoService {
             'Authorization': `Bearer ${token}`
           }
         });
+      })
+    );
+  }
+
+  /**
+   * Busca informações da aba "sobre" de uma loja
+   * @param dominio Domínio da loja
+   */
+  buscarSobreLoja(dominio: string): Observable<{ descricaoSobre: string }> {
+    return this.http.get<{ descricaoSobre: string }>(
+      `http://localhost:8080/api/v1/lojas/${dominio}/sobre`
+    );
+  }
+
+  /**
+   * Edita a descrição sobre da loja
+   * @param descricaoSobre Nova descrição sobre
+   */
+  editarLoja(editarLojaRequest: EditarLojaRequest): Observable<void> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.patch<void>(
+          'http://localhost:8080/api/v1/lojas/editar-loja',
+          editarLojaRequest,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
       })
     );
   }

@@ -35,3 +35,7 @@ export interface MeResponseCliente {
   dataCriacaoConta: string;
 
 }
+
+export interface EditarLojaRequest {
+  descricaoSobre: string;
+}

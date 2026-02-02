@@ -19,7 +19,7 @@ import { Subscription } from 'rxjs';
         <div class="flex items-center justify-between py-4">
           
           <!-- SEÇÃO ESQUERDA: Logo -->
-          <div class="flex items-center justify-center">
+          <div class="cursor-pointer flex items-center justify-center" (click)="irParaInicio()">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center">
               <img src="assets/images/DTavern-icone.png" alt="DTavern" class="w-8 h-8 object-contain" />
             </div>
@@ -135,12 +135,48 @@ import { Subscription } from 'rxjs';
                     
                     <!-- Opções específicas para LOJA -->
                     <ng-container *ngIf="obterTipoUsuario() === 'LOJA'">
-                      <button 
-                        (click)="irParaMinhaLoja()"
-                        class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
-                      >
-                        Minha loja
-                      </button>
+                      <div>
+                        <button 
+                          (click)="menuLojaAberto.set(!menuLojaAberto())"
+                          class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm flex items-center justify-between"
+                        >
+                          <span>Loja</span>
+                          <svg 
+                            class="w-4 h-4 transition-transform"
+                            [class.rotate-180]="menuLojaAberto()"
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                          </svg>
+                        </button>
+                        
+                        <!-- Submenu Dropdown da Loja -->
+                        <div 
+                          *ngIf="menuLojaAberto()"
+                          class="pl-4"
+                        >
+                          <button 
+                            (click)="irParaMinhaLoja()"
+                            class="w-full px-4 py-2 text-left text-scroll-beige/90 hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Ver loja
+                          </button>
+                          <button 
+                            (click)="irParaAdicionarProdutoLoja()"
+                            class="w-full px-4 py-2 text-left text-scroll-beige/90 hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Adicionar produto
+                          </button>
+                          <button 
+                            (click)="gerenciarLoja()"
+                            class="w-full px-4 py-2 text-left text-scroll-beige/90 hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Gerenciar Loja
+                          </button>
+                        </div>
+                      </div>
                     </ng-container>
                     
                     <!-- Opções específicas para COMPRADOR -->
@@ -234,6 +270,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   menuAberto = signal(false);
   menuPerfilAberto = signal(false);
+  menuLojaAberto = signal(false);
   termoPesquisa = signal('');
   mostrarResultados = signal(false);
   resultadosPesquisa = signal<Produto[]>([]);
@@ -255,11 +292,11 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
     // Observar mudanças no estado de autenticação
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.estaAutenticado.set(user !== null);
-      
+
       if (user !== null) {
         // Pegar displayName diretamente do Firebase User
         this.displayName.set(user.displayName || user.email || null);
-        
+
         // Carregar role do token
         this.authService.getUserRole().subscribe({
           next: (role) => {
@@ -270,7 +307,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
             this.userRole.set(null);
           }
         });
-        
+
         // Carregar domínio do token (se disponível)
         this.authService.getUserDominio().subscribe({
           next: (dominio) => {
@@ -297,6 +334,10 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
     }
   }
 
+  irParaInicio() {
+    this.router.navigate(['/']);
+  }
+
   onPesquisaChange() {
     const termo = this.termoPesquisa();
     if (termo.length >= 2) {
@@ -319,20 +360,20 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   realizarPesquisa() {
     if (this.termoPesquisa().trim()) {
-      this.router.navigate(['/produtos'], { 
-        queryParams: { 
-          pesquisa: this.termoPesquisa().trim() 
-        } 
+      this.router.navigate(['/produtos'], {
+        queryParams: {
+          pesquisa: this.termoPesquisa().trim()
+        }
       });
       this.mostrarResultados.set(false);
     }
   }
 
   selecionarProduto(produto: Produto) {
-    this.router.navigate(['/produtos'], { 
-      queryParams: { 
-        produto: produto.nomeNormalizado 
-      } 
+    this.router.navigate(['/produtos'], {
+      queryParams: {
+        produto: produto.nomeNormalizado
+      }
     });
     this.mostrarResultados.set(false);
     this.termoPesquisa.set('');
@@ -350,6 +391,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   fecharMenuPerfil() {
     this.menuPerfilAberto.set(false);
+    this.menuLojaAberto.set(false);
   }
 
   realizarLogout() {
@@ -395,12 +437,24 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   irParaMinhaLoja() {
     const dominio = this.obterDominioLoja();
     if (dominio) {
+      this.menuLojaAberto.set(false);
       this.fecharMenuPerfil();
       this.router.navigate(['/lojas', dominio]);
     } else {
       console.error('Domínio da loja não encontrado');
+      this.menuLojaAberto.set(false);
       this.fecharMenuPerfil();
     }
+  }
+
+  irParaAdicionarProdutoLoja() {
+    this.router.navigate(['/novo-produto']);
+  }
+
+  gerenciarLoja() {
+    // Por enquanto não faz nada, mas o item existe no dropdown
+    this.menuLojaAberto.set(false);
+    // TODO: Implementar navegação para página de gerenciamento da loja
   }
 
   @ViewChild('menuPerfilContainer') menuPerfilContainer!: ElementRef;

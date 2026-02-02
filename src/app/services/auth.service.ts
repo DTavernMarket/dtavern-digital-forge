@@ -4,10 +4,11 @@ import { Injectable, inject } from '@angular/core';
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
-  signOut
+  signOut,
+  User as FirebaseUser
 } from 'firebase/auth';
 import { BehaviorSubject, Observable, from, of } from 'rxjs';
-import { filter, map, switchMap, tap } from 'rxjs/operators';
+import { filter, map, switchMap, tap, catchError } from 'rxjs/operators';
 import { auth } from '../config/firebase.config';
 import { AuthResponse, User } from '../models/auth.model';
 import { CadastroLojaRequest } from '../models/artesao.model';
@@ -24,43 +25,112 @@ export class AuthService {
   private idTokenSubject = new BehaviorSubject<string | null>(null);
   idToken$ = this.idTokenSubject.asObservable();
 
-  private initialized = false;
+  private initializedSubject = new BehaviorSubject<boolean>(false);
+  initialized$ = this.initializedSubject.asObservable();
 
   constructor() {
     this.initAuthListener();
   }
 
+  /**
+   * Inicializa o listener de autenticação do Firebase.
+   * Sempre que a aplicação iniciar (incluindo refresh de página), este método
+   * ouve o evento onAuthStateChanged. Se houver um usuário autenticado, força
+   * imediatamente a obtenção de um novo ID Token chamando getIdToken(true),
+   * garantindo que o token em memória seja sempre válido e atualizado.
+   * O token é mantido apenas em memória (via BehaviorSubject), nunca em localStorage.
+   */
   private initAuthListener() {
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const token = await user.getIdToken();
+    onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        try {
+          // Forçar refresh do token para garantir que está válido e atualizado
+          // (incluindo custom claims como roles)
+          // O parâmetro true força a obtenção de um novo token do servidor
+          const token = await firebaseUser.getIdToken(true);
 
-        this.currentUserSubject.next(user);
-        this.idTokenSubject.next(token);
+          // Converter FirebaseUser para User do modelo da aplicação
+          const user: User = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName || null
+          };
+
+          // Só atualizar o estado após o refresh bem-sucedido
+          // Isso garante que o usuário só seja considerado logado com token válido
+          this.currentUserSubject.next(user);
+          this.idTokenSubject.next(token);
+        } catch (error) {
+          // Se a obtenção do token falhar (refresh token inválido, sessão revogada, etc.),
+          // deslogar o usuário de forma limpa
+          console.error('Erro ao obter token atualizado:', error);
+          this.currentUserSubject.next(null);
+          this.idTokenSubject.next(null);
+          
+          // Tentar fazer signOut para limpar o estado do Firebase
+          try {
+            await signOut(auth);
+          } catch (signOutError) {
+            console.error('Erro ao fazer signOut após falha no token:', signOutError);
+          }
+        }
       } else {
+        // Não há usuário autenticado - definir estado como deslogado
         this.currentUserSubject.next(null);
         this.idTokenSubject.next(null);
       }
 
-      this.initialized = true;
+      // Marcar como inicializado após processar o estado de autenticação
+      // Isso permite que a UI aguarde a inicialização antes de considerar o estado
+      this.initializedSubject.next(true);
     });
   }
 
+  /**
+   * Verifica se o serviço de autenticação foi inicializado.
+   * Útil para aguardar a reidratação da sessão antes de verificar autenticação.
+   */
   isInitialized(): boolean {
-    return this.initialized;
+    return this.initializedSubject.value;
   }
 
   /**
    * Login com email e senha
+   * Após o login bem-sucedido, força o refresh do token para garantir que está atualizado
    */
   login(email: string, password: string): Observable<User> {
     return from(signInWithEmailAndPassword(auth, email, password)).pipe(
-      tap(async (cred) => {
-        const token = await cred.user.getIdToken();
-        this.idTokenSubject.next(token);
-        this.currentUserSubject.next(cred.user);
-      }),
-      switchMap(cred => of(cred.user))
+      switchMap((cred) => {
+        // Forçar refresh do token após login para garantir que está atualizado
+        return from(cred.user.getIdToken(true)).pipe(
+          tap((token) => {
+            const user: User = {
+              uid: cred.user.uid,
+              email: cred.user.email,
+              displayName: cred.user.displayName || null
+            };
+            
+            this.idTokenSubject.next(token);
+            this.currentUserSubject.next(user);
+          }),
+          map(() => {
+            const user: User = {
+              uid: cred.user.uid,
+              email: cred.user.email,
+              displayName: cred.user.displayName || null
+            };
+            return user;
+          }),
+          catchError((error) => {
+            console.error('Erro ao obter token após login:', error);
+            // Se falhar ao obter token, fazer signOut
+            signOut(auth).catch(signOutError => {
+              console.error('Erro ao fazer signOut após falha no token:', signOutError);
+            });
+            throw error;
+          })
+        );
+      })
     );
   }
 
@@ -96,10 +166,22 @@ export class AuthService {
     );
   }
 
-  getCurrentUser(): Observable<User> {
+  /**
+   * Retorna o usuário atual de forma síncrona (valor atual do BehaviorSubject)
+   * Útil para guards e verificações rápidas
+   */
+  getCurrentUser(): User | null {
+    return this.currentUserSubject.value;
+  }
+
+  /**
+   * Retorna um Observable do usuário atual (apenas quando não for null)
+   * Útil para componentes que precisam reagir a mudanças de estado
+   */
+  getCurrentUser$(): Observable<User> {
     return this.currentUser$.pipe(
       filter(user => user !== null)
-    );
+    ) as Observable<User>;
   }
 
   getCurrentToken(): Observable<string> {
