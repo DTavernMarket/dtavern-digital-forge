@@ -1,16 +1,19 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, signal, computed } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Artesao, LojaResponse } from '../models/artesao.model';
+import { computed, Injectable, signal, inject } from '@angular/core';
+import { Observable, firstValueFrom } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { Artesao, CadastroLojaRequest, LojaResponse } from '../models/artesao.model';
 import { PagedResult } from '../models/produto.model';
+import { AuthService } from './auth.service';
+import { EditarLojaRequest, MeResponseLoja } from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ArtesaoService {
   private lojasCache = signal<LojaResponse[]>([]);
-
-  constructor(private http: HttpClient) {}
+  private authService = inject(AuthService);
+  private http = inject(HttpClient);
 
   /**
    * Lista lojas paginadas do backend
@@ -31,7 +34,7 @@ export class ArtesaoService {
       params = params.set('filtroGeral', filtroGeral.trim());
     }
 
-    return this.http.get<PagedResult<LojaResponse>>('http://localhost:8080/api/v1/lojas', {
+    return this.http.get<PagedResult<LojaResponse>>('http://localhost:8080/api/v1/client/lojas', {
       params,
     });
   }
@@ -42,7 +45,7 @@ export class ArtesaoService {
    */
   buscarLojaPorDominio(dominio: string): Observable<LojaResponse> {
     return this.http.get<LojaResponse>(
-      `http://localhost:8080/api/v1/lojas/${dominio}`
+      `http://localhost:8080/api/v1/client/lojas/${dominio}`
     );
   }
 
@@ -87,7 +90,7 @@ export class ArtesaoService {
    */
   buscarArtesoes(termo: string): Artesao[] {
     return this.lojasCache()
-      .filter(loja => 
+      .filter(loja =>
         loja.nome.toLowerCase().includes(termo.toLowerCase()) ||
         loja.descricao.toLowerCase().includes(termo.toLowerCase())
       )
@@ -102,5 +105,76 @@ export class ArtesaoService {
     return computed(() => {
       return this.lojasCache().map(loja => this.converterLojaParaArtesao(loja));
     });
+  }
+
+  criarLoja(loja: CadastroLojaRequest): Observable<LojaResponse> {
+    return this.http.post<LojaResponse>('http://localhost:8080/api/v1/client/lojas/register', loja);
+  }
+
+  verifyOwner(dominio: string): Observable<boolean> {
+    const token = this.authService.getCurrentToken();
+
+    return this.http.get<boolean>(
+      `http://localhost:8080/api/v1/client/lojas/verify-owner/${dominio}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+  }
+
+  getMeLoja(): Observable<MeResponseLoja> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.get<MeResponseLoja>('http://localhost:8080/api/v1/lojas/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      })
+    );
+  }
+
+  deletarLoja(): Observable<void> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.delete<void>('http://localhost:8080/api/v1/lojas/deletar-loja', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      })
+    );
+  }
+
+  /**
+   * Busca informações da aba "sobre" de uma loja
+   * @param dominio Domínio da loja
+   */
+  buscarSobreLoja(dominio: string): Observable<{ descricaoSobre: string }> {
+    return this.http.get<{ descricaoSobre: string }>(
+      `http://localhost:8080/api/v1/lojas/${dominio}/sobre`
+    );
+  }
+
+  /**
+   * Edita a descrição sobre da loja
+   * @param descricaoSobre Nova descrição sobre
+   */
+  editarLoja(editarLojaRequest: EditarLojaRequest): Observable<void> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.patch<void>(
+          'http://localhost:8080/api/v1/lojas/editar-loja',
+          editarLojaRequest,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+      })
+    );
   }
 }

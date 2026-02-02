@@ -19,7 +19,7 @@ import { Subscription } from 'rxjs';
         <div class="flex items-center justify-between py-4">
           
           <!-- SEÇÃO ESQUERDA: Logo -->
-          <div class="flex items-center justify-center">
+          <div class="cursor-pointer flex items-center justify-center" (click)="irParaInicio()">
             <div class="w-8 h-8 rounded-lg flex items-center justify-center">
               <img src="assets/images/DTavern-icone.png" alt="DTavern" class="w-8 h-8 object-contain" />
             </div>
@@ -103,24 +103,20 @@ import { Subscription } from 'rxjs';
           <div class="flex items-center space-x-4">
             <!-- Elementos para usuário logado -->
             <ng-container *ngIf="estaAutenticado()">
-              <!-- Carrinho -->
-              <button class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors relative">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                </svg>
-                <!-- <span class="absolute -top-1 -right-1 w-5 h-5 bg-candlelight-gold text-tavern-wood text-xs rounded-full flex items-center justify-center font-semibold">
-                  3
-                </span> -->
-              </button>
-
               <!-- Perfil -->
               <div class="relative" #menuPerfilContainer>
                 <button 
                   (click)="menuPerfilAberto.set(!menuPerfilAberto())"
-                  class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors"
+                  class="flex items-center space-x-2 px-3 py-2 text-scroll-beige hover:text-candlelight-gold transition-colors rounded-lg hover:bg-tavern-wood/10"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                  <span *ngIf="displayName()" class="font-medium text-sm">
+                    {{ displayName() }}
+                  </span>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                   </svg>
                 </button>
                 
@@ -131,17 +127,68 @@ import { Subscription } from 'rxjs';
                 >
                   <div class="py-2">
                     <button 
-                      (click)="fecharMenuPerfil()"
+                      (click)="irParaMeuPerfil()"
                       class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
                     >
                       Minha conta
                     </button>
-                    <button 
-                      (click)="fecharMenuPerfil()"
-                      class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
-                    >
-                      Meus Pedidos
-                    </button>
+                    
+                    <!-- Opções específicas para LOJA -->
+                    <ng-container *ngIf="obterTipoUsuario() === 'LOJA'">
+                      <div>
+                        <button 
+                          (click)="menuLojaAberto.set(!menuLojaAberto())"
+                          class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm flex items-center justify-between"
+                        >
+                          <span>Loja</span>
+                          <svg 
+                            class="w-4 h-4 transition-transform"
+                            [class.rotate-180]="menuLojaAberto()"
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                          </svg>
+                        </button>
+                        
+                        <!-- Submenu Dropdown da Loja -->
+                        <div 
+                          *ngIf="menuLojaAberto()"
+                          class="pl-4"
+                        >
+                          <button 
+                            (click)="irParaMinhaLoja()"
+                            class="w-full px-4 py-2 text-left text-scroll-beige/90 hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Ver loja
+                          </button>
+                          <button 
+                            (click)="irParaAdicionarProdutoLoja()"
+                            class="w-full px-4 py-2 text-left text-scroll-beige/90 hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Adicionar produto
+                          </button>
+                          <button 
+                            (click)="gerenciarLoja()"
+                            class="w-full px-4 py-2 text-left text-scroll-beige/90 hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Gerenciar Loja
+                          </button>
+                        </div>
+                      </div>
+                    </ng-container>
+                    
+                    <!-- Opções específicas para COMPRADOR -->
+                    <ng-container *ngIf="obterTipoUsuario() === 'COMPRADOR'">
+                      <button 
+                        (click)="fecharMenuPerfil()"
+                        class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                      >
+                        Meus Pedidos
+                      </button>
+                    </ng-container>
+                    
                     <div class="border-t border-brass-accent/30 my-1"></div>
                     <button 
                       (click)="realizarLogout()"
@@ -223,10 +270,14 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   menuAberto = signal(false);
   menuPerfilAberto = signal(false);
+  menuLojaAberto = signal(false);
   termoPesquisa = signal('');
   mostrarResultados = signal(false);
   resultadosPesquisa = signal<Produto[]>([]);
   estaAutenticado = signal(false);
+  displayName = signal<string | null>(null);
+  userRole = signal<'LOJA' | 'COMPRADOR' | null>(null);
+  userDominio = signal<string | null>(null);
 
   constructor() {
     // Esconder resultados quando clicar fora
@@ -238,19 +289,53 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Verificar estado inicial de autenticação
-    this.estaAutenticado.set(this.authService.isAuthenticated());
-    
     // Observar mudanças no estado de autenticação
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.estaAutenticado.set(user !== null);
+
+      if (user !== null) {
+        // Pegar displayName diretamente do Firebase User
+        this.displayName.set(user.displayName || user.email || null);
+
+        // Carregar role do token
+        this.authService.getUserRole().subscribe({
+          next: (role) => {
+            this.userRole.set(role);
+          },
+          error: (error) => {
+            console.error('Erro ao obter role do token:', error);
+            this.userRole.set(null);
+          }
+        });
+
+        // Carregar domínio do token (se disponível)
+        this.authService.getUserDominio().subscribe({
+          next: (dominio) => {
+            this.userDominio.set(dominio);
+          },
+          error: (error) => {
+            console.error('Erro ao obter domínio do token:', error);
+            this.userDominio.set(null);
+          }
+        });
+      } else {
+        // Limpar informações se não estiver autenticado
+        this.displayName.set(null);
+        this.userRole.set(null);
+        this.userDominio.set(null);
+      }
     });
   }
+
 
   ngOnDestroy() {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
+  }
+
+  irParaInicio() {
+    this.router.navigate(['/']);
   }
 
   onPesquisaChange() {
@@ -275,20 +360,20 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   realizarPesquisa() {
     if (this.termoPesquisa().trim()) {
-      this.router.navigate(['/produtos'], { 
-        queryParams: { 
-          pesquisa: this.termoPesquisa().trim() 
-        } 
+      this.router.navigate(['/produtos'], {
+        queryParams: {
+          pesquisa: this.termoPesquisa().trim()
+        }
       });
       this.mostrarResultados.set(false);
     }
   }
 
   selecionarProduto(produto: Produto) {
-    this.router.navigate(['/produtos'], { 
-      queryParams: { 
-        produto: produto.nomeNormalizado 
-      } 
+    this.router.navigate(['/produtos'], {
+      queryParams: {
+        produto: produto.nomeNormalizado
+      }
     });
     this.mostrarResultados.set(false);
     this.termoPesquisa.set('');
@@ -306,12 +391,17 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   fecharMenuPerfil() {
     this.menuPerfilAberto.set(false);
+    this.menuLojaAberto.set(false);
   }
 
   realizarLogout() {
     this.authService.logout().subscribe({
       next: () => {
         this.fecharMenuPerfil();
+        // Limpar informações do usuário
+        this.displayName.set(null);
+        this.userRole.set(null);
+        this.userDominio.set(null);
         this.router.navigate(['/']);
       },
       error: (error) => {
@@ -327,6 +417,44 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   irParaCadastro() {
     this.router.navigate(['/cadastro']);
+  }
+
+  irParaMeuPerfil() {
+    this.fecharMenuPerfil();
+    this.router.navigate(['/meu-perfil']);
+  }
+
+  obterTipoUsuario(): 'LOJA' | 'COMPRADOR' | null {
+    // Retornar a role do signal (que é carregada do token)
+    return this.userRole();
+  }
+
+  obterDominioLoja(): string | null {
+    // Retornar o domínio do signal (que é carregado do token)
+    return this.userDominio();
+  }
+
+  irParaMinhaLoja() {
+    const dominio = this.obterDominioLoja();
+    if (dominio) {
+      this.menuLojaAberto.set(false);
+      this.fecharMenuPerfil();
+      this.router.navigate(['/lojas', dominio]);
+    } else {
+      console.error('Domínio da loja não encontrado');
+      this.menuLojaAberto.set(false);
+      this.fecharMenuPerfil();
+    }
+  }
+
+  irParaAdicionarProdutoLoja() {
+    this.router.navigate(['/novo-produto']);
+  }
+
+  gerenciarLoja() {
+    // Por enquanto não faz nada, mas o item existe no dropdown
+    this.menuLojaAberto.set(false);
+    // TODO: Implementar navegação para página de gerenciamento da loja
   }
 
   @ViewChild('menuPerfilContainer') menuPerfilContainer!: ElementRef;

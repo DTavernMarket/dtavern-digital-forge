@@ -1,18 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, OnDestroy, OnInit, signal, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 import { Artesao } from '../../models/artesao.model';
 import { Produto } from '../../models/produto.model';
 import { ArtesaoService } from '../../services/artesao.service';
 import { ProdutoService } from '../../services/produto.service';
-import { firstValueFrom } from 'rxjs';
-
+import { AuthService } from '../../services/auth.service';
+import { auth } from '../../config/firebase.config';
 @Component({
   selector: 'app-loja-artesao',
   standalone: true,
-  imports: [CommonModule, FormsModule, BarraNavegacaoComponent],
+  imports: [CommonModule, FormsModule, BarraNavegacaoComponent, RouterModule],
   template: `
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
       <app-barra-navegacao [isFixed]="true" />
@@ -110,8 +110,10 @@ import { firstValueFrom } from 'rxjs';
         <div class="container mx-auto px-4">
           <div class="flex items-center justify-between py-4">
             <div class="flex items-center space-x-8">
-              <button
-                (click)="abaAtiva.set('produtos')"
+              <a
+                [routerLink]="getRotaAba('produtos')"
+                routerLinkActive="text-candlelight-gold border-b-2 border-candlelight-gold"
+                [routerLinkActiveOptions]="{ exact: false }"
                 [class]="
                   abaAtiva() === 'produtos'
                     ? 'text-candlelight-gold border-b-2 border-candlelight-gold'
@@ -120,9 +122,11 @@ import { firstValueFrom } from 'rxjs';
                 class="pb-2 font-medium transition-colors"
               >
                 Produtos ({{ produtosArtesao().length }})
-              </button>
-              <button
-                (click)="abaAtiva.set('sobre')"
+              </a>
+              <a
+                [routerLink]="getRotaAba('sobre')"
+                routerLinkActive="text-candlelight-gold border-b-2 border-candlelight-gold"
+                [routerLinkActiveOptions]="{ exact: false }"
                 [class]="
                   abaAtiva() === 'sobre'
                     ? 'text-candlelight-gold border-b-2 border-candlelight-gold'
@@ -131,9 +135,11 @@ import { firstValueFrom } from 'rxjs';
                 class="pb-2 font-medium transition-colors"
               >
                 Sobre
-              </button>
-              <button
-                (click)="abaAtiva.set('contato')"
+              </a>
+              <a
+                [routerLink]="getRotaAba('contato')"
+                routerLinkActive="text-candlelight-gold border-b-2 border-candlelight-gold"
+                [routerLinkActiveOptions]="{ exact: false }"
                 [class]="
                   abaAtiva() === 'contato'
                     ? 'text-candlelight-gold border-b-2 border-candlelight-gold'
@@ -142,17 +148,19 @@ import { firstValueFrom } from 'rxjs';
                 class="pb-2 font-medium transition-colors"
               >
                 Contato
-              </button>
+              </a>
             </div>
 
             <!-- Botões de Ação -->
             <div class="flex items-center space-x-4">
-              <button
+            @if (isOwner() === true) {
+            <button
                 (click)="novoProduto()"
                 class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-brass-accent/90 transition-colors"
               >
                 Novo produto
               </button>
+            }
               <button
                 class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors"
               >
@@ -185,8 +193,9 @@ import { firstValueFrom } from 'rxjs';
 
       <!-- Conteúdo Principal -->
       <div class="container mx-auto px-4 py-8">
-        <!-- Aba de Produtos -->
-        <div *ngIf="abaAtiva() === 'produtos'" class="space-y-6">
+        @if (abaAtiva() === 'produtos') {
+      <!-- Aba de Produtos -->
+        <div class="space-y-6">
           <!-- Filtros -->
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-4">
@@ -373,63 +382,159 @@ import { firstValueFrom } from 'rxjs';
             </p>
           </div>
         </div>
-
+        }
+        @if (abaAtiva() === 'sobre') {
         <!-- Aba Sobre -->
-        <div *ngIf="abaAtiva() === 'sobre'" class="max-w-4xl">
-          <div class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl p-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Card Sobre (Esquerda) -->
+          <div class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl p-6 relative">
             <h2 class="text-2xl font-semibold text-scroll-beige mb-6">
-              Sobre {{ artesao()?.nome }}
+              Sobre
             </h2>
 
-            <div class="prose prose-invert max-w-none">
-              <p class="text-scroll-beige/80 text-lg leading-relaxed mb-6">
-                {{ artesao()?.biografia }}
-              </p>
+            <!-- Botão Editar (apenas para dono da loja) -->
+            @if (isOwner() && !editandoSobre()) {
+              <button
+                (click)="iniciarEdicaoSobre()"
+                class="absolute top-6 right-6 w-8 h-8 bg-candlelight-gold/90 hover:bg-candlelight-gold text-tavern-wood rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors z-10"
+                title="Editar descrição"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </button>
+            }
 
-              <!-- Especialidades -->
-              <div class="mb-8">
-                <h3 class="text-xl font-semibold text-scroll-beige mb-4">Especialidades</h3>
-                <div class="flex flex-wrap gap-3">
-                  <span
-                    *ngFor="let especialidade of []"
-                    class="px-4 py-2 bg-candlelight-gold/20 border border-candlelight-gold/30 rounded-lg text-candlelight-gold font-medium"
+            @if (carregandoSobre()) {
+              <div class="flex items-center justify-center py-8">
+                <svg class="animate-spin w-6 h-6 text-candlelight-gold" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="ml-2 text-scroll-beige text-sm">Carregando...</span>
+              </div>
+            } @else if (editandoSobre()) {
+              <!-- Modo de Edição -->
+              <div class="space-y-4">
+                <textarea
+                  [value]="descricaoSobreEditada()"
+                  (input)="onTextareaInput($event)"
+                  maxlength="5000"
+                  rows="12"
+                  class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60 focus:outline-none focus:ring-2 focus:ring-candlelight-gold resize-none h-[400px] overflow-y-auto"
+                  placeholder="Escreva sobre sua loja..."
+                ></textarea>
+                <div class="flex justify-between items-center text-sm text-scroll-beige/70">
+                  <span>{{ descricaoSobreEditada().length }} / 5000 caracteres</span>
+                </div>
+                <div class="flex gap-3">
+                  <button
+                    (click)="cancelarEdicaoSobre()"
+                    [disabled]="salvandoSobre()"
+                    class="flex-1 px-4 py-2 bg-tavern-wood/30 border border-brass-accent/40 text-scroll-beige font-semibold rounded-lg hover:bg-tavern-wood/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {{ '' }}
-                  </span>
+                    Cancelar
+                  </button>
+                  <button
+                    (click)="salvarSobre()"
+                    [disabled]="salvandoSobre()"
+                    class="flex-1 px-4 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  >
+                    @if (salvandoSobre()) {
+                      <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span>Salvando...</span>
+                    } @else {
+                      <span>Salvar</span>
+                    }
+                  </button>
                 </div>
               </div>
-
-              <!-- Estatísticas Detalhadas -->
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-                <div class="text-center">
-                  <div class="text-3xl font-bold text-candlelight-gold">0</div>
-                  <div class="text-scroll-beige/70">Avaliação Média</div>
-                </div>
-                <div class="text-center">
-                  <div class="text-3xl font-bold text-candlelight-gold">0</div>
-                  <div class="text-scroll-beige/70">Produtos</div>
-                </div>
-                <div class="text-center">
-                  <div class="text-3xl font-bold text-candlelight-gold">0</div>
-                  <div class="text-scroll-beige/70">Seguidores</div>
-                </div>
-                <div class="text-center">
-                  <div class="text-3xl font-bold text-candlelight-gold">0</div>
-                  <div class="text-scroll-beige/70">Avaliações</div>
-                </div>
+            } @else {
+              <div class="bg-tavern-wood/20 border border-brass-accent/40 rounded-lg p-4 h-[400px] overflow-y-auto">
+                <p class="text-scroll-beige/80 text-base leading-relaxed whitespace-pre-wrap">
+                  {{ descricaoSobre() || 'Nenhuma descrição disponível.' }}
+                </p>
               </div>
+            }
+          </div>
 
-              <!-- Data de Entrada -->
-              <div class="text-scroll-beige/70">
-                <strong class="text-scroll-beige">Membro desde:</strong>
-                {{ '' }}
+          <!-- Card Especialidades (Direita) -->
+          <div class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl p-6">
+            <h2 class="text-2xl font-semibold text-scroll-beige mb-6">
+              Especialidades
+            </h2>
+
+            <!-- Estatísticas Detalhadas -->
+            <div class="grid grid-cols-2 gap-6 mb-6">
+              <div class="text-center">
+                <div class="text-3xl font-bold text-candlelight-gold">0</div>
+                <div class="text-scroll-beige/70 text-sm">Avaliação Média</div>
+              </div>
+              <div class="text-center">
+                <div class="text-3xl font-bold text-candlelight-gold">0</div>
+                <div class="text-scroll-beige/70 text-sm">Produtos</div>
+              </div>
+              <div class="text-center">
+                <div class="text-3xl font-bold text-candlelight-gold">0</div>
+                <div class="text-scroll-beige/70 text-sm">Seguidores</div>
+              </div>
+              <div class="text-center">
+                <div class="text-3xl font-bold text-candlelight-gold">0</div>
+                <div class="text-scroll-beige/70 text-sm">Avaliações</div>
+              </div>
+            </div>
+
+            <!-- Categorias Mockadas -->
+            <div class="mt-6">
+              <h3 class="text-lg font-semibold text-scroll-beige mb-4">Categorias</h3>
+              <div class="flex flex-wrap gap-3">
+                <span
+                  class="px-4 py-2 bg-candlelight-gold/20 border border-candlelight-gold/30 rounded-lg text-candlelight-gold font-medium text-sm"
+                >
+                  Token
+                </span>
+                <span
+                  class="px-4 py-2 bg-candlelight-gold/20 border border-candlelight-gold/30 rounded-lg text-candlelight-gold font-medium text-sm"
+                >
+                  Mapa
+                </span>
+                <span
+                  class="px-4 py-2 bg-candlelight-gold/20 border border-candlelight-gold/30 rounded-lg text-candlelight-gold font-medium text-sm"
+                >
+                  Aventura
+                </span>
+                <span
+                  class="px-4 py-2 bg-candlelight-gold/20 border border-candlelight-gold/30 rounded-lg text-candlelight-gold font-medium text-sm"
+                >
+                  Trilha Sonora
+                </span>
+                <span
+                  class="px-4 py-2 bg-candlelight-gold/20 border border-candlelight-gold/30 rounded-lg text-candlelight-gold font-medium text-sm"
+                >
+                  Ferramenta
+                </span>
+                <span
+                  class="px-4 py-2 bg-candlelight-gold/20 border border-candlelight-gold/30 rounded-lg text-candlelight-gold font-medium text-sm"
+                >
+                  Outro
+                </span>
               </div>
             </div>
           </div>
         </div>
+        }
 
+        @if (abaAtiva() === 'contato') {
         <!-- Aba Contato -->
-        <div *ngIf="abaAtiva() === 'contato'" class="max-w-4xl">
+        <div class="max-w-4xl">
           <div class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl p-8">
             <h2 class="text-2xl font-semibold text-scroll-beige mb-6">Entre em Contato</h2>
 
@@ -548,9 +653,36 @@ import { firstValueFrom } from 'rxjs';
             </div>
           </div>
         </div>
+        }
       </div>
+
+      <!-- Dialog de Confirmação de Cancelamento -->
+      @if (mostrarDialogCancelar()) {
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="negarCancelarEdicao()">
+          <div class="bg-midnight-brown border border-brass-accent/40 rounded-xl p-6 max-w-md w-full mx-4" (click)="$event.stopPropagation()">
+            <h3 class="text-xl font-semibold text-scroll-beige mb-4">Cancelar Edição?</h3>
+            <p class="text-scroll-beige/80 mb-6">
+              Todas as alterações que você fez não serão salvas. Deseja realmente cancelar?
+            </p>
+            <div class="flex gap-3">
+              <button
+                (click)="negarCancelarEdicao()"
+                class="flex-1 px-4 py-2 bg-tavern-wood/30 border border-brass-accent/40 text-scroll-beige font-semibold rounded-lg hover:bg-tavern-wood/40 transition-colors"
+              >
+                Não, continuar editando
+              </button>
+              <button
+                (click)="confirmarCancelarEdicao()"
+                class="flex-1 px-4 py-2 bg-red-600/20 border-2 border-red-600/50 text-red-400 font-semibold rounded-lg hover:bg-red-600/30 hover:border-red-600 transition-colors"
+              >
+                Sim, cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      }
     </div>
-  `,
+    `,
   styles: [
     `
       :host {
@@ -566,17 +698,27 @@ import { firstValueFrom } from 'rxjs';
     `,
   ],
 })
-export class LojaArtesaoComponent implements OnInit {
+export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
+
+
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private artesaoService = inject(ArtesaoService);
   private produtoService = inject(ProdutoService);
-
+  private authService = inject(AuthService);
   artesao = signal<Artesao | undefined>(undefined);
   produtosArtesao = signal<Produto[]>([]);
   abaAtiva = signal('produtos');
   categoriaFiltro = signal('');
   ordenacao = signal('recentes');
+  isOwner = signal(false);
+  dominioAtual = signal<string | null>(null);
+  descricaoSobre = signal<string | null>(null);
+  carregandoSobre = signal<boolean>(false);
+  editandoSobre = signal<boolean>(false);
+  descricaoSobreEditada = signal<string>('');
+  salvandoSobre = signal<boolean>(false);
+  mostrarDialogCancelar = signal<boolean>(false);
 
   produtosFiltrados = computed(() => {
     let produtos = this.produtosArtesao();
@@ -614,11 +756,174 @@ export class LojaArtesaoComponent implements OnInit {
     return produtos;
   });
 
-  ngOnInit() {
+  constructor() {
+    // Effect para carregar dados da aba "sobre" quando ela for ativada
+    effect(() => {
+      const aba = this.abaAtiva();
+      const dominio = this.dominioAtual();
+
+      if (aba === 'sobre' && dominio) {
+        this.carregarSobre(dominio);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    sessionStorage.removeItem('userInfo');
+  }
+
+  private carregarSobre(dominio: string) {
+    this.carregandoSobre.set(true);
+    this.artesaoService.buscarSobreLoja(dominio).subscribe({
+      next: (response) => {
+        this.descricaoSobre.set(response.descricaoSobre);
+        this.carregandoSobre.set(false);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar informações sobre a loja:', error);
+        this.descricaoSobre.set(null);
+        this.carregandoSobre.set(false);
+      }
+    });
+  }
+
+  iniciarEdicaoSobre() {
+    this.descricaoSobreEditada.set(this.descricaoSobre() || '');
+    this.editandoSobre.set(true);
+  }
+
+  onTextareaInput(event: Event) {
+    const target = event.target as HTMLTextAreaElement;
+    if (target.value.length <= 5000) {
+      this.descricaoSobreEditada.set(target.value);
+    } else {
+      target.value = this.descricaoSobreEditada();
+    }
+  }
+
+  cancelarEdicaoSobre() {
+    this.mostrarDialogCancelar.set(true);
+  }
+
+  confirmarCancelarEdicao() {
+    this.mostrarDialogCancelar.set(false);
+    this.editandoSobre.set(false);
+    this.descricaoSobreEditada.set('');
+  }
+
+  negarCancelarEdicao() {
+    this.mostrarDialogCancelar.set(false);
+  }
+
+  salvarSobre() {
+    this.salvandoSobre.set(true);
+    this.artesaoService.editarLoja({ descricaoSobre: this.descricaoSobreEditada() }).subscribe({
+      next: () => {
+        this.descricaoSobre.set(this.descricaoSobreEditada());
+        this.editandoSobre.set(false);
+        this.salvandoSobre.set(false);
+        this.descricaoSobreEditada.set('');
+      },
+      error: (error) => {
+        console.error('Erro ao salvar descrição sobre:', error);
+        this.salvandoSobre.set(false);
+        // Aqui você pode adicionar uma mensagem de erro para o usuário
+        alert('Erro ao salvar descrição. Tente novamente.');
+      }
+    });
+  }
+
+  ngAfterViewInit() {
+    // Função auxiliar para atualizar a aba baseada nos parâmetros da rota filha
+    const atualizarAba = () => {
+      // Tentar pegar da rota filha usando snapshot
+      const aba = this.route.firstChild?.snapshot.params['aba'];
+
+      if (aba && ['produtos', 'sobre', 'contato'].includes(aba)) {
+        this.abaAtiva.set(aba);
+        return;
+      }
+
+      // Se não houver aba válida na rota filha, verificar a URL atual como fallback
+      const urlAtual = this.router.url;
+      const matchAba = urlAtual.match(/\/lojas\/[^\/]+\/([^\/]+)/);
+      if (matchAba && matchAba[1] && ['produtos', 'sobre', 'contato'].includes(matchAba[1])) {
+        this.abaAtiva.set(matchAba[1]);
+        return;
+      }
+
+      // Se não encontrar aba válida, definir como produtos (padrão)
+      this.abaAtiva.set('produtos');
+    };
+
+    // Observar parâmetros da rota pai (dominio)
     this.route.params.subscribe((params) => {
       const dominio = params['dominio'];
+
       if (dominio) {
+        this.dominioAtual.set(dominio);
         this.carregarArtesao(dominio);
+        this.verificarDonoLoja(dominio);
+
+        // Atualizar aba após carregar o domínio
+        // Usar setTimeout para garantir que a rota filha já foi processada pelo Angular
+        setTimeout(() => {
+          atualizarAba();
+        }, 0);
+      }
+    });
+
+    // Observar mudanças na rota filha
+    // Isso captura quando a rota filha é carregada ou quando muda
+    // Usar uma função recursiva com limite de tentativas para verificar quando firstChild estiver disponível
+    let tentativas = 0;
+    const maxTentativas = 50; // Máximo de 500ms (50 * 10ms)
+
+    const observarRotaFilha = () => {
+      if (this.route.firstChild) {
+        // Observar mudanças nos parâmetros da rota filha
+        this.route.firstChild.params.subscribe((childParams) => {
+          const aba = childParams['aba'];
+
+          if (aba && ['produtos', 'sobre', 'contato'].includes(aba)) {
+            this.abaAtiva.set(aba);
+          } else {
+            this.abaAtiva.set('produtos');
+          }
+        });
+      } else if (tentativas < maxTentativas) {
+        // Se a rota filha ainda não estiver disponível, tentar novamente após um pequeno delay
+        tentativas++;
+        setTimeout(() => {
+          observarRotaFilha();
+        }, 10);
+      } else {
+        // Se exceder o limite de tentativas, usar fallback da URL
+        atualizarAba();
+      }
+    };
+
+    // Iniciar observação da rota filha
+    observarRotaFilha();
+
+    // Verificar o snapshot inicial da rota filha (caso já esteja carregada)
+    atualizarAba();
+  }
+
+  private async verificarDonoLoja(dominio: string) {
+    // Verificar se há token disponível (mais confiável que isAuthenticated)
+    this.authService.getCurrentToken().subscribe((token) => {
+      if (token) {
+        this.artesaoService.verifyOwner(dominio).subscribe({
+          next: (isOwner) => {
+            if (isOwner) {
+              console.log('dono da loja');
+            } else {
+              console.log('é visitante');
+            }
+            this.isOwner.set(isOwner);
+          },
+        });
       }
     });
   }
@@ -656,7 +961,7 @@ export class LojaArtesaoComponent implements OnInit {
   }
 
   private carregarProdutosPorDominio(dominio: string) {
-    this.produtoService.listarProdutosPorDominio(dominio).subscribe({
+    this.produtoService.buscarProdutosPorArtesao(dominio).subscribe({
       next: (produtos) => {
         this.produtosArtesao.set(produtos);
       },
@@ -688,5 +993,16 @@ export class LojaArtesaoComponent implements OnInit {
       sessionStorage.setItem('lojaDominio', dominioAtual);
     }
     this.router.navigate(['/novo-produto']);
+  }
+
+  /**
+   * Retorna a rota para uma aba específica da loja
+   */
+  getRotaAba(aba: 'produtos' | 'sobre' | 'contato'): string[] {
+    const dominio = this.dominioAtual() || this.artesao()?.dominio || this.route.snapshot.params['dominio'];
+    if (dominio) {
+      return ['/lojas', dominio, aba];
+    }
+    return ['/'];
   }
 }

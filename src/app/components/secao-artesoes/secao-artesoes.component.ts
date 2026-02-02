@@ -123,8 +123,8 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
       </div>
     </section>
   `,
-     styles: [
-     `
+  styles: [
+    `
        :host {
          display: block;
        }
@@ -136,11 +136,11 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
          overflow: hidden;
        }
      `,
-   ],
+  ],
 })
 export class SecaoArtesoesComponent implements OnInit {
   private artesaoService = inject(ArtesaoService);
-  
+
   artesoesEmDestaque = signal<Artesao[]>([]);
 
   ngOnInit() {

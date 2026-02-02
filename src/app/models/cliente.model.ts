@@ -22,3 +22,12 @@ export interface Compra {
   preco: number;
   dataCompra: Date;
 }
+
+
+export interface CadastroClienteRequest {
+  nomeCompleto: string;
+  apelido: string;
+  email: string;
+  password: string;
+  dataNascimento: string;
+}

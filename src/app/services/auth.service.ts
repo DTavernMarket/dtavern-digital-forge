@@ -1,80 +1,144 @@
 // src/app/services/auth.service.ts
-import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { 
-  signInWithEmailAndPassword, 
+import { Injectable, inject } from '@angular/core';
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
   signOut,
-  User as FirebaseUser,
-  onAuthStateChanged
+  User as FirebaseUser
 } from 'firebase/auth';
+import { BehaviorSubject, Observable, from, of } from 'rxjs';
+import { filter, map, switchMap, tap, catchError } from 'rxjs/operators';
 import { auth } from '../config/firebase.config';
-import { Observable, from, BehaviorSubject } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { AuthResponse, LoginRequest, User } from '../models/auth.model';
-
+import { AuthResponse, User } from '../models/auth.model';
+import { CadastroLojaRequest } from '../models/artesao.model';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private http = inject(HttpClient);
   private readonly API_URL = 'http://localhost:8080/api/v1/auth';
-  
-  // Estado de autenticação
+
   private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
-  
-  // Token atual
-  private idToken = signal<string | null>(null);
-  public idToken$ = this.idToken.asReadonly();
+  currentUser$ = this.currentUserSubject.asObservable();
+
+  private idTokenSubject = new BehaviorSubject<string | null>(null);
+  idToken$ = this.idTokenSubject.asObservable();
+
+  private initializedSubject = new BehaviorSubject<boolean>(false);
+  initialized$ = this.initializedSubject.asObservable();
 
   constructor() {
-    // Observar mudanças no estado de autenticação do Firebase
+    this.initAuthListener();
+  }
+
+  /**
+   * Inicializa o listener de autenticação do Firebase.
+   * Sempre que a aplicação iniciar (incluindo refresh de página), este método
+   * ouve o evento onAuthStateChanged. Se houver um usuário autenticado, força
+   * imediatamente a obtenção de um novo ID Token chamando getIdToken(true),
+   * garantindo que o token em memória seja sempre válido e atualizado.
+   * O token é mantido apenas em memória (via BehaviorSubject), nunca em localStorage.
+   */
+  private initAuthListener() {
     onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
-        // Obter token do Firebase
-        const token = await firebaseUser.getIdToken();
-        this.idToken.set(token);
-        
-        // Converter para nosso modelo de User
-        const user: User = {
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName || null
-        };
-        this.currentUserSubject.next(user);
-        
-        // Verificar token no backend
-        this.verifyToken(token).subscribe({
-          next: (response) => {
-            console.log('Token verificado no backend:', response);
-          },
-          error: (error) => {
-            console.error('Erro ao verificar token:', error);
+        try {
+          // Forçar refresh do token para garantir que está válido e atualizado
+          // (incluindo custom claims como roles)
+          // O parâmetro true força a obtenção de um novo token do servidor
+          const token = await firebaseUser.getIdToken(true);
+
+          // Converter FirebaseUser para User do modelo da aplicação
+          const user: User = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName || null
+          };
+
+          // Só atualizar o estado após o refresh bem-sucedido
+          // Isso garante que o usuário só seja considerado logado com token válido
+          this.currentUserSubject.next(user);
+          this.idTokenSubject.next(token);
+        } catch (error) {
+          // Se a obtenção do token falhar (refresh token inválido, sessão revogada, etc.),
+          // deslogar o usuário de forma limpa
+          console.error('Erro ao obter token atualizado:', error);
+          this.currentUserSubject.next(null);
+          this.idTokenSubject.next(null);
+          
+          // Tentar fazer signOut para limpar o estado do Firebase
+          try {
+            await signOut(auth);
+          } catch (signOutError) {
+            console.error('Erro ao fazer signOut após falha no token:', signOutError);
           }
-        });
+        }
       } else {
-        this.idToken.set(null);
+        // Não há usuário autenticado - definir estado como deslogado
         this.currentUserSubject.next(null);
+        this.idTokenSubject.next(null);
       }
+
+      // Marcar como inicializado após processar o estado de autenticação
+      // Isso permite que a UI aguarde a inicialização antes de considerar o estado
+      this.initializedSubject.next(true);
     });
   }
 
   /**
-   * Login com email e senha
+   * Verifica se o serviço de autenticação foi inicializado.
+   * Útil para aguardar a reidratação da sessão antes de verificar autenticação.
    */
-  login(email: string, password: string): Observable<AuthResponse | undefined> {
+  isInitialized(): boolean {
+    return this.initializedSubject.value;
+  }
+
+  /**
+   * Login com email e senha
+   * Após o login bem-sucedido, força o refresh do token para garantir que está atualizado
+   */
+  login(email: string, password: string): Observable<User> {
     return from(signInWithEmailAndPassword(auth, email, password)).pipe(
-      switchMap(async (userCredential) => {
-        const token = await userCredential.user.getIdToken();
-        this.idToken.set(token);
-        
-        // Verificar token no backend
-        return this.verifyToken(token).toPromise() || Promise.resolve({
-          idToken: token,
-          uid: userCredential.user.uid,
-          email: userCredential.user.email,
-          message: 'Login realizado com sucesso'
-        } as AuthResponse);
+      switchMap((cred) => {
+        // Forçar refresh do token após login para garantir que está atualizado
+        return from(cred.user.getIdToken(true)).pipe(
+          tap((token) => {
+            const user: User = {
+              uid: cred.user.uid,
+              email: cred.user.email,
+              displayName: cred.user.displayName || null
+            };
+            
+            this.idTokenSubject.next(token);
+            this.currentUserSubject.next(user);
+          }),
+          map(() => {
+            const user: User = {
+              uid: cred.user.uid,
+              email: cred.user.email,
+              displayName: cred.user.displayName || null
+            };
+            return user;
+          }),
+          catchError((error) => {
+            console.error('Erro ao obter token após login:', error);
+            // Se falhar ao obter token, fazer signOut
+            signOut(auth).catch(signOutError => {
+              console.error('Erro ao fazer signOut após falha no token:', signOutError);
+            });
+            throw error;
+          })
+        );
+      })
+    );
+  }
+
+  logout(): Observable<void> {
+    return from(signOut(auth)).pipe(
+      tap(() => {
+        this.currentUserSubject.next(null);
+        this.idTokenSubject.next(null);
       })
     );
   }
@@ -82,9 +146,9 @@ export class AuthService {
   /**
    * Registrar novo usuário
    */
-  register(email: string, password: string): Observable<AuthResponse> {
-    const request: LoginRequest = { email, password };
-    return this.http.post<AuthResponse>(`${this.API_URL}/register`, request);
+  registerComprador(displayName: string, email: string, password: string): Observable<AuthResponse> {
+    const request: CadastroLojaRequest = { nomeLoja: displayName, email, password };
+    return this.http.post<AuthResponse>(`http://localhost:8080/api/v1/client/compradores/register`, request);
   }
 
   /**
@@ -103,36 +167,90 @@ export class AuthService {
   }
 
   /**
-   * Logout
-   */
-  logout(): Observable<void> {
-    return from(signOut(auth)).pipe(
-      map(() => {
-        this.idToken.set(null);
-        this.currentUserSubject.next(null);
-        window.location.reload();
-      })
-    );
-  }
-
-  /**
-   * Obter usuário atual
+   * Retorna o usuário atual de forma síncrona (valor atual do BehaviorSubject)
+   * Útil para guards e verificações rápidas
    */
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
   /**
-   * Obter token atual
+   * Retorna um Observable do usuário atual (apenas quando não for null)
+   * Útil para componentes que precisam reagir a mudanças de estado
    */
-  getCurrentToken(): string | null {
-    return this.idToken();
+  getCurrentUser$(): Observable<User> {
+    return this.currentUser$.pipe(
+      filter(user => user !== null)
+    ) as Observable<User>;
+  }
+
+  getCurrentToken(): Observable<string> {
+    return this.idToken$.pipe(
+      filter(token => token !== null)
+    );
   }
 
   /**
-   * Verificar se está autenticado
+   * Decodifica o token JWT e retorna os claims
    */
-  isAuthenticated(): boolean {
-    return this.idToken() !== null;
+  getTokenClaims(): Observable<any> {
+    return this.idToken$.pipe(
+      filter(token => token !== null),
+      map(token => {
+        if (!token) return null;
+        try {
+          // Decodificar o payload do JWT (sem verificar assinatura)
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split('')
+              .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+              .join('')
+          );
+          return JSON.parse(jsonPayload);
+        } catch (error) {
+          console.error('Erro ao decodificar token:', error);
+          return null;
+        }
+      })
+    );
   }
+
+  /**
+   * Obtém a role do usuário a partir dos claims do token
+   */
+  getUserRole(): Observable<'LOJA' | 'COMPRADOR' | null> {
+    return this.getTokenClaims().pipe(
+      map(claims => {
+        if (!claims || !claims.role) return null;
+        return claims.role as 'LOJA' | 'COMPRADOR';
+      })
+    );
+  }
+
+  /**
+   * Obtém o domínio da loja a partir dos claims do token (se disponível)
+   */
+  getUserDominio(): Observable<string | null> {
+    return this.getTokenClaims().pipe(
+      map(claims => {
+        if (!claims || !claims.dominio) return null;
+        return claims.dominio as string;
+      })
+    );
+  }
+
+  deleteComprador(): Observable<void> {
+    return this.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.delete<void>(`http://localhost:8080/api/v1/clientes/deletar-comprador`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      })
+    );
+  }
+
 }
