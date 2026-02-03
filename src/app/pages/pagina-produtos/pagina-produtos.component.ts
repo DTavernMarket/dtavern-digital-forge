@@ -266,7 +266,7 @@ import { Produto } from '../../models/produto.model';
 
                         <!-- Descrição -->
                         <p class="text-sm text-scroll-beige/70 line-clamp-2">
-                          {{ produto.resumo || produto.descricao }}
+                          {{ produto.descricao.substring(0, 100) || '' }}...
                         </p>
 
                         <!-- Nome da Loja -->
@@ -290,20 +290,32 @@ import { Produto } from '../../models/produto.model';
                     <div class="flex-shrink-0 flex flex-col items-end justify-between">
                       <!-- Preço -->
                       <div class="text-right">
-                        <div *ngIf="produto.gratuito" class="text-2xl font-bold text-green-500">
+                        @if (produto.gratuito) {
+                        <div class="text-2xl font-bold text-green-500">
                           Grátis
                         </div>
-                        <div *ngIf="!produto.gratuito" class="text-right">
+                        } @else {
+                        <div class="text-right">
                           <div class="text-2xl font-bold text-scroll-beige">
-                            R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                            R$
+                            {{
+                              (produto.valorPromocional != null
+                                ? produto.valorPromocional
+                                : produto.valorUnitario
+                              )
+                                .toFixed(2)
+                                .replace('.', ',')
+                            }}
                           </div>
+                          @if (produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
                           <div
-                            *ngIf="produto.promocaoPorcentagem > 0"
                             class="text-sm text-scroll-beige/60 line-through"
                           >
-                            R$ {{ (produto.valorUnitario / (1 - produto.promocaoPorcentagem / 100)).toFixed(2).replace('.', ',') }}
+                            R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
                           </div>
+                          }
                         </div>
+                          }
                       </div>
 
                       <!-- Botões de Ação -->
@@ -417,13 +429,15 @@ export class PaginaProdutosComponent implements OnInit {
     // Filtrar por preço
     if (this.precoMinimo() !== null) {
       produtos = produtos.filter((p) => {
-        const precoFinal = p.gratuito ? 0 : p.valorUnitario * (1 - p.promocaoPorcentagem / 100);
+        const precoBase = p.valorPromocional ?? p.valorUnitario;
+        const precoFinal = p.gratuito ? 0 : precoBase;
         return precoFinal >= this.precoMinimo()!;
       });
     }
     if (this.precoMaximo() !== null) {
       produtos = produtos.filter((p) => {
-        const precoFinal = p.gratuito ? 0 : p.valorUnitario * (1 - p.promocaoPorcentagem / 100);
+        const precoBase = p.valorPromocional ?? p.valorUnitario;
+        const precoFinal = p.gratuito ? 0 : precoBase;
         return precoFinal <= this.precoMaximo()!;
       });
     }
@@ -432,15 +446,19 @@ export class PaginaProdutosComponent implements OnInit {
     switch (this.ordenacaoSelecionada()) {
       case 'preco-menor':
         produtos = produtos.sort((a, b) => {
-          const precoA = a.gratuito ? 0 : a.valorUnitario * (1 - a.promocaoPorcentagem / 100);
-          const precoB = b.gratuito ? 0 : b.valorUnitario * (1 - b.promocaoPorcentagem / 100);
+          const precoBaseA = a.valorPromocional ?? a.valorUnitario;
+          const precoBaseB = b.valorPromocional ?? b.valorUnitario;
+          const precoA = a.gratuito ? 0 : precoBaseA;
+          const precoB = b.gratuito ? 0 : precoBaseB;
           return precoA - precoB;
         });
         break;
       case 'preco-maior':
         produtos = produtos.sort((a, b) => {
-          const precoA = a.gratuito ? 0 : a.valorUnitario * (1 - a.promocaoPorcentagem / 100);
-          const precoB = b.gratuito ? 0 : b.valorUnitario * (1 - b.promocaoPorcentagem / 100);
+          const precoBaseA = a.valorPromocional ?? a.valorUnitario;
+          const precoBaseB = b.valorPromocional ?? b.valorUnitario;
+          const precoA = a.gratuito ? 0 : precoBaseA;
+          const precoB = b.gratuito ? 0 : precoBaseB;
           return precoB - precoA;
         });
         break;
@@ -490,7 +508,7 @@ export class PaginaProdutosComponent implements OnInit {
   });
 
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
     // Verificar parâmetros da URL ao inicializar
@@ -584,9 +602,21 @@ export class PaginaProdutosComponent implements OnInit {
   ordenarProdutos(produtos: Produto[]): Produto[] {
     switch (this.ordenacaoSelecionada()) {
       case 'preco-menor':
-        return produtos.sort((a, b) => a.valorUnitario - b.valorUnitario);
+        return produtos.sort((a, b) => {
+          const precoBaseA = a.valorPromocional ?? a.valorUnitario;
+          const precoBaseB = b.valorPromocional ?? b.valorUnitario;
+          const precoA = a.gratuito ? 0 : precoBaseA;
+          const precoB = b.gratuito ? 0 : precoBaseB;
+          return precoA - precoB;
+        });
       case 'preco-maior':
-        return produtos.sort((a, b) => b.valorUnitario - a.valorUnitario);
+        return produtos.sort((a, b) => {
+          const precoBaseA = a.valorPromocional ?? a.valorUnitario;
+          const precoBaseB = b.valorPromocional ?? b.valorUnitario;
+          const precoA = a.gratuito ? 0 : precoBaseA;
+          const precoB = b.gratuito ? 0 : precoBaseB;
+          return precoB - precoA;
+        });
       default:
         return produtos;
     }

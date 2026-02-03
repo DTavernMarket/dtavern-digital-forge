@@ -71,10 +71,23 @@ import { Subscription } from 'rxjs';
                     </div>
                     <div class="flex-1 min-w-0">
                       <h4 class="text-scroll-beige font-semibold truncate">{{ produto.nome }}</h4>
-                      <p class="text-scroll-beige/70 text-sm truncate">{{ produto.resumo || produto.descricao }}</p>
+                      <p class="text-scroll-beige/70 text-sm truncate">{{ produto.descricao.substring(0, 50) }}...</p>
                       <div class="flex items-center space-x-2 mt-1">
-                        <span *ngIf="produto.gratuito" class="text-green-500 font-bold text-sm">Grátis</span>
-                        <span *ngIf="!produto.gratuito" class="text-candlelight-gold font-bold">R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}</span>
+                      @if (produto.gratuito) {
+                        <span class="text-green-500 font-bold text-sm">Grátis</span>
+                      } @else {
+                        <span class="text-candlelight-gold font-bold">
+                          R$
+                          {{
+                            (produto.valorPromocional != null
+                              ? produto.valorPromocional
+                              : produto.valorUnitario
+                            )
+                              .toFixed(2)
+                              .replace('.', ',')
+                          }}
+                        </span>
+                      }
                       </div>
                     </div>
                   </div>

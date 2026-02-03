@@ -97,18 +97,28 @@ import { Produto } from '../../models/produto.model';
               <!-- Preço e Botão de Compra -->
               <div class="flex items-center justify-between pt-2">
                 <div>
-                  <span *ngIf="false" class="text-lg font-bold text-scroll-beige">
+                  <span *ngIf="produto.gratuito" class="text-lg font-bold text-scroll-beige">
                     Grátis
                   </span>
-                  <span *ngIf="!false" class="text-lg font-bold text-scroll-beige">
-                    R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
-                  </span>
-                  <span
-                    *ngIf="0 > 0 && !false"
-                    class="text-scroll-beige/60 text-sm line-through ml-2"
-                  >
-                    R$ {{ (produto.valorUnitario / (1 - produto.promocaoPorcentagem / 100)).toFixed(2).replace('.', ',') }}
-                  </span>
+                  <div *ngIf="!produto.gratuito" class="flex items-baseline gap-2">
+                    <span class="text-lg font-bold text-scroll-beige">
+                      R$
+                      {{
+                        (produto.valorPromocional != null
+                          ? produto.valorPromocional
+                          : produto.valorUnitario
+                        )
+                          .toFixed(2)
+                          .replace('.', ',')
+                      }}
+                    </span>
+                    <span
+                      *ngIf="produto.promocaoPorcentagem > 0 && produto.valorPromocional != null"
+                      class="text-scroll-beige/60 text-sm line-through"
+                    >
+                      R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                    </span>
+                  </div>
                 </div>
                 <button
                   class="px-4 py-2 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-sm"

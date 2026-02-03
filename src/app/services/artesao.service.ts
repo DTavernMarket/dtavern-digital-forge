@@ -154,7 +154,7 @@ export class ArtesaoService {
    */
   buscarSobreLoja(dominio: string): Observable<{ descricaoSobre: string }> {
     return this.http.get<{ descricaoSobre: string }>(
-      `http://localhost:8080/api/v1/lojas/${dominio}/sobre`
+      `http://localhost:8080/api/v1/client/lojas/${dominio}/sobre`
     );
   }
 

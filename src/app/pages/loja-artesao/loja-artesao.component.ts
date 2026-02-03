@@ -51,7 +51,6 @@ import { auth } from '../../config/firebase.config';
             <!-- Informações do Artesão -->
             <div class="text-white">
               <h1 class="text-4xl font-medieval font-bold mb-2">{{ artesao()?.nome }}</h1>
-              <p class="text-lg text-scroll-beige/80 mb-4 max-w-2xl">{{ artesao()?.biografia }}</p>
 
               <!-- Estatísticas -->
               <div class="flex items-center space-x-6 text-sm">
@@ -324,31 +323,38 @@ import { auth } from '../../config/firebase.config';
 
                 <!-- Resumo/Descrição -->
                 <p class="text-scroll-beige/70 text-sm line-clamp-3 min-h-[4rem]">
-                  {{ produto.resumo || produto.descricao }}
+                  {{ produto.descricao.substring(0, 100) }}...
                 </p>
 
                 <!-- Preço e Botão -->
                 <div class="flex items-center justify-between pt-2 border-t border-brass-accent/20">
                   <div class="flex flex-col">
-                    <span *ngIf="produto.gratuito" class="text-candlelight-gold font-bold text-xl">
+                    @if (produto.gratuito) {
+                    <span class="text-candlelight-gold font-bold text-xl">
                       Grátis
                     </span>
-                    <div *ngIf="!produto.gratuito" class="flex items-baseline gap-2">
+                    } @else {
+                    <div class="flex items-baseline gap-2">
                       <span class="text-candlelight-gold font-bold text-xl">
-                        R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
-                      </span>
-                      <span
-                        *ngIf="produto.promocaoPorcentagem > 0"
-                        class="text-scroll-beige/50 text-sm line-through"
-                      >
                         R$
                         {{
-                          (produto.valorUnitario / (1 - produto.promocaoPorcentagem / 100))
+                          (produto.valorPromocional != null
+                            ? produto.valorPromocional
+                            : produto.valorUnitario
+                          )
                             .toFixed(2)
                             .replace('.', ',')
                         }}
                       </span>
+                      @if (produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
+                      <span
+                        class="text-scroll-beige/50 text-sm line-through"
+                      >
+                        R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                      </span>
+                      }
                     </div>
+                      }
                   </div>
                   <button
                     (click)="$event.stopPropagation()"
@@ -732,15 +738,19 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
     switch (this.ordenacao()) {
       case 'preco-menor':
         produtos = produtos.sort((a, b) => {
-          const precoA = a.gratuito ? 0 : a.valorUnitario * (1 - a.promocaoPorcentagem / 100);
-          const precoB = b.gratuito ? 0 : b.valorUnitario * (1 - b.promocaoPorcentagem / 100);
+          const precoBaseA = a.valorPromocional ?? a.valorUnitario;
+          const precoBaseB = b.valorPromocional ?? b.valorUnitario;
+          const precoA = a.gratuito ? 0 : precoBaseA;
+          const precoB = b.gratuito ? 0 : precoBaseB;
           return precoA - precoB;
         });
         break;
       case 'preco-maior':
         produtos = produtos.sort((a, b) => {
-          const precoA = a.gratuito ? 0 : a.valorUnitario * (1 - a.promocaoPorcentagem / 100);
-          const precoB = b.gratuito ? 0 : b.valorUnitario * (1 - b.promocaoPorcentagem / 100);
+          const precoBaseA = a.valorPromocional ?? a.valorUnitario;
+          const precoBaseB = b.valorPromocional ?? b.valorUnitario;
+          const precoA = a.gratuito ? 0 : precoBaseA;
+          const precoB = b.gratuito ? 0 : precoBaseB;
           return precoB - precoA;
         });
         break;

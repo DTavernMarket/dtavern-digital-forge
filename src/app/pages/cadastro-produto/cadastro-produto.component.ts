@@ -71,11 +71,9 @@ import { Inject, PLATFORM_ID } from '@angular/core';
           <div class="border border-brass-accent/30 rounded-xl max-w-4xl mx-auto">
             <!-- Informações Básicas -->
             <div class="bg-tavern-wood/10 p-8">
-              <h2 class="text-xl font-semibold text-scroll-beige mb-6">Informações Básicas</h2>
-
-              <div class="grid md:grid-cols-2 gap-6">
+              <div class="grid md:grid-cols-3 gap-6">
                 <!-- Nome -->
-                <div class="md:col-span-2">
+                <div class="md:col-span-3">
                   <app-input-customizado
                     label="Nome"
                     placeholder="Digite o nome do produto"
@@ -85,16 +83,6 @@ import { Inject, PLATFORM_ID } from '@angular/core';
                   />
                 </div>
 
-                <!-- Categoria -->
-                <div>
-                  <app-select-customizado
-                    label="Categoria *"
-                    [opcoes]="opcoesCategoria"
-                    [(ngModel)]="produto.categoriaCodigo"
-                    name="categoriaCodigo"
-                    placeholder="Selecione uma categoria"
-                  />
-                </div>
 
                 <!-- Valor Unitário -->
                 <div>
@@ -107,43 +95,71 @@ import { Inject, PLATFORM_ID } from '@angular/core';
                     [step]="0.01"
                     [(ngModel)]="produto.valorUnitario"
                     name="valorUnitario"
+                    (ngModelChange)="calcularValorPromocional()"
                   />
                 </div>
+
+                <!-- Promoção -->
+                <div>
+                  <app-input-customizado
+                    label="Promoção (%)"
+                    type="number"
+                    placeholder="0"
+                    [min]="0"
+                    [max]="100"
+                    [step]="1"
+                    [(ngModel)]="produto.promocaoPorcentagem"
+                    name="promocaoPorcentagem"
+                    (ngModelChange)="calcularValorPromocional()"
+                  />
+                </div>
+
+                <!-- Valor Promocional -->
+                <div>
+                  <app-input-customizado
+                    [readonly]="true"
+                    label="Valor com promoção (R$)"
+                    [value]="valorPromocionalVisualizacao.toFixed(2).replace('.', ',')"
+                    name="valorPromocionalVisualizacao"
+                  /> 
+                </div>
+
+                  <!-- Categoria -->
+                  <div class="md:col-span-3">
+                  <app-select-customizado
+                    label="Categoria *"
+                    [opcoes]="opcoesCategoria"
+                    [(ngModel)]="produto.categoriaCodigo"
+                    name="categoriaCodigo"
+                    placeholder="Selecione uma categoria"
+                  />
+                </div>
+
               </div>
             </div>
 
             <!-- Descrição -->
-            <div class="bg-tavern-wood/10 rounded-xl p-8">
-              <h2 class="text-xl font-semibold text-scroll-beige mb-6">Descrição</h2>
-
+            <div class="bg-tavern-wood/10 rounded-xl pl-8 pr-8">
               <div class="space-y-6">
-                <div>
-                  <app-input-customizado
-                    label="Resumo"
-                    type="textarea"
-                    placeholder="Resumo curto do produto (até 200 caracteres)..."
-                    [rows]="3"
-                    [(ngModel)]="produto.resumo"
-                    name="resumo"
-                  />
-                </div>
                 <div>
                   <app-input-customizado
                     label="Descrição Completa"
                     type="textarea"
                     placeholder="Descreva seu produto em detalhes..."
                     [rows]="6"
+                    [maxlength]="2000"
                     [(ngModel)]="produto.descricao"
                     name="descricao"
                   />
+                  <div class="flex justify-end items-center text-sm text-scroll-beige/70 mt-2">
+                    <span>{{ (produto.descricao || '').length }} / 2000 caracteres</span>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- Imagem de Preview -->
-            <div class="bg-tavern-wood/10 rounded-xl p-8">
-              <h2 class="text-xl font-semibold text-scroll-beige mb-6">Imagem de Preview</h2>
-
+            <div class="bg-tavern-wood/10 rounded-xl ml-8 mb-8">
               <div class="space-y-4">
                 <!-- Input de arquivo -->
                 <div *ngIf="!imagemPreview || imagemPreview === null">
@@ -175,38 +191,6 @@ import { Inject, PLATFORM_ID } from '@angular/core';
                       ×
                     </button>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Preço e Promoção -->
-            <div class="bg-tavern-wood/10 rounded-xl p-8">
-              <h2 class="text-xl font-semibold text-scroll-beige mb-6">Preço e Promoção</h2>
-
-              <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                  <app-input-customizado
-                    label="Valor Unitário (R$)"
-                    type="number"
-                    placeholder="0,00"
-                    [required]="true"
-                    [min]="0"
-                    [step]="0.01"
-                    [(ngModel)]="produto.valorUnitario"
-                    name="valorUnitario"
-                  />
-                </div>
-                <div>
-                  <app-input-customizado
-                    label="Promoção (%)"
-                    type="number"
-                    placeholder="0"
-                    [min]="0"
-                    [max]="100"
-                    [step]="1"
-                    [(ngModel)]="produto.promocaoPorcentagem"
-                    name="promocaoPorcentagem"
-                  />
                 </div>
               </div>
             </div>
@@ -296,7 +280,6 @@ export class CadastroProdutoComponent implements OnInit {
   produto: any = {
     nome: '',
     descricao: '',
-    resumo: '',
     categoriaCodigo: '',
     valorUnitario: 0,
     promocaoPorcentagem: 0,
@@ -323,6 +306,8 @@ export class CadastroProdutoComponent implements OnInit {
 
   // Dialog de confirmação de exclusão
   mostrarDialogDeletar = signal(false);
+
+  valorPromocionalVisualizacao = 0;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private router: Router) {
     if (isPlatformBrowser(this.platformId)) {
@@ -371,6 +356,13 @@ export class CadastroProdutoComponent implements OnInit {
     this.produto = produto;
     this.imagemPreview = produto.urlPreview;
     this.cdr.detectChanges();
+  }
+
+  calcularValorPromocional() {
+    
+    const porcentagem = 100 - this.produto.promocaoPorcentagem;
+
+    this.valorPromocionalVisualizacao = this.produto.valorUnitario * (porcentagem / 100);
   }
 
   private validarAcessoArtesao() {
@@ -424,7 +416,6 @@ export class CadastroProdutoComponent implements OnInit {
       const dtoProduto = {
         nome: this.produto.nome,
         descricao: this.produto.descricao || '',
-        resumo: this.produto.resumo || this.produto.descricao?.substring(0, 200) || '',
         categoriaCodigo: this.produto.categoriaCodigo,
         valorUnitario: this.produto.gratuito ? 0 : this.produto.valorUnitario || 0,
         promocaoPorcentagem: this.produto.promocaoPorcentagem || 0,

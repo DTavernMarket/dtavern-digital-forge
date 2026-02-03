@@ -28,10 +28,12 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
           [placeholder]="placeholder"
           [value]="value"
           [disabled]="disabled"
+          [readonly]="readonly"
           [required]="required"
           [min]="min"
           [max]="max"
           [step]="step"
+          [attr.maxlength]="maxlength"
           [class]="dynamicInputClasses"
           (input)="onInput($event)"
           (blur)="onBlur()"
@@ -44,8 +46,10 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
           [placeholder]="placeholder"
           [value]="value"
           [disabled]="disabled"
+          [readonly]="readonly"
           [required]="required"
           [rows]="rows"
+          [attr.maxlength]="maxlength"
           [class]="dynamicInputClasses + ' resize-none'"
           (input)="onInput($event)"
           (blur)="onBlur()"
@@ -77,6 +81,7 @@ export class InputCustomizadoComponent implements ControlValueAccessor {
   @Input() type: string = 'text';
   @Input() required: boolean = false;
   @Input() disabled: boolean = false;
+  @Input() readonly: boolean = false;
   @Input() icon: string = '';
   @Input() helpText: string = '';
   @Input() errorMessage: string = '';
@@ -86,6 +91,19 @@ export class InputCustomizadoComponent implements ControlValueAccessor {
   @Input() max: number | string = '';
   @Input() step: number | string = '';
   @Input() rows: number = 3;
+  @Input() maxlength: number | string = '';
+  
+  // Valor externo (para campos readonly)
+  @Input() set value(value: string | number | null | undefined) {
+    if (value !== null && value !== undefined) {
+      this._value = String(value);
+    } else {
+      this._value = '';
+    }
+  }
+  get value(): string {
+    return this._value;
+  }
   
   // Classes customizáveis
   @Input() labelClasses: string = 'text-scroll-beige/80 text-sm';
@@ -97,7 +115,7 @@ export class InputCustomizadoComponent implements ControlValueAccessor {
   @Input() width: string = 'w-full';
   @Input() height: string = '';
 
-  value: string = '';
+  private _value: string = '';
   isFocused = false;
 
   // ControlValueAccessor implementation
@@ -105,9 +123,12 @@ export class InputCustomizadoComponent implements ControlValueAccessor {
   private onTouched = () => {};
 
   onInput(event: Event) {
+    if (this.readonly) {
+      return; // Não permite mudanças em campos readonly
+    }
     const target = event.target as HTMLInputElement;
-    this.value = target.value;
-    this.onChange(this.value);
+    this._value = target.value;
+    this.onChange(this._value);
   }
 
   onBlur() {
@@ -121,7 +142,11 @@ export class InputCustomizadoComponent implements ControlValueAccessor {
 
   // ControlValueAccessor methods
   writeValue(value: string): void {
-    this.value = value || '';
+    if (!this.readonly) {
+      // Só atualiza via ControlValueAccessor se não for readonly
+      // Campos readonly devem ser atualizados via @Input() value
+      this._value = value || '';
+    }
   }
 
   registerOnChange(fn: (value: string) => void): void {
@@ -153,6 +178,10 @@ export class InputCustomizadoComponent implements ControlValueAccessor {
     // Adicionar classes de estado
     if (this.disabled) {
       classes += ' opacity-50 cursor-not-allowed';
+    }
+    
+    if (this.readonly) {
+      classes += ' bg-tavern-wood/10 cursor-not-allowed text-scroll-beige/70';
     }
     
     if (this.errorMessage) {

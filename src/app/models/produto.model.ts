@@ -5,8 +5,8 @@ export interface Produto {
   nome: string;
   nomeNormalizado: string;
   promocaoPorcentagem: number;
-  resumo: string;
   valorUnitario: number;
+  valorPromocional: number | null;
   nomeLoja: string;
   dominioLoja: string;
   idMidiaPreview?: string;
