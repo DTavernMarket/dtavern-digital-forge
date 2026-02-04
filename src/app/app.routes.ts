@@ -8,10 +8,12 @@ import { authGuard } from './config/auth.guard';
 import { LoginComponent } from './pages/login/login.component';
 import { CadastroComponent } from './pages/cadastro/cadastro.component';
 import { MeuPerfilComponent } from './pages/meu-perfil/meu-perfil.component';
+import { ProdutoDetalheComponent } from './pages/produto-detalhe/produto-detalhe.component';
 
 export const routes: Routes = [
   { path: '', component: PaginaInicialComponent },
   { path: 'produtos', component: PaginaProdutosComponent },
+  { path: 'produtos/:nomeNormalizado', component: ProdutoDetalheComponent },
   {
     path: 'lojas/:dominio',
     component: LojaArtesaoComponent,

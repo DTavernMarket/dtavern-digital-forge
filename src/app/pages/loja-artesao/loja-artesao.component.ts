@@ -984,9 +984,7 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
 
   verProduto(produto: Produto) {
     // Navegar para página de detalhes do produto usando nomeNormalizado
-    this.router.navigate(['/produtos'], {
-      queryParams: { produto: produto.nomeNormalizado },
-    });
+    this.router.navigate(['/produtos', produto.nomeNormalizado]);
   }
 
   getYouTubeUrl(youtubeHandle?: string): string {
