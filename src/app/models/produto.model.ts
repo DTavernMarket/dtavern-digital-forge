@@ -9,7 +9,7 @@ export interface Produto {
   valorPromocional?: number | null;
   nomeLoja: string;
   dominioLoja: string;
-  midiaPreview: Midia;
+  midiaPreview?: Midia | null;
 }
 
 export interface Midia {

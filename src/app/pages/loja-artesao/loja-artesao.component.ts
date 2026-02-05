@@ -239,14 +239,15 @@ import { auth } from '../../config/firebase.config';
               >
                 <!-- Imagem de Preview ou Placeholder -->
                 <div class="w-full h-full">
-                  <img
-                    *ngIf="produto.midiaPreview.url"
-                    [src]="produto.midiaPreview.url"
+                  
+                @if (produto.midiaPreview?.url) {
+                <img
+                    [src]="produto.midiaPreview?.url"
                     [alt]="produto.nome"
                     class="w-full h-full object-cover"
                   />
+                  } @else {
                   <div
-                    *ngIf="!produto.midiaPreview.url"
                     class="w-full h-full flex items-center justify-center"
                   >
                     <svg
@@ -263,6 +264,7 @@ import { auth } from '../../config/firebase.config';
                       />
                     </svg>
                   </div>
+                  }
                 </div>
 
                 <!-- Badge de Categoria -->

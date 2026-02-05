@@ -69,9 +69,9 @@ import { Produto } from '../../models/produto.model';
           <div class="flex flex-col lg:flex-row gap-10 items-center">
             <!-- 1) Imagem - ~45% -->
             <div class="w-full lg:w-[45%] flex justify-center bg-midnight-brown/90 rounded-lg border border-brass-accent/40">
-              @if (produto.midiaPreview.url) {
+              @if (produto.midiaPreview?.url) {
                 <img
-                  [src]="produto.midiaPreview.url"
+                  [src]="produto.midiaPreview?.url"
                   [alt]="produto.nome"
                   class="max-h-[640px] w-auto object-contain"
                 />

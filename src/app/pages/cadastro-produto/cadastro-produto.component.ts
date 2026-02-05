@@ -153,7 +153,7 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                     name="descricao"
                   />
                   <div class="flex justify-end items-center text-sm text-scroll-beige/70 mt-2">
-                    <span>{{ (produto?.descricao || '').length }} / 2000 caracteres</span>
+                    <span>{{ (produto.descricao?.length || 0) }} / 2000 caracteres</span>
                   </div>
                 </div>
               </div>
@@ -169,8 +169,31 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                   </p>
                   <div class="relative inline-block">
                     <div class="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 bg-midnight-brown/90 rounded-lg border border-brass-accent/40 flex items-center justify-center overflow-hidden">
-                      <!-- Quando não houver imagem, mostrar input centralizado -->
-                      <div *ngIf="!imagemPreview && !midiaPreviewInfo" class="flex flex-col items-center justify-center w-full h-full p-4">
+                      <!-- Spinner de carregamento -->
+                      <div *ngIf="uploadPreviewLoading || deletePreviewLoading" class="flex flex-col items-center justify-center w-full h-full">
+                        <svg
+                          class="animate-spin h-8 w-8 text-candlelight-gold"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                          ></circle>
+                          <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      </div>
+                      <!-- Quando não houver imagem e não estiver carregando, mostrar input centralizado -->
+                      <div *ngIf="!imagemPreview && !midiaPreviewInfo && !uploadPreviewLoading && !deletePreviewLoading" class="flex flex-col items-center justify-center w-full h-full p-4">
                         <label class="cursor-pointer flex flex-col items-center justify-center w-full h-full">
                           <svg
                             class="w-12 h-12 text-scroll-beige/50 mb-3"
@@ -196,17 +219,17 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                           />
                         </label>
                       </div>
-                      <!-- Quando houver imagem, mostrar preview -->
+                      <!-- Quando houver imagem e não estiver carregando, mostrar preview -->
                       <img
-                        *ngIf="imagemPreview || midiaPreviewInfo?.url"
+                        *ngIf="(imagemPreview || midiaPreviewInfo?.url) && !uploadPreviewLoading && !deletePreviewLoading"
                         [src]="imagemPreview || midiaPreviewInfo?.url"
                         alt="Preview da imagem"
                         class="max-w-full max-h-full w-auto h-auto object-contain"
                       />
                     </div>
-                    <!-- Botão de remover imagem (só aparece quando há imagem) -->
+                    <!-- Botão de remover imagem (só aparece quando há imagem e não está carregando) -->
                     <button
-                      *ngIf="imagemPreview || midiaPreviewInfo"
+                      *ngIf="(imagemPreview || midiaPreviewInfo) && !uploadPreviewLoading && !deletePreviewLoading"
                       type="button"
                       (click)="removerImagem()"
                       class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
@@ -234,14 +257,37 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                   <div class="relative inline-block">
                     <div
                       class="w-72 h-48 sm:w-[336px] sm:h-56 md:w-96 md:h-64 bg-midnight-brown/90 rounded-lg border border-brass-accent/40 flex items-center justify-center overflow-hidden"
-                      [class.border-candlelight-gold]="isDragOverConteudo"
-                      [class.border-2]="isDragOverConteudo"
+                      [class.border-candlelight-gold]="isDragOverConteudo && !uploadConteudoLoading && !deleteConteudoLoading"
+                      [class.border-2]="isDragOverConteudo && !uploadConteudoLoading && !deleteConteudoLoading"
                       (dragover)="onDragOverConteudo($event)"
                       (dragleave)="onDragLeaveConteudo($event)"
                       (drop)="onDropConteudo($event)"
                     >
-                      <!-- Quando não houver arquivo, mostrar input centralizado -->
-                      <div *ngIf="!arquivoConteudoSelecionado && !midiaConteudoInfo" class="flex flex-col items-center justify-center w-full h-full p-4">
+                      <!-- Spinner de carregamento -->
+                      <div *ngIf="uploadConteudoLoading || deleteConteudoLoading" class="flex flex-col items-center justify-center w-full h-full">
+                        <svg
+                          class="animate-spin h-8 w-8 text-candlelight-gold"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                          ></circle>
+                          <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      </div>
+                      <!-- Quando não houver arquivo e não estiver carregando, mostrar input centralizado -->
+                      <div *ngIf="!arquivoConteudoSelecionado && !midiaConteudoInfo && !uploadConteudoLoading && !deleteConteudoLoading" class="flex flex-col items-center justify-center w-full h-full p-4">
                         <label class="cursor-pointer flex flex-col items-center justify-center w-full h-full">
                           <svg
                             class="w-16 h-16 text-scroll-beige/50 mb-3"
@@ -267,8 +313,8 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                           />
                         </label>
                       </div>
-                      <!-- Quando houver arquivo, mostrar preview -->
-                      <div *ngIf="arquivoConteudoSelecionado || midiaConteudoInfo" class="flex flex-col items-center justify-center w-full h-full p-4">
+                      <!-- Quando houver arquivo e não estiver carregando, mostrar preview -->
+                      <div *ngIf="(arquivoConteudoSelecionado || midiaConteudoInfo) && !uploadConteudoLoading && !deleteConteudoLoading" class="flex flex-col items-center justify-center w-full h-full p-4">
                         <!-- Preview de imagem -->
                         <img
                           *ngIf="(obterTipoConteudo()?.startsWith('image/') && arquivoConteudoPreview) || (midiaConteudoInfo?.mimeType?.startsWith('image/') && midiaConteudoInfo?.url)"
@@ -294,9 +340,9 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                         </div>
                       </div>
                     </div>
-                    <!-- Botão de remover arquivo (só aparece quando há arquivo) -->
+                    <!-- Botão de remover arquivo (só aparece quando há arquivo e não está carregando) -->
                     <button
-                      *ngIf="arquivoConteudoSelecionado || midiaConteudoInfo"
+                      *ngIf="(arquivoConteudoSelecionado || midiaConteudoInfo) && !uploadConteudoLoading && !deleteConteudoLoading"
                       type="button"
                       (click)="removerArquivoConteudo()"
                       class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
@@ -457,6 +503,8 @@ export class CadastroProdutoComponent implements OnInit {
   imagemPreview: string | null = null;
   imagemAlterada: boolean = false;
   midiaPreviewInfo: Midia | null = null;
+  uploadPreviewLoading: boolean = false;
+  deletePreviewLoading: boolean = false;
 
   // Arquivo de conteúdo do produto
   arquivoConteudoSelecionado: File | null = null;
@@ -465,6 +513,8 @@ export class CadastroProdutoComponent implements OnInit {
   arquivoConteudoTipo: string | null = null;
   midiaConteudoInfo: Midia | null = null;
   isDragOverConteudo: boolean = false;
+  uploadConteudoLoading: boolean = false;
+  deleteConteudoLoading: boolean = false;
 
   // Modo de edição
   isModoEdicao = signal(false);
@@ -516,9 +566,15 @@ export class CadastroProdutoComponent implements OnInit {
     this.isModoEdicao.set(true);
     this.nomeNormalizadoProduto = nomeNormalizado;
 
+    await this.recarregarProdutoCompleto(nomeNormalizado);
+  }
+
+  async recarregarProdutoCompleto(nomeNormalizado: string) {
     const produtoCompleto = await firstValueFrom(
       this.produtoService.buscarProdutoPorNomeNormalizadoFormulario(nomeNormalizado)
     );
+    
+    // Atualizar informações do produto
     this.produto = produtoCompleto;
     this.imagemPreview = produtoCompleto.midiaPreview?.url || null;
     this.midiaPreviewInfo = produtoCompleto.midiaPreview || null;
@@ -531,7 +587,13 @@ export class CadastroProdutoComponent implements OnInit {
       // Se for imagem, carregar preview
       if (produtoCompleto.midiaConteudo.mimeType?.startsWith('image/')) {
         this.arquivoConteudoPreview = produtoCompleto.midiaConteudo.url;
+      } else {
+        this.arquivoConteudoPreview = null;
       }
+    } else {
+      // Se não houver arquivo de conteúdo, limpar informações
+      this.midiaConteudoInfo = null;
+      this.arquivoConteudoPreview = null;
     }
 
     this.cdr.detectChanges();
@@ -622,11 +684,19 @@ export class CadastroProdutoComponent implements OnInit {
       }
 
       if (this.imagemAlterada && this.produto.midiaPreview?.idMidia) {
-        await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.midiaPreview.idMidia));
+        this.deletePreviewLoading = true;
+        try {
+          await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.midiaPreview.idMidia));
+        } catch (error) {
+          console.error('Erro ao deletar imagem de preview:', error);
+        } finally {
+          this.deletePreviewLoading = false;
+        }
       }
 
       // Se houver imagem selecionada, fazer upload
       if (this.imagemSelecionada && nomeNormalizado && this.imagemAlterada) {
+        this.uploadPreviewLoading = true;
         try {
           await firstValueFrom(
             this.produtoService.uploadImagemPreviewProduto(
@@ -634,6 +704,8 @@ export class CadastroProdutoComponent implements OnInit {
               this.imagemSelecionada
             )
           );
+          // Recarregar produto para atualizar informações
+          await this.recarregarProdutoCompleto(nomeNormalizado);
         } catch (uploadError) {
           console.error('Erro ao fazer upload da imagem:', uploadError);
           alert(
@@ -641,6 +713,8 @@ export class CadastroProdutoComponent implements OnInit {
               ? 'Produto atualizado, mas houve erro ao fazer upload da imagem.'
               : 'Produto salvo, mas houve erro ao fazer upload da imagem.'
           );
+        } finally {
+          this.uploadPreviewLoading = false;
         }
       }
 
@@ -658,6 +732,9 @@ export class CadastroProdutoComponent implements OnInit {
   }
 
   onImagemSelecionada(event: Event) {
+    if (this.uploadPreviewLoading || this.deletePreviewLoading) {
+      return;
+    }
     this.imagemAlterada = true;
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -682,7 +759,22 @@ export class CadastroProdutoComponent implements OnInit {
     }
   }
 
-  removerImagem() {
+  async removerImagem() {
+    if (this.produto.midiaPreview?.idMidia) {
+      this.deletePreviewLoading = true;
+      try {
+        await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.midiaPreview.idMidia));
+        // Recarregar produto para atualizar informações
+        if (this.nomeNormalizadoProduto) {
+          await this.recarregarProdutoCompleto(this.nomeNormalizadoProduto);
+        }
+      } catch (error) {
+        console.error('Erro ao deletar imagem de preview:', error);
+        alert('Erro ao deletar imagem. Tente novamente.');
+      } finally {
+        this.deletePreviewLoading = false;
+      }
+    }
     this.imagemSelecionada = null;
     this.imagemPreview = null;
     this.midiaPreviewInfo = null;
@@ -690,6 +782,9 @@ export class CadastroProdutoComponent implements OnInit {
   }
 
   onArquivoConteudoSelecionado(event: Event) {
+    if (this.uploadConteudoLoading || this.deleteConteudoLoading) {
+      return;
+    }
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const arquivo = input.files[0];
@@ -698,18 +793,27 @@ export class CadastroProdutoComponent implements OnInit {
   }
 
   onDragOverConteudo(event: DragEvent) {
+    if (this.uploadConteudoLoading || this.deleteConteudoLoading) {
+      return;
+    }
     event.preventDefault();
     event.stopPropagation();
     this.isDragOverConteudo = true;
   }
 
   onDragLeaveConteudo(event: DragEvent) {
+    if (this.uploadConteudoLoading || this.deleteConteudoLoading) {
+      return;
+    }
     event.preventDefault();
     event.stopPropagation();
     this.isDragOverConteudo = false;
   }
 
   onDropConteudo(event: DragEvent) {
+    if (this.uploadConteudoLoading || this.deleteConteudoLoading) {
+      return;
+    }
     event.preventDefault();
     event.stopPropagation();
     this.isDragOverConteudo = false;
@@ -744,6 +848,7 @@ export class CadastroProdutoComponent implements OnInit {
   }
 
   async fazerUploadArquivoConteudo(arquivo: File) {
+    this.uploadConteudoLoading = true;
     try {
       let nomeNormalizado: string | null = null;
 
@@ -775,6 +880,9 @@ export class CadastroProdutoComponent implements OnInit {
           this.produtoService.uploadImagemConteudoProduto(nomeNormalizado, arquivo)
         );
         console.log('Upload do arquivo de conteúdo realizado com sucesso!');
+        
+        // Recarregar informações do produto para atualizar dados do arquivo de conteúdo
+        await this.recarregarProdutoCompleto(nomeNormalizado);
       } else {
         console.warn('Não foi possível fazer upload: produto ainda não foi salvo ou formulário inválido');
       }
@@ -782,10 +890,29 @@ export class CadastroProdutoComponent implements OnInit {
       console.error('Erro ao fazer upload do arquivo de conteúdo:', error);
       alert('Erro ao fazer upload do arquivo de conteúdo. Tente novamente.');
       this.removerArquivoConteudo();
+    } finally {
+      this.uploadConteudoLoading = false;
     }
   }
 
-  removerArquivoConteudo() {
+  async removerArquivoConteudo() {
+    const idMidia = this.produto.midiaConteudo?.idMidia;
+
+    if (idMidia) {
+      this.deleteConteudoLoading = true;
+      try {
+        await firstValueFrom(this.produtoService.deleteMidiaProduto(idMidia));
+        // Recarregar produto para atualizar informações
+        if (this.nomeNormalizadoProduto) {
+          await this.recarregarProdutoCompleto(this.nomeNormalizadoProduto);
+        }
+      } catch (error) {
+        console.error('Erro ao deletar arquivo de conteúdo:', error);
+        alert('Erro ao deletar arquivo. Tente novamente.');
+      } finally {
+        this.deleteConteudoLoading = false;
+      }
+    }
     this.arquivoConteudoSelecionado = null;
     this.arquivoConteudoPreview = null;
     this.arquivoConteudoNome = null;
