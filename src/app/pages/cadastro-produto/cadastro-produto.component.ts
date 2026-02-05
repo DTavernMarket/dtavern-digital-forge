@@ -8,6 +8,7 @@ import {
   OpcaoSelect,
 } from '../../components/select-customizado/select-customizado.component';
 import { InputCustomizadoComponent } from '../../components/input-customizado/input-customizado.component';
+import { DialogConfirmacaoComponent } from '../../components/dialog-confirmacao/dialog-confirmacao.component';
 import { ArtesaoService } from '../../services/artesao.service';
 import { Artesao } from '../../models/artesao.model';
 import { ProdutoService } from '../../services/produto.service';
@@ -29,6 +30,7 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
     BarraNavegacaoComponent,
     SelectCustomizadoComponent,
     InputCustomizadoComponent,
+    DialogConfirmacaoComponent,
   ],
   template: `
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
@@ -338,6 +340,15 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                             />
                           </svg>
                         </div>
+                        <!-- Botão Baixar arquivo (quando houver arquivo carregado totalmente) -->
+                        <button
+                          *ngIf="midiaConteudoInfo && isModoEdicao()"
+                          type="button"
+                          (click)="baixarArquivoConteudo()"
+                          class="px-6 py-2 bg-candlelight-gold hover:bg-candlelight-gold/90 text-tavern-wood font-semibold rounded-lg transition-colors mt-2"
+                        >
+                          Baixar arquivo
+                        </button>
                       </div>
                     </div>
                     <!-- Botão de remover arquivo (só aparece quando há arquivo e não está carregando) -->
@@ -354,7 +365,7 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                   <div *ngIf="arquivoConteudoSelecionado || midiaConteudoInfo" class="mt-2 space-y-1">
                     <div 
                       *ngIf="midiaConteudoInfo && isModoEdicao()"
-                      class="text-xs text-scroll-beige/70 break-words cursor-pointer hover:text-candlelight-gold hover:underline transition-colors"
+                      class="text-xs text-candlelight-gold break-words cursor-pointer"
                       (click)="baixarArquivoConteudo()"
                       title="Clique para baixar o arquivo"
                     >
@@ -380,21 +391,21 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
           <div class="flex items-center justify-between space-x-4 max-w-4xl mx-auto">
             <div>
               <button
+                type="button"
+                (click)="irParaLoja()"
+                class="px-6 py-3 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
+              >
+                Voltar para loja
+              </button>
+            </div>
+            <div class="flex items-center space-x-4">
+              <button
                 *ngIf="isModoEdicao()"
                 type="button"
                 (click)="abrirDialogDeletar()"
                 class="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
               >
                 Deletar
-              </button>
-            </div>
-            <div class="flex items-center space-x-4">
-              <button
-                type="button"
-                (click)="irParaLoja()"
-                class="px-6 py-3 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
-              >
-                Voltar para loja
               </button>
               <button
                 type="submit"
@@ -408,38 +419,32 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
         </form>
       </div>
 
-      <!-- Dialog de Confirmação de Exclusão -->
-      <div
-        *ngIf="mostrarDialogDeletar()"
-        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-        (click)="fecharDialogDeletar()"
-      >
-        <div
-          class="bg-midnight-brown border border-brass-accent/40 rounded-xl p-6 max-w-md w-full mx-4"
-          (click)="$event.stopPropagation()"
-        >
-          <h3 class="text-xl font-semibold text-scroll-beige mb-4">Confirmar Exclusão</h3>
-          <p class="text-scroll-beige/80 mb-6">
-            Você realmente deseja deletar este produto? Esta ação não pode ser desfeita.
-          </p>
-          <div class="flex justify-end space-x-4">
-            <button
-              type="button"
-              (click)="fecharDialogDeletar()"
-              class="px-6 py-2 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
-            >
-              Não
-            </button>
-            <button
-              type="button"
-              (click)="confirmarDeletar()"
-              class="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Sim
-            </button>
-          </div>
-        </div>
-      </div>
+      <!-- Dialog de Confirmação de Exclusão do Produto -->
+      <app-dialog-confirmacao
+        [mostrar]="mostrarDialogDeletar()"
+        titulo="Confirmar Exclusão"
+        texto="Você realmente deseja deletar este produto? Esta ação não pode ser desfeita."
+        (resposta)="onRespostaDialogDeletar($event)"
+        (fecharDialog)="fecharDialogDeletar()"
+      />
+
+      <!-- Dialog de Confirmação de Exclusão da Imagem de Preview -->
+      <app-dialog-confirmacao
+        [mostrar]="mostrarDialogDeletarPreview()"
+        titulo="Confirmar Exclusão"
+        texto="Você realmente deseja deletar a imagem de preview? Esta ação não pode ser desfeita."
+        (resposta)="onRespostaDialogDeletarPreview($event)"
+        (fecharDialog)="fecharDialogDeletarPreview()"
+      />
+
+      <!-- Dialog de Confirmação de Exclusão do Arquivo de Conteúdo -->
+      <app-dialog-confirmacao
+        [mostrar]="mostrarDialogDeletarConteudo()"
+        titulo="Confirmar Exclusão"
+        texto="Você realmente deseja deletar o arquivo de conteúdo? Esta ação não pode ser desfeita."
+        (resposta)="onRespostaDialogDeletarConteudo($event)"
+        (fecharDialog)="fecharDialogDeletarConteudo()"
+      />
     </div>
   `,
   styles: [
@@ -522,6 +527,8 @@ export class CadastroProdutoComponent implements OnInit {
 
   // Dialog de confirmação de exclusão
   mostrarDialogDeletar = signal(false);
+  mostrarDialogDeletarPreview = signal(false);
+  mostrarDialogDeletarConteudo = signal(false);
 
   valorPromocionalVisualizacao = 0;
 
@@ -739,29 +746,48 @@ export class CadastroProdutoComponent implements OnInit {
     }
   }
 
-  async removerImagem() {
+  removerImagem() {
+    // Se houver imagem no backend, mostrar dialog de confirmação
     if (this.produto.midiaPreview?.idMidia) {
-      this.deletePreviewLoading = true;
-      this.cdr.detectChanges();
-      try {
-        await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.midiaPreview.idMidia));
-        // Recarregar produto para atualizar informações
-        if (this.nomeNormalizadoProduto) {
-          await this.recarregarProdutoCompleto(this.nomeNormalizadoProduto);
-        }
-      } catch (error) {
-        console.error('Erro ao deletar imagem de preview:', error);
-        alert('Erro ao deletar imagem. Tente novamente.');
-      } finally {
-        this.deletePreviewLoading = false;
-        this.imagemSelecionada = null;
-        this.imagemPreview = null;
-        this.midiaPreviewInfo = null;
-        this.imagemAlterada = true;
-        this.cdr.detectChanges();
-      }
+      this.mostrarDialogDeletarPreview.set(true);
     } else {
       // Se não houver idMidia, apenas limpar localmente
+      this.imagemSelecionada = null;
+      this.imagemPreview = null;
+      this.midiaPreviewInfo = null;
+      this.imagemAlterada = true;
+      this.cdr.detectChanges();
+    }
+  }
+
+  onRespostaDialogDeletarPreview(confirmado: boolean) {
+    if (confirmado) {
+      this.confirmarDeletarPreview();
+    }
+  }
+
+  fecharDialogDeletarPreview() {
+    this.mostrarDialogDeletarPreview.set(false);
+  }
+
+  async confirmarDeletarPreview() {
+    if (!this.produto.midiaPreview?.idMidia) {
+      return;
+    }
+
+    this.deletePreviewLoading = true;
+    this.cdr.detectChanges();
+    try {
+      await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.midiaPreview.idMidia));
+      // Recarregar produto para atualizar informações
+      if (this.nomeNormalizadoProduto) {
+        await this.recarregarProdutoCompleto(this.nomeNormalizadoProduto);
+      }
+    } catch (error) {
+      console.error('Erro ao deletar imagem de preview:', error);
+      alert('Erro ao deletar imagem. Tente novamente.');
+    } finally {
+      this.deletePreviewLoading = false;
       this.imagemSelecionada = null;
       this.imagemPreview = null;
       this.midiaPreviewInfo = null;
@@ -955,32 +981,51 @@ export class CadastroProdutoComponent implements OnInit {
     }
   }
 
-  async removerArquivoConteudo() {
-    const idMidia = this.produto.midiaConteudo?.idMidia;
-
-    if (idMidia) {
-      this.deleteConteudoLoading = true;
-      this.cdr.detectChanges();
-      try {
-        await firstValueFrom(this.produtoService.deleteMidiaProduto(idMidia));
-        // Recarregar produto para atualizar informações
-        if (this.nomeNormalizadoProduto) {
-          await this.recarregarProdutoCompleto(this.nomeNormalizadoProduto);
-        }
-      } catch (error) {
-        console.error('Erro ao deletar arquivo de conteúdo:', error);
-        alert('Erro ao deletar arquivo. Tente novamente.');
-      } finally {
-        this.deleteConteudoLoading = false;
-        this.arquivoConteudoSelecionado = null;
-        this.arquivoConteudoPreview = null;
-        this.arquivoConteudoNome = null;
-        this.arquivoConteudoTipo = null;
-        this.midiaConteudoInfo = null;
-        this.cdr.detectChanges();
-      }
+  removerArquivoConteudo() {
+    // Se houver arquivo no backend, mostrar dialog de confirmação
+    if (this.produto.midiaConteudo?.idMidia) {
+      this.mostrarDialogDeletarConteudo.set(true);
     } else {
       // Se não houver idMidia, apenas limpar localmente
+      this.arquivoConteudoSelecionado = null;
+      this.arquivoConteudoPreview = null;
+      this.arquivoConteudoNome = null;
+      this.arquivoConteudoTipo = null;
+      this.midiaConteudoInfo = null;
+      this.cdr.detectChanges();
+    }
+  }
+
+  onRespostaDialogDeletarConteudo(confirmado: boolean) {
+    if (confirmado) {
+      this.confirmarDeletarConteudo();
+    }
+  }
+
+  fecharDialogDeletarConteudo() {
+    this.mostrarDialogDeletarConteudo.set(false);
+  }
+
+  async confirmarDeletarConteudo() {
+    const idMidia = this.produto.midiaConteudo?.idMidia;
+
+    if (!idMidia) {
+      return;
+    }
+
+    this.deleteConteudoLoading = true;
+    this.cdr.detectChanges();
+    try {
+      await firstValueFrom(this.produtoService.deleteMidiaProduto(idMidia));
+      // Recarregar produto para atualizar informações
+      if (this.nomeNormalizadoProduto) {
+        await this.recarregarProdutoCompleto(this.nomeNormalizadoProduto);
+      }
+    } catch (error) {
+      console.error('Erro ao deletar arquivo de conteúdo:', error);
+      alert('Erro ao deletar arquivo. Tente novamente.');
+    } finally {
+      this.deleteConteudoLoading = false;
       this.arquivoConteudoSelecionado = null;
       this.arquivoConteudoPreview = null;
       this.arquivoConteudoNome = null;
@@ -1086,11 +1131,16 @@ export class CadastroProdutoComponent implements OnInit {
     this.mostrarDialogDeletar.set(false);
   }
 
+  onRespostaDialogDeletar(confirmado: boolean) {
+    if (confirmado) {
+      this.confirmarDeletar();
+    }
+  }
+
   async confirmarDeletar() {
     if (!this.nomeNormalizadoProduto) {
       return;
     }
-    this.fecharDialogDeletar();
 
     try {
       await firstValueFrom(this.produtoService.deletarProduto(this.nomeNormalizadoProduto!));
