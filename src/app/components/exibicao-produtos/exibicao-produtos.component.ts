@@ -35,13 +35,13 @@ import { Produto } from '../../models/produto.model';
             <div class="relative overflow-hidden bg-tavern-wood/20 h-48">
               <!-- Imagem de Preview ou Placeholder -->
               <img
-                *ngIf="produto.midiaPreview?.urlPreview"
-                [src]="produto.midiaPreview.urlPreview"
+                *ngIf="produto.midiaPreview.url"
+                [src]="produto.midiaPreview.url"
                 [alt]="produto.nome"
                 class="w-full h-full object-cover"
               />
               <div
-                *ngIf="!produto.midiaPreview?.urlPreview"
+                *ngIf="!produto.midiaPreview.url"
                 class="w-full h-full flex items-center justify-center"
               >
                 <svg
@@ -113,7 +113,7 @@ import { Produto } from '../../models/produto.model';
                       }}
                     </span>
                     <span
-                      *ngIf="produto.promocaoPorcentagem > 0 && produto.valorPromocional != null"
+                      *ngIf="produto.promocaoPorcentagem && produto.promocaoPorcentagem > 0 && produto.valorPromocional != null"
                       class="text-scroll-beige/60 text-sm line-through"
                     >
                       R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}

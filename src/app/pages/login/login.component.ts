@@ -11,21 +11,21 @@ import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="h-screen flex overflow-hidden bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
-      <!-- Lado esquerdo: Card com imagem (40%) -->
-      <div class="hidden lg:flex lg:w-[40%] items-center justify-center p-8">
-        <div class="w-full h-full rounded-2xl overflow-hidden shadow-2xl">
-          <img 
-            src="assets/images/Background login DTavern.png" 
-            alt="Background DTavern"
-            class="w-full h-full object-cover"
-          />
-        </div>
+    <div class="h-screen flex overflow-hidden relative">
+      <!-- Background da imagem cobrindo toda a tela -->
+      <div class="absolute inset-0 z-0 flex items-center justify-center bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
+        <img 
+          src="assets/images/Background login DTavern.png" 
+          alt="Background DTavern"
+          class="w-full h-full"
+        />
+        <!-- Overlay escuro para melhorar legibilidade do card -->
+        <div class="absolute inset-0"></div>
       </div>
       
-      <!-- Lado direito: Formulário com fundo gradiente (60%) -->
-      <div class="w-full lg:w-[60%] h-screen flex items-center justify-center overflow-hidden">
-        <div class="bg-midnight-brown/90 border border-brass-accent/40 rounded-xl p-8 max-w-md w-full mx-4">
+      <!-- Card de login à direita -->
+      <div class="w-full lg:w-[60%] h-screen flex items-center justify-center overflow-hidden relative z-10 ml-auto mr-[-5rem]">
+        <div class="bg-midnight-brown/90 rounded-xl p-8 max-w-md w-full mx-4 shadow-2xl">
           <h2 class="text-2xl font-medieval font-bold text-scroll-beige mb-6 text-center">Login</h2>
           
           <form (ngSubmit)="onLogin()" class="space-y-4">

@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Produto, PagedResult } from '../models/produto.model';
+import { PagedResult, Produto, ProdutoCompleto } from '../models/produto.model';
 
 @Injectable({
   providedIn: 'root',
@@ -51,9 +51,19 @@ export class ProdutoService {
    * Busca um produto pelo nome normalizado (slug)
    * @param nomeProdutoNormalizado Nome normalizado do produto
    */
-  buscarProdutoPorNomeNormalizado(nomeProdutoNormalizado: string): Observable<any> {
-    return this.http.get<any>(
+  buscarProdutoPorNomeNormalizado(nomeProdutoNormalizado: string): Observable<Produto> {
+    return this.http.get<Produto>(
       `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}`
+    );
+  }
+
+  /**
+   * Busca um produto pelo nome normalizado (slug) para o formulário de cadastro de produto
+   * @param nomeProdutoNormalizado Nome normalizado do produto
+   */
+  buscarProdutoPorNomeNormalizadoFormulario(nomeProdutoNormalizado: string): Observable<ProdutoCompleto> {
+    return this.http.get<ProdutoCompleto>(
+      `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}/completo`
     );
   }
 

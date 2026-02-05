@@ -18,6 +18,7 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, PLATFORM_ID } from '@angular/core';
+import { Midia } from '../../models/produto.model';
 
 @Component({
   selector: 'app-cadastro-produto',
@@ -169,7 +170,7 @@ import { Inject, PLATFORM_ID } from '@angular/core';
                   <div class="relative inline-block">
                     <div class="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 bg-midnight-brown/90 rounded-lg border border-brass-accent/40 flex items-center justify-center overflow-hidden">
                       <!-- Quando não houver imagem, mostrar input centralizado -->
-                      <div *ngIf="!imagemPreview || imagemPreview === null" class="flex flex-col items-center justify-center w-full h-full p-4">
+                      <div *ngIf="!imagemPreview && !midiaPreviewInfo" class="flex flex-col items-center justify-center w-full h-full p-4">
                         <label class="cursor-pointer flex flex-col items-center justify-center w-full h-full">
                           <svg
                             class="w-12 h-12 text-scroll-beige/50 mb-3"
@@ -197,15 +198,15 @@ import { Inject, PLATFORM_ID } from '@angular/core';
                       </div>
                       <!-- Quando houver imagem, mostrar preview -->
                       <img
-                        *ngIf="imagemPreview"
-                        [src]="imagemPreview"
+                        *ngIf="imagemPreview || midiaPreviewInfo?.url"
+                        [src]="imagemPreview || midiaPreviewInfo?.url"
                         alt="Preview da imagem"
                         class="max-w-full max-h-full w-auto h-auto object-contain"
                       />
                     </div>
                     <!-- Botão de remover imagem (só aparece quando há imagem) -->
                     <button
-                      *ngIf="imagemPreview"
+                      *ngIf="imagemPreview || midiaPreviewInfo"
                       type="button"
                       (click)="removerImagem()"
                       class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
@@ -214,10 +215,14 @@ import { Inject, PLATFORM_ID } from '@angular/core';
                     </button>
                   </div>
                   <!-- Nome da imagem (fora da caixa de input) -->
-                  <div *ngIf="imagemSelecionada" class="mt-2">
-                    <span class="text-xs text-scroll-beige/70 break-words">
-                      {{ imagemSelecionada.name }}
-                    </span>
+                  <div *ngIf="imagemSelecionada || midiaPreviewInfo" class="mt-2 space-y-1">
+                    <div class="text-xs text-scroll-beige/70 break-words">
+                      {{ imagemSelecionada?.name || midiaPreviewInfo?.nomeArquivo }}
+                    </div>
+                    <div class="text-xs text-scroll-beige/50 flex gap-2">
+                      <span *ngIf="obterTipoPreview()">{{ obterTipoPreview() }}</span>
+                      <span *ngIf="obterTamanhoPreview()">• {{ formatarTamanhoArquivo(obterTamanhoPreview()) }}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -236,7 +241,7 @@ import { Inject, PLATFORM_ID } from '@angular/core';
                       (drop)="onDropConteudo($event)"
                     >
                       <!-- Quando não houver arquivo, mostrar input centralizado -->
-                      <div *ngIf="!arquivoConteudoSelecionado" class="flex flex-col items-center justify-center w-full h-full p-4">
+                      <div *ngIf="!arquivoConteudoSelecionado && !midiaConteudoInfo" class="flex flex-col items-center justify-center w-full h-full p-4">
                         <label class="cursor-pointer flex flex-col items-center justify-center w-full h-full">
                           <svg
                             class="w-16 h-16 text-scroll-beige/50 mb-3"
@@ -263,16 +268,16 @@ import { Inject, PLATFORM_ID } from '@angular/core';
                         </label>
                       </div>
                       <!-- Quando houver arquivo, mostrar preview -->
-                      <div *ngIf="arquivoConteudoSelecionado" class="flex flex-col items-center justify-center w-full h-full p-4">
+                      <div *ngIf="arquivoConteudoSelecionado || midiaConteudoInfo" class="flex flex-col items-center justify-center w-full h-full p-4">
                         <!-- Preview de imagem -->
                         <img
-                          *ngIf="arquivoConteudoTipo?.startsWith('image/') && arquivoConteudoPreview"
-                          [src]="arquivoConteudoPreview"
+                          *ngIf="(obterTipoConteudo()?.startsWith('image/') && arquivoConteudoPreview) || (midiaConteudoInfo?.mimeType?.startsWith('image/') && midiaConteudoInfo?.url)"
+                          [src]="arquivoConteudoPreview || midiaConteudoInfo?.url"
                           alt="Preview do arquivo"
                           class="max-w-full max-h-[70%] w-auto h-auto object-contain mb-2"
                         />
                         <!-- Ícone para outros tipos de arquivo -->
-                        <div *ngIf="!arquivoConteudoTipo?.startsWith('image/') || !arquivoConteudoPreview" class="flex flex-col items-center justify-center mb-2">
+                        <div *ngIf="!(obterTipoConteudo()?.startsWith('image/') && arquivoConteudoPreview) && !(midiaConteudoInfo?.mimeType?.startsWith('image/') && midiaConteudoInfo?.url)" class="flex flex-col items-center justify-center mb-2">
                           <svg
                             class="w-16 h-16 text-scroll-beige/50 mb-2"
                             fill="none"
@@ -291,7 +296,7 @@ import { Inject, PLATFORM_ID } from '@angular/core';
                     </div>
                     <!-- Botão de remover arquivo (só aparece quando há arquivo) -->
                     <button
-                      *ngIf="arquivoConteudoSelecionado"
+                      *ngIf="arquivoConteudoSelecionado || midiaConteudoInfo"
                       type="button"
                       (click)="removerArquivoConteudo()"
                       class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
@@ -300,10 +305,14 @@ import { Inject, PLATFORM_ID } from '@angular/core';
                     </button>
                   </div>
                   <!-- Nome do arquivo (fora da caixa de input) -->
-                  <div *ngIf="arquivoConteudoSelecionado" class="mt-2">
-                    <span class="text-xs text-scroll-beige/70 break-words">
-                      {{ arquivoConteudoNome }}
-                    </span>
+                  <div *ngIf="arquivoConteudoSelecionado || midiaConteudoInfo" class="mt-2 space-y-1">
+                    <div class="text-xs text-scroll-beige/70 break-words">
+                      {{ arquivoConteudoNome || midiaConteudoInfo?.nomeArquivo }}
+                    </div>
+                    <div class="text-xs text-scroll-beige/50 flex gap-2">
+                      <span *ngIf="obterTipoConteudo()">{{ obterTipoConteudo() }}</span>
+                      <span *ngIf="obterTamanhoConteudo()">• {{ formatarTamanhoArquivo(obterTamanhoConteudo()) }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -413,12 +422,14 @@ export class CadastroProdutoComponent implements OnInit {
   imagemSelecionada: File | null = null;
   imagemPreview: string | null = null;
   imagemAlterada: boolean = false;
+  midiaPreviewInfo: Midia | null = null;
 
   // Arquivo de conteúdo do produto
   arquivoConteudoSelecionado: File | null = null;
   arquivoConteudoPreview: string | null = null;
   arquivoConteudoNome: string | null = null;
   arquivoConteudoTipo: string | null = null;
+  midiaConteudoInfo: Midia | null = null;
   isDragOverConteudo: boolean = false;
 
   // Modo de edição
@@ -471,11 +482,24 @@ export class CadastroProdutoComponent implements OnInit {
     this.isModoEdicao.set(true);
     this.nomeNormalizadoProduto = nomeNormalizado;
 
-    const produto = await firstValueFrom(
-      this.produtoService.buscarProdutoPorNomeNormalizado(nomeNormalizado)
+    const produtoCompleto = await firstValueFrom(
+      this.produtoService.buscarProdutoPorNomeNormalizadoFormulario(nomeNormalizado)
     );
-    this.produto = produto;
-    this.imagemPreview = produto.midiaPreview?.urlPreview || null;
+    this.produto = produtoCompleto;
+    this.imagemPreview = produtoCompleto.midiaPreview?.url || null;
+    this.midiaPreviewInfo = produtoCompleto.midiaPreview || null;
+    
+    // Carregar informações do arquivo de conteúdo se existir
+    if (produtoCompleto.midiaConteudo) {
+      this.midiaConteudoInfo = produtoCompleto.midiaConteudo;
+      this.arquivoConteudoNome = produtoCompleto.midiaConteudo.nomeArquivo;
+      this.arquivoConteudoTipo = produtoCompleto.midiaConteudo.mimeType;
+      // Se for imagem, carregar preview
+      if (produtoCompleto.midiaConteudo.mimeType?.startsWith('image/')) {
+        this.arquivoConteudoPreview = produtoCompleto.midiaConteudo.url;
+      }
+    }
+    
     this.cdr.detectChanges();
   }
 
@@ -559,8 +583,8 @@ export class CadastroProdutoComponent implements OnInit {
         nomeNormalizado = resposta?.nomeNormalizado;
       }
 
-      if (this.imagemAlterada && this.produto.midiaPreview?.idMidiaPreview) {
-        await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.midiaPreview.idMidiaPreview));
+      if (this.imagemAlterada && this.produto.midiaPreview?.idMidia) {
+        await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.midiaPreview.idMidia));
       }
 
       // Se houver imagem selecionada, fazer upload
@@ -623,6 +647,7 @@ export class CadastroProdutoComponent implements OnInit {
   removerImagem() {
     this.imagemSelecionada = null;
     this.imagemPreview = null;
+    this.midiaPreviewInfo = null;
     this.imagemAlterada = true;
   }
 
@@ -658,7 +683,7 @@ export class CadastroProdutoComponent implements OnInit {
     }
   }
 
-  processarArquivoConteudo(arquivo: File) {
+  async processarArquivoConteudo(arquivo: File) {
     this.arquivoConteudoSelecionado = arquivo;
     this.arquivoConteudoNome = arquivo.name;
     this.arquivoConteudoTipo = arquivo.type;
@@ -675,6 +700,51 @@ export class CadastroProdutoComponent implements OnInit {
       this.arquivoConteudoPreview = null;
       this.cdr.detectChanges();
     }
+
+    // Fazer upload automaticamente
+    await this.fazerUploadArquivoConteudo(arquivo);
+  }
+
+  async fazerUploadArquivoConteudo(arquivo: File) {
+    try {
+      let nomeNormalizado: string | null = null;
+
+      // Se estiver em modo de edição, usar o nomeNormalizado existente
+      if (this.isModoEdicao() && this.nomeNormalizadoProduto) {
+        nomeNormalizado = this.nomeNormalizadoProduto;
+      } else if (this.formularioValido() && this.artesaoAtual) {
+        // Se estiver em modo de criação e o formulário estiver válido, salvar o produto primeiro
+        const dtoProduto = {
+          nome: this.produto.nome,
+          descricao: this.produto.descricao || '',
+          categoriaCodigo: this.produto.categoriaCodigo,
+          valorUnitario: this.produto.gratuito ? 0 : this.produto.valorUnitario || 0,
+          promocaoPorcentagem: this.produto.promocaoPorcentagem || 0,
+          gratuito: this.produto.gratuito || false,
+        };
+
+        const resposta = await firstValueFrom(
+          this.produtoService.adicionarProduto(dtoProduto, this.artesaoAtual.dominio)
+        );
+        nomeNormalizado = resposta?.nomeNormalizado;
+        this.nomeNormalizadoProduto = nomeNormalizado;
+        this.isModoEdicao.set(true);
+      }
+
+      // Fazer upload se tiver nomeNormalizado
+      if (nomeNormalizado) {
+        await firstValueFrom(
+          this.produtoService.uploadImagemConteudoProduto(nomeNormalizado, arquivo)
+        );
+        console.log('Upload do arquivo de conteúdo realizado com sucesso!');
+      } else {
+        console.warn('Não foi possível fazer upload: produto ainda não foi salvo ou formulário inválido');
+      }
+    } catch (error) {
+      console.error('Erro ao fazer upload do arquivo de conteúdo:', error);
+      alert('Erro ao fazer upload do arquivo de conteúdo. Tente novamente.');
+      this.removerArquivoConteudo();
+    }
   }
 
   removerArquivoConteudo() {
@@ -682,6 +752,56 @@ export class CadastroProdutoComponent implements OnInit {
     this.arquivoConteudoPreview = null;
     this.arquivoConteudoNome = null;
     this.arquivoConteudoTipo = null;
+    this.midiaConteudoInfo = null;
+    this.cdr.detectChanges();
+  }
+
+  formatarTamanhoArquivo(bytes: number | null | undefined): string {
+    if (!bytes) return '';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+    if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+    return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+  }
+
+  obterTamanhoPreview(): number | null {
+    if (this.imagemSelecionada) {
+      return this.imagemSelecionada.size;
+    }
+    if (this.midiaPreviewInfo) {
+      return this.midiaPreviewInfo.tamanhoBytes;
+    }
+    return null;
+  }
+
+  obterTipoPreview(): string | null {
+    if (this.imagemSelecionada) {
+      return this.imagemSelecionada.type;
+    }
+    if (this.midiaPreviewInfo) {
+      return this.midiaPreviewInfo.mimeType;
+    }
+    return null;
+  }
+
+  obterTamanhoConteudo(): number | null {
+    if (this.arquivoConteudoSelecionado) {
+      return this.arquivoConteudoSelecionado.size;
+    }
+    if (this.midiaConteudoInfo) {
+      return this.midiaConteudoInfo.tamanhoBytes;
+    }
+    return null;
+  }
+
+  obterTipoConteudo(): string | null {
+    if (this.arquivoConteudoSelecionado) {
+      return this.arquivoConteudoSelecionado.type;
+    }
+    if (this.midiaConteudoInfo) {
+      return this.midiaConteudoInfo.mimeType;
+    }
+    return this.arquivoConteudoTipo;
   }
 
   irParaLoja() {

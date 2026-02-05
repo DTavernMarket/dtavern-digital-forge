@@ -46,22 +46,22 @@ import { Produto } from '../../models/produto.model';
               {{ erro() }}
             </p>
           </div>
-        } @else if (produto()) {
+        } @else if (produto) {
           <!-- Navegação (Breadcrumb) -->
           <div class="mb-6">
             <nav class="text-sm text-scroll-beige/70">
-              @if (produto()!.nomeLoja && produto()!.dominioLoja) {
+              @if (produto.nomeLoja && produto.dominioLoja) {
                 <a
-                  [routerLink]="['/lojas', produto()!.dominioLoja]"
+                  [routerLink]="['/lojas', produto.dominioLoja]"
                   class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-colors"
                 >
-                  {{ produto()!.nomeLoja }}
+                  {{ produto.nomeLoja }}
                 </a>
                 <span class="mx-2">></span>
               }
-              <span>{{ produto()!.categoriaCodigo }}</span>
+              <span>{{ produto.categoriaCodigo }}</span>
               <span class="mx-2">></span>
-              <span class="text-scroll-beige">{{ produto()!.nome }}</span>
+              <span class="text-scroll-beige">{{ produto.nome }}</span>
             </nav>
           </div>
 
@@ -69,10 +69,10 @@ import { Produto } from '../../models/produto.model';
           <div class="flex flex-col lg:flex-row gap-10 items-center">
             <!-- 1) Imagem - ~45% -->
             <div class="w-full lg:w-[45%] flex justify-center bg-midnight-brown/90 rounded-lg border border-brass-accent/40">
-              @if (produto()!.midiaPreview?.urlPreview) {
+              @if (produto.midiaPreview.url) {
                 <img
-                  [src]="produto()!.midiaPreview.urlPreview"
-                  [alt]="produto()!.nome"
+                  [src]="produto.midiaPreview.url"
+                  [alt]="produto.nome"
                   class="max-h-[640px] w-auto object-contain"
                 />
               } @else {
@@ -98,32 +98,32 @@ import { Produto } from '../../models/produto.model';
             <!-- 2) Título + info da loja + resumo (200 caracteres) + preço/botão - ~55% -->
             <div class="w-full lg:w-[55%] space-y-4">
               <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige">
-                {{ produto()!.nome }}
+                {{ produto.nome }}
               </h1>
 
-              @if (produto()!.nomeLoja && produto()!.dominioLoja) {
+              @if (produto.nomeLoja && produto.dominioLoja) {
                 <p class="text-sm text-scroll-beige/70">
                   Criado por
                   <a
-                    [routerLink]="['/lojas', produto()!.dominioLoja]"
+                    [routerLink]="['/lojas', produto.dominioLoja]"
                     class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-colors cursor-pointer"
                   >
-                    {{ produto()!.nomeLoja }}
+                    {{ produto.nomeLoja }}
                   </a>
                 </p>
               }
 
               <p class="text-lg text-scroll-beige/80 leading-relaxed">
                 {{
-                  (produto()!.descricao || '').substring(0, 200)
+                  (produto.descricao || '').substring(0, 200)
                 }}
-                <span *ngIf="(produto()!.descricao || '').length > 200">...</span>
+                <span *ngIf="(produto.descricao || '').length > 200">...</span>
               </p>
 
               <!-- Preço + Promoção + Botão (abaixo do resumo de 200 caracteres) -->
               <div class="space-y-4 pt-4">
                 <div class="space-y-2">
-                  @if (produto()!.gratuito) {
+                  @if (produto.gratuito) {
                     <p class="text-sm text-scroll-beige/70">Produto digital</p>
                     <div class="text-3xl font-bold text-green-500">Grátis</div>
                   } @else {
@@ -132,23 +132,23 @@ import { Produto } from '../../models/produto.model';
                       <span class="text-3xl font-bold text-scroll-beige">
                         R$
                         {{
-                          (produto()!.valorPromocional != null
-                            ? produto()!.valorPromocional
-                            : produto()!.valorUnitario
+                          (produto.valorPromocional != null
+                            ? produto.valorPromocional
+                            : produto.valorUnitario
                           )
                             ?.toFixed(2)
                             ?.replace('.', ',')
                         }}
                       </span>
 
-                      @if (produto()!.promocaoPorcentagem > 0 && produto()!.valorPromocional != null) {
+                      @if (produto.promocaoPorcentagem && produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
                         <span class="text-scroll-beige/60 line-through text-lg">
-                          R$ {{ produto()!.valorUnitario.toFixed(2).replace('.', ',') }}
+                          R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
                         </span>
                         <span
                           class="px-2 py-1 rounded-full bg-red-600/90 text-white text-xs font-semibold"
                         >
-                          -{{ produto()!.promocaoPorcentagem }}%
+                          -{{ produto.promocaoPorcentagem }}%
                         </span>
                       }
                     </div>
@@ -159,7 +159,7 @@ import { Produto } from '../../models/produto.model';
                   <button
                     class="w-full py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors shadow-md hover:shadow-lg"
                   >
-                    {{ produto()!.gratuito ? 'Baixar agora' : 'Comprar' }}
+                    {{ produto.gratuito ? 'Baixar agora' : 'Comprar' }}
                   </button>
                   <p class="text-xs text-scroll-beige/60">
                     * Integração com carrinho/pagamento será adicionada em breve.
@@ -173,7 +173,7 @@ import { Produto } from '../../models/produto.model';
           <div class="mt-10">
             <h2 class="text-xl font-semibold text-scroll-beige mb-3">Descrição do produto</h2>
             <p class="text-scroll-beige/80 leading-relaxed whitespace-pre-line">
-              {{ produto()!.descricao || 'Nenhuma descrição disponível para este produto.' }}
+              {{ produto.descricao || 'Nenhuma descrição disponível para este produto.' }}
             </p>
           </div>
         }
@@ -185,7 +185,7 @@ export class ProdutoDetalheComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private produtoService = inject(ProdutoService);
 
-  produto = signal<Produto | null>(null);
+  produto: Produto | null = null;
   carregando = signal<boolean>(true);
   erro = signal<string | null>(null);
 
@@ -202,7 +202,7 @@ export class ProdutoDetalheComponent implements OnInit {
 
     this.produtoService.buscarProdutoPorNomeNormalizado(identificador).subscribe({
       next: (produto) => {
-        this.produto.set(produto);
+        this.produto = produto;
         this.carregando.set(false);
       },
       error: (error) => {

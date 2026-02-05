@@ -240,13 +240,13 @@ import { auth } from '../../config/firebase.config';
                 <!-- Imagem de Preview ou Placeholder -->
                 <div class="w-full h-full">
                   <img
-                    *ngIf="produto.midiaPreview.urlPreview"
-                    [src]="produto.midiaPreview.urlPreview"
+                    *ngIf="produto.midiaPreview.url"
+                    [src]="produto.midiaPreview.url"
                     [alt]="produto.nome"
                     class="w-full h-full object-cover"
                   />
                   <div
-                    *ngIf="!produto.midiaPreview.urlPreview"
+                    *ngIf="!produto.midiaPreview.url"
                     class="w-full h-full flex items-center justify-center"
                   >
                     <svg
@@ -285,7 +285,7 @@ import { auth } from '../../config/firebase.config';
 
                 <!-- Badge de Promoção -->
                 <div
-                  *ngIf="produto.promocaoPorcentagem > 0 && !produto.gratuito"
+                  *ngIf="produto.promocaoPorcentagem && produto.promocaoPorcentagem > 0 && !produto.gratuito"
                   class="absolute bottom-3 right-3"
                 >
                   <span
@@ -346,7 +346,7 @@ import { auth } from '../../config/firebase.config';
                             .replace('.', ',')
                         }}
                       </span>
-                      @if (produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
+                      @if (produto.promocaoPorcentagem && produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
                       <span
                         class="text-scroll-beige/50 text-sm line-through"
                       >

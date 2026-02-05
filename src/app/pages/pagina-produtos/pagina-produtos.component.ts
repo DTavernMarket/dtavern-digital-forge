@@ -211,13 +211,13 @@ import { Produto } from '../../models/produto.model';
                       <div class="relative w-32 h-32 bg-tavern-wood/20 rounded-lg overflow-hidden">
                         <!-- Imagem de Preview ou Placeholder -->
                         <img
-                          *ngIf="produto.midiaPreview?.urlPreview"
-                          [src]="produto.midiaPreview.urlPreview"
+                          *ngIf="produto.midiaPreview.url"
+                          [src]="produto.midiaPreview.url"
                           [alt]="produto.nome"
                           class="w-full h-full object-cover"
                         />
                         <div
-                          *ngIf="!produto.midiaPreview?.urlPreview"
+                          *ngIf="!produto.midiaPreview.url"
                           class="w-full h-full flex items-center justify-center"
                         >
                           <svg
@@ -307,7 +307,7 @@ import { Produto } from '../../models/produto.model';
                                 .replace('.', ',')
                             }}
                           </div>
-                          @if (produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
+                          @if (produto.promocaoPorcentagem && produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
                           <div
                             class="text-sm text-scroll-beige/60 line-through"
                           >

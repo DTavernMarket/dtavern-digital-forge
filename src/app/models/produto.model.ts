@@ -4,19 +4,22 @@ export interface Produto {
   gratuito: boolean;
   nome: string;
   nomeNormalizado: string;
-  promocaoPorcentagem: number;
   valorUnitario: number;
-  valorPromocional: number | null;
+  promocaoPorcentagem?: number;
+  valorPromocional?: number | null;
   nomeLoja: string;
   dominioLoja: string;
-  midiaPreview: MidiaPreview;
-
+  midiaPreview: Midia;
 }
 
-export interface MidiaPreview {
-  idMidiaPreview: string;
+export interface Midia {
+  idMidia: string;
   nomeArquivo: string;
-  urlPreview: string;
+  url: string;
+  alturaPx: number;
+  larguraPx: number;
+  mimeType: string;
+  tamanhoBytes: number;
 }
 
 export interface PagedResult<T> {
@@ -30,4 +33,17 @@ export interface PagedResult<T> {
   numberOfElements: number;
 }
 
-
+export interface ProdutoCompleto {
+  categoriaCodigo: string;
+  descricao: string;
+  gratuito: boolean;
+  nome: string;
+  nomeNormalizado: string;
+  valorUnitario: number;
+  promocaoPorcentagem?: number;
+  valorPromocional?: number | null;
+  nomeLoja: string;
+  dominioLoja: string;
+  midiaPreview: Midia;
+  midiaConteudo: Midia;
+}
