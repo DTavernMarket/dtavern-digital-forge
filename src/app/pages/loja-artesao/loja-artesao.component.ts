@@ -240,13 +240,13 @@ import { auth } from '../../config/firebase.config';
                 <!-- Imagem de Preview ou Placeholder -->
                 <div class="w-full h-full">
                   <img
-                    *ngIf="produto.urlPreview"
-                    [src]="produto.urlPreview"
+                    *ngIf="produto.midiaPreview.urlPreview"
+                    [src]="produto.midiaPreview.urlPreview"
                     [alt]="produto.nome"
                     class="w-full h-full object-cover"
                   />
                   <div
-                    *ngIf="!produto.urlPreview"
+                    *ngIf="!produto.midiaPreview.urlPreview"
                     class="w-full h-full flex items-center justify-center"
                   >
                     <svg

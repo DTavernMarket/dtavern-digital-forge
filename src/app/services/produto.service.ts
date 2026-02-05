@@ -7,7 +7,7 @@ import { Produto, PagedResult } from '../models/produto.model';
   providedIn: 'root',
 })
 export class ProdutoService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   adicionarProduto(dtoProduto: any, dominioArtesao: string): Observable<any> {
     return this.http.post<any>(
@@ -61,17 +61,36 @@ export class ProdutoService {
    * Faz upload da imagem de preview do produto
    * @param nomeProdutoNormalizado Nome normalizado do produto
    * @param arquivo Arquivo de imagem a ser enviado
-   * @param tipoArquivo Tipo do arquivo (ex: "preview", "imagem")
    */
-  uploadImagemProduto(
+  uploadImagemPreviewProduto(
     nomeProdutoNormalizado: string,
     arquivo: File,
-    tipoArquivo: string = 'preview'
   ): Observable<void> {
     const formData = new FormData();
     formData.append('files', arquivo);
 
-    const params = new HttpParams().set('tipo_arquivo', tipoArquivo);
+    const params = new HttpParams().set('tipo_arquivo', 'preview');
+
+    return this.http.post<void>(
+      `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}/files`,
+      formData,
+      { params }
+    );
+  }
+  
+  /**
+   * Faz upload da imagem de conteudo do produto
+   * @param nomeProdutoNormalizado Nome normalizado do produto
+   * @param arquivo Arquivo de imagem a ser enviado
+   */
+  uploadImagemConteudoProduto(
+    nomeProdutoNormalizado: string,
+    arquivo: File,
+  ): Observable<void> {
+    const formData = new FormData();
+    formData.append('files', arquivo);
+
+    const params = new HttpParams().set('tipo_arquivo', 'conteudo');
 
     return this.http.post<void>(
       `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}/files`,

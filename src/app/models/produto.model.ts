@@ -9,8 +9,14 @@ export interface Produto {
   valorPromocional: number | null;
   nomeLoja: string;
   dominioLoja: string;
-  idMidiaPreview?: string;
-  urlPreview?: string;
+  midiaPreview: MidiaPreview;
+
+}
+
+export interface MidiaPreview {
+  idMidiaPreview: string;
+  nomeArquivo: string;
+  urlPreview: string;
 }
 
 export interface PagedResult<T> {

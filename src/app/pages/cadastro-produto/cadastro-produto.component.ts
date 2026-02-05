@@ -68,7 +68,7 @@ import { Inject, PLATFORM_ID } from '@angular/core';
       <div class="container mx-auto px-4 py-8">
         <form (ngSubmit)="salvarProduto()" class="space-y-8">
           <!-- Divisor -->
-          <div class="border border-brass-accent/30 rounded-xl max-w-4xl mx-auto">
+          <div class="border border-brass-accent/30 rounded-xl max-w-4xl mx-auto bg-midnight-brown/40">
             <!-- Informações Básicas -->
             <div class="bg-tavern-wood/10 p-8">
               <div class="grid md:grid-cols-3 gap-6">
@@ -125,7 +125,7 @@ import { Inject, PLATFORM_ID } from '@angular/core';
                 </div>
 
                   <!-- Categoria -->
-                  <div class="md:col-span-3">
+                  <div>
                   <app-select-customizado
                     label="Categoria *"
                     [opcoes]="opcoesCategoria"
@@ -158,38 +158,152 @@ import { Inject, PLATFORM_ID } from '@angular/core';
               </div>
             </div>
 
-            <!-- Imagem de Preview -->
-            <div class="bg-tavern-wood/10 rounded-xl ml-8 mb-8">
-              <div class="space-y-4">
-                <!-- Input de arquivo -->
-                <div *ngIf="!imagemPreview || imagemPreview === null">
-                  <label class="block text-sm font-medium text-scroll-beige mb-2">
-                    Selecione uma imagem
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    (change)="onImagemSelecionada($event)"
-                    class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-candlelight-gold file:text-tavern-wood hover:file:bg-candlelight-gold/90 file:cursor-pointer cursor-pointer focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
-                  />
-                </div>
-
-                <!-- Preview da imagem -->
-                <div *ngIf="imagemPreview" class="mt-4">
-                  <p class="text-sm text-scroll-beige/70 mb-2">Preview:</p>
+            <!-- Imagem de Preview e Arquivo de Conteúdo -->
+            <div class="bg-tavern-wood/10 rounded-xl ml-8 mb-8 p-8">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Imagem de apresentação -->
+                <div class="space-y-4">
+                  <p class="text-sm font-medium text-scroll-beige/80 mb-2">
+                    Imagem de apresentação
+                  </p>
                   <div class="relative inline-block">
-                    <img
-                      [src]="imagemPreview"
-                      alt="Preview da imagem"
-                      class="max-w-xs max-h-64 rounded-lg border border-brass-accent/40 object-cover"
-                    />
+                    <div class="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 bg-midnight-brown/90 rounded-lg border border-brass-accent/40 flex items-center justify-center overflow-hidden">
+                      <!-- Quando não houver imagem, mostrar input centralizado -->
+                      <div *ngIf="!imagemPreview || imagemPreview === null" class="flex flex-col items-center justify-center w-full h-full p-4">
+                        <label class="cursor-pointer flex flex-col items-center justify-center w-full h-full">
+                          <svg
+                            class="w-12 h-12 text-scroll-beige/50 mb-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                          <span class="px-6 py-2 bg-candlelight-gold hover:bg-candlelight-gold/90 text-tavern-wood font-semibold rounded-lg transition-colors">
+                            Escolher arquivo
+                          </span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            (change)="onImagemSelecionada($event)"
+                            class="hidden"
+                          />
+                        </label>
+                      </div>
+                      <!-- Quando houver imagem, mostrar preview -->
+                      <img
+                        *ngIf="imagemPreview"
+                        [src]="imagemPreview"
+                        alt="Preview da imagem"
+                        class="max-w-full max-h-full w-auto h-auto object-contain"
+                      />
+                    </div>
+                    <!-- Botão de remover imagem (só aparece quando há imagem) -->
                     <button
+                      *ngIf="imagemPreview"
                       type="button"
                       (click)="removerImagem()"
                       class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
                     >
                       ×
                     </button>
+                  </div>
+                  <!-- Nome da imagem (fora da caixa de input) -->
+                  <div *ngIf="imagemSelecionada" class="mt-2">
+                    <span class="text-xs text-scroll-beige/70 break-words">
+                      {{ imagemSelecionada.name }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Arquivo de conteúdo do produto -->
+                <div class="space-y-4">
+                  <p class="text-sm font-medium text-scroll-beige/80 mb-2">
+                    Arquivo de conteúdo
+                  </p>
+                  <div class="relative inline-block">
+                    <div
+                      class="w-72 h-48 sm:w-[336px] sm:h-56 md:w-96 md:h-64 bg-midnight-brown/90 rounded-lg border border-brass-accent/40 flex items-center justify-center overflow-hidden"
+                      [class.border-candlelight-gold]="isDragOverConteudo"
+                      [class.border-2]="isDragOverConteudo"
+                      (dragover)="onDragOverConteudo($event)"
+                      (dragleave)="onDragLeaveConteudo($event)"
+                      (drop)="onDropConteudo($event)"
+                    >
+                      <!-- Quando não houver arquivo, mostrar input centralizado -->
+                      <div *ngIf="!arquivoConteudoSelecionado" class="flex flex-col items-center justify-center w-full h-full p-4">
+                        <label class="cursor-pointer flex flex-col items-center justify-center w-full h-full">
+                          <svg
+                            class="w-16 h-16 text-scroll-beige/50 mb-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                            />
+                          </svg>
+                          <span class="px-6 py-2 bg-candlelight-gold hover:bg-candlelight-gold/90 text-tavern-wood font-semibold rounded-lg transition-colors mb-2">
+                            Escolher arquivo
+                          </span>
+                          <span class="text-xs text-scroll-beige/60 text-center">ou arraste e solte aqui</span>
+                          <input
+                            type="file"
+                            (change)="onArquivoConteudoSelecionado($event)"
+                            class="hidden"
+                          />
+                        </label>
+                      </div>
+                      <!-- Quando houver arquivo, mostrar preview -->
+                      <div *ngIf="arquivoConteudoSelecionado" class="flex flex-col items-center justify-center w-full h-full p-4">
+                        <!-- Preview de imagem -->
+                        <img
+                          *ngIf="arquivoConteudoTipo?.startsWith('image/') && arquivoConteudoPreview"
+                          [src]="arquivoConteudoPreview"
+                          alt="Preview do arquivo"
+                          class="max-w-full max-h-[70%] w-auto h-auto object-contain mb-2"
+                        />
+                        <!-- Ícone para outros tipos de arquivo -->
+                        <div *ngIf="!arquivoConteudoTipo?.startsWith('image/') || !arquivoConteudoPreview" class="flex flex-col items-center justify-center mb-2">
+                          <svg
+                            class="w-16 h-16 text-scroll-beige/50 mb-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Botão de remover arquivo (só aparece quando há arquivo) -->
+                    <button
+                      *ngIf="arquivoConteudoSelecionado"
+                      type="button"
+                      (click)="removerArquivoConteudo()"
+                      class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <!-- Nome do arquivo (fora da caixa de input) -->
+                  <div *ngIf="arquivoConteudoSelecionado" class="mt-2">
+                    <span class="text-xs text-scroll-beige/70 break-words">
+                      {{ arquivoConteudoNome }}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -219,7 +333,7 @@ import { Inject, PLATFORM_ID } from '@angular/core';
               <button
                 type="submit"
                 [disabled]="!formularioValido()"
-                class="px-8 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-8 py-3 bg-candlelight-gold hover:bg-candlelight-gold/90 text-tavern-wood font-semibold rounded-lg  transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Salvar Produto
               </button>
@@ -300,6 +414,13 @@ export class CadastroProdutoComponent implements OnInit {
   imagemPreview: string | null = null;
   imagemAlterada: boolean = false;
 
+  // Arquivo de conteúdo do produto
+  arquivoConteudoSelecionado: File | null = null;
+  arquivoConteudoPreview: string | null = null;
+  arquivoConteudoNome: string | null = null;
+  arquivoConteudoTipo: string | null = null;
+  isDragOverConteudo: boolean = false;
+
   // Modo de edição
   isModoEdicao = signal(false);
   nomeNormalizadoProduto: string | null = null;
@@ -354,12 +475,12 @@ export class CadastroProdutoComponent implements OnInit {
       this.produtoService.buscarProdutoPorNomeNormalizado(nomeNormalizado)
     );
     this.produto = produto;
-    this.imagemPreview = produto.urlPreview;
+    this.imagemPreview = produto.midiaPreview?.urlPreview || null;
     this.cdr.detectChanges();
   }
 
   calcularValorPromocional() {
-    
+
     const porcentagem = 100 - this.produto.promocaoPorcentagem;
 
     this.valorPromocionalVisualizacao = this.produto.valorUnitario * (porcentagem / 100);
@@ -438,18 +559,17 @@ export class CadastroProdutoComponent implements OnInit {
         nomeNormalizado = resposta?.nomeNormalizado;
       }
 
-      if (this.imagemAlterada) {
-        await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.idMidiaPreview!));
+      if (this.imagemAlterada && this.produto.midiaPreview?.idMidiaPreview) {
+        await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.midiaPreview.idMidiaPreview));
       }
 
       // Se houver imagem selecionada, fazer upload
       if (this.imagemSelecionada && nomeNormalizado && this.imagemAlterada) {
         try {
           await firstValueFrom(
-            this.produtoService.uploadImagemProduto(
+            this.produtoService.uploadImagemPreviewProduto(
               nomeNormalizado,
-              this.imagemSelecionada,
-              'preview'
+              this.imagemSelecionada
             )
           );
         } catch (uploadError) {
@@ -493,8 +613,10 @@ export class CadastroProdutoComponent implements OnInit {
       const reader = new FileReader();
       reader.onload = (e) => {
         this.imagemPreview = e.target?.result as string;
+        this.cdr.detectChanges();
       };
       reader.readAsDataURL(arquivo);
+
     }
   }
 
@@ -502,6 +624,64 @@ export class CadastroProdutoComponent implements OnInit {
     this.imagemSelecionada = null;
     this.imagemPreview = null;
     this.imagemAlterada = true;
+  }
+
+  onArquivoConteudoSelecionado(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const arquivo = input.files[0];
+      this.processarArquivoConteudo(arquivo);
+    }
+  }
+
+  onDragOverConteudo(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOverConteudo = true;
+  }
+
+  onDragLeaveConteudo(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOverConteudo = false;
+  }
+
+  onDropConteudo(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOverConteudo = false;
+
+    if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
+      const arquivo = event.dataTransfer.files[0];
+      this.processarArquivoConteudo(arquivo);
+      this.cdr.detectChanges();
+    }
+  }
+
+  processarArquivoConteudo(arquivo: File) {
+    this.arquivoConteudoSelecionado = arquivo;
+    this.arquivoConteudoNome = arquivo.name;
+    this.arquivoConteudoTipo = arquivo.type;
+
+    // Se for uma imagem, criar preview
+    if (arquivo.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.arquivoConteudoPreview = e.target?.result as string;
+        this.cdr.detectChanges();
+      };
+      reader.readAsDataURL(arquivo);
+    } else {
+      this.arquivoConteudoPreview = null;
+      this.cdr.detectChanges();
+    }
+  }
+
+  removerArquivoConteudo() {
+    this.arquivoConteudoSelecionado = null;
+    this.arquivoConteudoPreview = null;
+    this.arquivoConteudoNome = null;
+    this.arquivoConteudoTipo = null;
   }
 
   irParaLoja() {

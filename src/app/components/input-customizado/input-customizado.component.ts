@@ -106,8 +106,8 @@ export class InputCustomizadoComponent implements ControlValueAccessor {
   }
   
   // Classes customizáveis
-  @Input() labelClasses: string = 'text-scroll-beige/80 text-sm';
-  @Input() inputClasses: string = 'w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60 focus:outline-none focus:ring-2 focus:ring-candlelight-gold';
+  @Input() labelClasses: string = 'text-scroll-beige/80 text-sm font-medium mb-2';
+  @Input() inputClasses: string = 'w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60 focus:outline-none focus:ring-2 focus:ring-candlelight-gold';
   @Input() iconClasses: string = 'text-scroll-beige/60';
   @Input() helpTextClasses: string = 'text-scroll-beige/60';
   
