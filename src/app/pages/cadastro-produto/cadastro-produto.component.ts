@@ -578,6 +578,11 @@ export class CadastroProdutoComponent implements OnInit {
     this.produto = produtoCompleto;
     this.imagemPreview = produtoCompleto.midiaPreview?.url || null;
     this.midiaPreviewInfo = produtoCompleto.midiaPreview || null;
+    
+    // Limpar imagemSelecionada se já foi feito upload (agora está no backend)
+    if (this.midiaPreviewInfo) {
+      this.imagemSelecionada = null;
+    }
 
     // Carregar informações do arquivo de conteúdo se existir
     if (produtoCompleto.midiaConteudo) {
@@ -590,10 +595,13 @@ export class CadastroProdutoComponent implements OnInit {
       } else {
         this.arquivoConteudoPreview = null;
       }
+      // Limpar arquivoConteudoSelecionado se já foi feito upload (agora está no backend)
+      this.arquivoConteudoSelecionado = null;
     } else {
       // Se não houver arquivo de conteúdo, limpar informações
       this.midiaConteudoInfo = null;
       this.arquivoConteudoPreview = null;
+      this.arquivoConteudoSelecionado = null;
     }
 
     this.cdr.detectChanges();
@@ -683,41 +691,6 @@ export class CadastroProdutoComponent implements OnInit {
         nomeNormalizado = resposta?.nomeNormalizado;
       }
 
-      if (this.imagemAlterada && this.produto.midiaPreview?.idMidia) {
-        this.deletePreviewLoading = true;
-        try {
-          await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.midiaPreview.idMidia));
-        } catch (error) {
-          console.error('Erro ao deletar imagem de preview:', error);
-        } finally {
-          this.deletePreviewLoading = false;
-        }
-      }
-
-      // Se houver imagem selecionada, fazer upload
-      if (this.imagemSelecionada && nomeNormalizado && this.imagemAlterada) {
-        this.uploadPreviewLoading = true;
-        try {
-          await firstValueFrom(
-            this.produtoService.uploadImagemPreviewProduto(
-              nomeNormalizado,
-              this.imagemSelecionada
-            )
-          );
-          // Recarregar produto para atualizar informações
-          await this.recarregarProdutoCompleto(nomeNormalizado);
-        } catch (uploadError) {
-          console.error('Erro ao fazer upload da imagem:', uploadError);
-          alert(
-            this.isModoEdicao()
-              ? 'Produto atualizado, mas houve erro ao fazer upload da imagem.'
-              : 'Produto salvo, mas houve erro ao fazer upload da imagem.'
-          );
-        } finally {
-          this.uploadPreviewLoading = false;
-        }
-      }
-
       alert(this.isModoEdicao() ? 'Produto atualizado com sucesso!' : 'Produto salvo com sucesso!');
       // Redirecionar para a loja específica
       this.irParaLoja();
@@ -731,7 +704,7 @@ export class CadastroProdutoComponent implements OnInit {
     }
   }
 
-  onImagemSelecionada(event: Event) {
+  async onImagemSelecionada(event: Event) {
     if (this.uploadPreviewLoading || this.deletePreviewLoading) {
       return;
     }
@@ -756,12 +729,15 @@ export class CadastroProdutoComponent implements OnInit {
       };
       reader.readAsDataURL(arquivo);
 
+      // Fazer upload automaticamente
+      await this.fazerUploadImagemPreview(arquivo);
     }
   }
 
   async removerImagem() {
     if (this.produto.midiaPreview?.idMidia) {
       this.deletePreviewLoading = true;
+      this.cdr.detectChanges();
       try {
         await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.midiaPreview.idMidia));
         // Recarregar produto para atualizar informações
@@ -773,12 +749,83 @@ export class CadastroProdutoComponent implements OnInit {
         alert('Erro ao deletar imagem. Tente novamente.');
       } finally {
         this.deletePreviewLoading = false;
+        this.imagemSelecionada = null;
+        this.imagemPreview = null;
+        this.midiaPreviewInfo = null;
+        this.imagemAlterada = true;
+        this.cdr.detectChanges();
       }
+    } else {
+      // Se não houver idMidia, apenas limpar localmente
+      this.imagemSelecionada = null;
+      this.imagemPreview = null;
+      this.midiaPreviewInfo = null;
+      this.imagemAlterada = true;
+      this.cdr.detectChanges();
     }
-    this.imagemSelecionada = null;
-    this.imagemPreview = null;
-    this.midiaPreviewInfo = null;
-    this.imagemAlterada = true;
+  }
+
+  async fazerUploadImagemPreview(arquivo: File) {
+    this.uploadPreviewLoading = true;
+    this.cdr.detectChanges();
+    try {
+      let nomeNormalizado: string | null = null;
+
+      // Se estiver em modo de edição, usar o nomeNormalizado existente
+      if (this.isModoEdicao() && this.nomeNormalizadoProduto) {
+        nomeNormalizado = this.nomeNormalizadoProduto;
+      } else if (this.formularioValido() && this.artesaoAtual) {
+        // Se estiver em modo de criação e o formulário estiver válido, salvar o produto primeiro
+        const dtoProduto = {
+          nome: this.produto.nome,
+          descricao: this.produto.descricao || '',
+          categoriaCodigo: this.produto.categoriaCodigo,
+          valorUnitario: this.produto.gratuito ? 0 : this.produto.valorUnitario || 0,
+          promocaoPorcentagem: this.produto.promocaoPorcentagem || 0,
+          gratuito: this.produto.gratuito || false,
+        };
+
+        const resposta = await firstValueFrom(
+          this.produtoService.adicionarProduto(dtoProduto, this.artesaoAtual.dominio)
+        );
+        nomeNormalizado = resposta?.nomeNormalizado;
+        this.nomeNormalizadoProduto = nomeNormalizado;
+        this.isModoEdicao.set(true);
+        this.cdr.detectChanges();
+      }
+
+      // Se já houver uma imagem de preview, deletar antes de fazer upload da nova
+      if (nomeNormalizado && this.produto.midiaPreview?.idMidia) {
+        try {
+          await firstValueFrom(this.produtoService.deleteMidiaProduto(this.produto.midiaPreview.idMidia));
+        } catch (error) {
+          console.error('Erro ao deletar imagem de preview antiga:', error);
+        }
+      }
+
+      // Fazer upload se tiver nomeNormalizado
+      if (nomeNormalizado) {
+        await firstValueFrom(
+          this.produtoService.uploadImagemPreviewProduto(nomeNormalizado, arquivo)
+        );
+        console.log('Upload da imagem de preview realizado com sucesso!');
+        
+        // Recarregar informações do produto para atualizar dados da imagem de preview
+        await this.recarregarProdutoCompleto(nomeNormalizado);
+      } else {
+        console.warn('Não foi possível fazer upload: produto ainda não foi salvo ou formulário inválido');
+      }
+    } catch (error) {
+      console.error('Erro ao fazer upload da imagem de preview:', error);
+      alert('Erro ao fazer upload da imagem de preview. Tente novamente.');
+      this.imagemSelecionada = null;
+      this.imagemPreview = null;
+      this.imagemAlterada = true;
+      this.cdr.detectChanges();
+    } finally {
+      this.uploadPreviewLoading = false;
+      this.cdr.detectChanges();
+    }
   }
 
   onArquivoConteudoSelecionado(event: Event) {
@@ -829,6 +876,7 @@ export class CadastroProdutoComponent implements OnInit {
     this.arquivoConteudoSelecionado = arquivo;
     this.arquivoConteudoNome = arquivo.name;
     this.arquivoConteudoTipo = arquivo.type;
+    this.cdr.detectChanges();
 
     // Se for uma imagem, criar preview
     if (arquivo.type.startsWith('image/')) {
@@ -849,6 +897,7 @@ export class CadastroProdutoComponent implements OnInit {
 
   async fazerUploadArquivoConteudo(arquivo: File) {
     this.uploadConteudoLoading = true;
+    this.cdr.detectChanges();
     try {
       let nomeNormalizado: string | null = null;
 
@@ -872,6 +921,7 @@ export class CadastroProdutoComponent implements OnInit {
         nomeNormalizado = resposta?.nomeNormalizado;
         this.nomeNormalizadoProduto = nomeNormalizado;
         this.isModoEdicao.set(true);
+        this.cdr.detectChanges();
       }
 
       // Fazer upload se tiver nomeNormalizado
@@ -889,9 +939,14 @@ export class CadastroProdutoComponent implements OnInit {
     } catch (error) {
       console.error('Erro ao fazer upload do arquivo de conteúdo:', error);
       alert('Erro ao fazer upload do arquivo de conteúdo. Tente novamente.');
-      this.removerArquivoConteudo();
+      this.arquivoConteudoSelecionado = null;
+      this.arquivoConteudoPreview = null;
+      this.arquivoConteudoNome = null;
+      this.arquivoConteudoTipo = null;
+      this.cdr.detectChanges();
     } finally {
       this.uploadConteudoLoading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -900,6 +955,7 @@ export class CadastroProdutoComponent implements OnInit {
 
     if (idMidia) {
       this.deleteConteudoLoading = true;
+      this.cdr.detectChanges();
       try {
         await firstValueFrom(this.produtoService.deleteMidiaProduto(idMidia));
         // Recarregar produto para atualizar informações
@@ -911,14 +967,22 @@ export class CadastroProdutoComponent implements OnInit {
         alert('Erro ao deletar arquivo. Tente novamente.');
       } finally {
         this.deleteConteudoLoading = false;
+        this.arquivoConteudoSelecionado = null;
+        this.arquivoConteudoPreview = null;
+        this.arquivoConteudoNome = null;
+        this.arquivoConteudoTipo = null;
+        this.midiaConteudoInfo = null;
+        this.cdr.detectChanges();
       }
+    } else {
+      // Se não houver idMidia, apenas limpar localmente
+      this.arquivoConteudoSelecionado = null;
+      this.arquivoConteudoPreview = null;
+      this.arquivoConteudoNome = null;
+      this.arquivoConteudoTipo = null;
+      this.midiaConteudoInfo = null;
+      this.cdr.detectChanges();
     }
-    this.arquivoConteudoSelecionado = null;
-    this.arquivoConteudoPreview = null;
-    this.arquivoConteudoNome = null;
-    this.arquivoConteudoTipo = null;
-    this.midiaConteudoInfo = null;
-    this.cdr.detectChanges();
   }
 
   formatarTamanhoArquivo(bytes: number | null | undefined): string {

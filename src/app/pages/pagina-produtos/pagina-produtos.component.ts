@@ -211,13 +211,13 @@ import { Produto } from '../../models/produto.model';
                       <div class="relative w-32 h-32 bg-tavern-wood/20 rounded-lg overflow-hidden">
                         <!-- Imagem de Preview ou Placeholder -->
                         <img
-                          *ngIf="produto.midiaPreview.url"
-                          [src]="produto.midiaPreview.url"
+                          *ngIf="produto.midiaPreview?.url"
+                          [src]="produto.midiaPreview?.url"
                           [alt]="produto.nome"
                           class="w-full h-full object-cover"
                         />
                         <div
-                          *ngIf="!produto.midiaPreview.url"
+                          *ngIf="!produto.midiaPreview?.url"
                           class="w-full h-full flex items-center justify-center"
                         >
                           <svg
