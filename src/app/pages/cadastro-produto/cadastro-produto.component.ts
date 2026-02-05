@@ -18,7 +18,7 @@ import {
 import { firstValueFrom } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, PLATFORM_ID } from '@angular/core';
-import { Midia } from '../../models/produto.model';
+import { Midia, ProdutoCompleto } from '../../models/produto.model';
 
 @Component({
   selector: 'app-cadastro-produto',
@@ -153,7 +153,7 @@ import { Midia } from '../../models/produto.model';
                     name="descricao"
                   />
                   <div class="flex justify-end items-center text-sm text-scroll-beige/70 mt-2">
-                    <span>{{ (produto.descricao || '').length }} / 2000 caracteres</span>
+                    <span>{{ (produto?.descricao || '').length }} / 2000 caracteres</span>
                   </div>
                 </div>
               </div>
@@ -306,7 +306,18 @@ import { Midia } from '../../models/produto.model';
                   </div>
                   <!-- Nome do arquivo (fora da caixa de input) -->
                   <div *ngIf="arquivoConteudoSelecionado || midiaConteudoInfo" class="mt-2 space-y-1">
-                    <div class="text-xs text-scroll-beige/70 break-words">
+                    <div 
+                      *ngIf="midiaConteudoInfo && isModoEdicao()"
+                      class="text-xs text-scroll-beige/70 break-words cursor-pointer hover:text-candlelight-gold hover:underline transition-colors"
+                      (click)="baixarArquivoConteudo()"
+                      title="Clique para baixar o arquivo"
+                    >
+                      {{ arquivoConteudoNome || midiaConteudoInfo.nomeArquivo }}
+                    </div>
+                    <div 
+                      *ngIf="!midiaConteudoInfo || !isModoEdicao()"
+                      class="text-xs text-scroll-beige/70 break-words"
+                    >
                       {{ arquivoConteudoNome || midiaConteudoInfo?.nomeArquivo }}
                     </div>
                     <div class="text-xs text-scroll-beige/50 flex gap-2">
@@ -400,13 +411,36 @@ export class CadastroProdutoComponent implements OnInit {
   private categoriaProdutoService = inject(CategoriaProdutoService);
   private cdr = inject(ChangeDetectorRef);
 
-  produto: any = {
-    nome: '',
-    descricao: '',
+  produto: ProdutoCompleto = {
+    id: '',
     categoriaCodigo: '',
+    descricao: '',
+    gratuito: false,
+    nome: '',
+    nomeNormalizado: '',
     valorUnitario: 0,
     promocaoPorcentagem: 0,
-    gratuito: false,
+    valorPromocional: 0,
+    nomeLoja: '',
+    dominioLoja: '',
+    midiaPreview: {
+      idMidia: '',
+      nomeArquivo: '',
+      url: '',
+      alturaPx: 0,
+      larguraPx: 0,
+      mimeType: '',
+      tamanhoBytes: 0,
+    },
+    midiaConteudo: {
+      idMidia: '',
+      nomeArquivo: '',
+      url: '',
+      alturaPx: 0,
+      larguraPx: 0,
+      mimeType: '',
+      tamanhoBytes: 0,
+    },
   };
 
   // Artesão atual
@@ -488,7 +522,7 @@ export class CadastroProdutoComponent implements OnInit {
     this.produto = produtoCompleto;
     this.imagemPreview = produtoCompleto.midiaPreview?.url || null;
     this.midiaPreviewInfo = produtoCompleto.midiaPreview || null;
-    
+
     // Carregar informações do arquivo de conteúdo se existir
     if (produtoCompleto.midiaConteudo) {
       this.midiaConteudoInfo = produtoCompleto.midiaConteudo;
@@ -499,13 +533,17 @@ export class CadastroProdutoComponent implements OnInit {
         this.arquivoConteudoPreview = produtoCompleto.midiaConteudo.url;
       }
     }
-    
+
     this.cdr.detectChanges();
   }
 
   calcularValorPromocional() {
 
-    const porcentagem = 100 - this.produto.promocaoPorcentagem;
+    if (!this.produto.promocaoPorcentagem) {
+      return;
+    }
+
+    const porcentagem = 100 - (this.produto.promocaoPorcentagem);
 
     this.valorPromocionalVisualizacao = this.produto.valorUnitario * (porcentagem / 100);
   }
@@ -802,6 +840,35 @@ export class CadastroProdutoComponent implements OnInit {
       return this.midiaConteudoInfo.mimeType;
     }
     return this.arquivoConteudoTipo;
+  }
+
+  async baixarArquivoConteudo() {
+    if (!this.nomeNormalizadoProduto || !this.midiaConteudoInfo) {
+      return;
+    }
+
+    try {
+      const blob = await firstValueFrom(
+        this.produtoService.downloadMidiaConteudoProdutoDonoLoja(this.produto.id)
+      );
+
+      // Criar URL temporária para o blob
+      const url = window.URL.createObjectURL(blob);
+
+      // Criar elemento <a> temporário para fazer o download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = this.midiaConteudoInfo.nomeArquivo || 'arquivo-conteudo';
+      document.body.appendChild(link);
+      link.click();
+
+      // Limpar
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erro ao baixar arquivo de conteúdo:', error);
+      alert('Erro ao baixar o arquivo de conteúdo. Tente novamente.');
+    }
   }
 
   irParaLoja() {

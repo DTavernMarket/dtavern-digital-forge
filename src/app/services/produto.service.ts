@@ -87,7 +87,7 @@ export class ProdutoService {
       { params }
     );
   }
-  
+
   /**
    * Faz upload da imagem de conteudo do produto
    * @param nomeProdutoNormalizado Nome normalizado do produto
@@ -106,6 +106,19 @@ export class ProdutoService {
       `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}/files`,
       formData,
       { params }
+    );
+  }
+
+  /**
+   * Faz download do arquivo de conteúdo do produto (apenas para dono da loja)
+   * @param idProduto ID ou nome normalizado do produto
+   */
+  downloadMidiaConteudoProdutoDonoLoja(idProduto: string): Observable<Blob> {
+    return this.http.get(
+      `http://localhost:8080/api/v1/produtos/${idProduto}/download-loja`,
+      {
+        responseType: 'blob'
+      }
     );
   }
 

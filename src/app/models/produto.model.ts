@@ -34,13 +34,14 @@ export interface PagedResult<T> {
 }
 
 export interface ProdutoCompleto {
+  id: string;
   categoriaCodigo: string;
-  descricao: string;
+  descricao?: string;
   gratuito: boolean;
   nome: string;
   nomeNormalizado: string;
   valorUnitario: number;
-  promocaoPorcentagem?: number;
+  promocaoPorcentagem?: number | null;
   valorPromocional?: number | null;
   nomeLoja: string;
   dominioLoja: string;
