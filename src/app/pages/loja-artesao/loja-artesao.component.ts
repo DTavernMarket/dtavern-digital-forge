@@ -298,6 +298,7 @@ import { auth } from '../../config/firebase.config';
                 </div>
 
                 <!-- Ícone de Edição -->
+                @if (isOwner()) {
                 <button
                   (click)="editarProduto(produto); $event.stopPropagation()"
                   class="absolute top-3 right-3 w-8 h-8 bg-candlelight-gold/90 hover:bg-candlelight-gold text-tavern-wood rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors z-10"
@@ -312,6 +313,7 @@ import { auth } from '../../config/firebase.config';
                     />
                   </svg>
                 </button>
+                }
               </div>
 
               <!-- Informações do Produto -->
