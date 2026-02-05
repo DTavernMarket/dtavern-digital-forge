@@ -604,6 +604,11 @@ export class CadastroProdutoComponent implements OnInit {
       this.arquivoConteudoSelecionado = null;
     }
 
+    // Calcular valor promocional se houver promoção
+    if (this.produto.promocaoPorcentagem != null && this.produto.promocaoPorcentagem !== 0) {
+      this.calcularValorPromocional();
+    }
+
     this.cdr.detectChanges();
   }
 
