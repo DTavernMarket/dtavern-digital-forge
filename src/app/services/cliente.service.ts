@@ -1,12 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, from, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CadastroClienteRequest } from '../models/cliente.model';
 import { MeResponseCliente } from '../models/auth.model';
-import { switchMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
-import { auth } from '../config/firebase.config';
-import { sendEmailVerification } from 'firebase/auth';
+import { PagedResult, Produto } from '../models/produto.model';
 
 @Injectable({
     providedIn: 'root'
@@ -16,22 +15,30 @@ export class ClienteService {
     private http = inject(HttpClient);
 
     criarCliente(cliente: CadastroClienteRequest): Observable<void> {
-        return this.http.post<void>('http://localhost:8080/api/v1/client/clientes/register', cliente).pipe(
-            switchMap(() => {
-                const currentUser = auth.currentUser;
+        return this.http.post<void>('http://localhost:8080/api/v1/client/clientes/register', cliente);
+    }
 
-                // Se por algum motivo não houver usuário autenticado no Firebase,
-                // apenas completa sem tentar enviar e-mail
-                if (!currentUser) {
-                    console.warn('Nenhum usuário Firebase autenticado para enviar verificação de e-mail (cliente).');
-                    return of(void 0);
-                }
+    getBibliotecaCliente(page: number = 0, size: number = 10, termoBusca?: string): Observable<PagedResult<Produto>> {
 
-                return from(sendEmailVerification(currentUser)).pipe(
-                    // Mesmo que o envio do e-mail falhe, não quebrar o fluxo da criação
-                    // (o erro será apenas logado no console)
-                    switchMap(() => of(void 0))
-                );
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+
+        if (termoBusca && termoBusca.trim()) {
+            params = params.set('filtroGeral', termoBusca.trim());
+        }
+
+        return this.authService.getCurrentToken().pipe(
+            switchMap(token => {
+                return this.http.get<PagedResult<Produto>>('http://localhost:8080/api/v1/clientes/biblioteca', {
+                    params: params,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }).pipe(
+                    catchError((error) => {
+                        console.error('Erro ao buscar biblioteca do cliente:', error);
+                        throw error;
+                    })
+                )
             })
         );
     }

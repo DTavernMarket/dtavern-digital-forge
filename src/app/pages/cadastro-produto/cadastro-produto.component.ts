@@ -370,7 +370,7 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                       title="Clique para baixar o arquivo"
                     >
                       {{ arquivoConteudoNome || midiaConteudoInfo.nomeArquivo }}
-                    </div>
+                </div>
                     <div 
                       *ngIf="!midiaConteudoInfo || !isModoEdicao()"
                       class="text-xs text-scroll-beige/70 break-words"
@@ -752,10 +752,10 @@ export class CadastroProdutoComponent implements OnInit {
       this.mostrarDialogDeletarPreview.set(true);
     } else {
       // Se não houver idMidia, apenas limpar localmente
-      this.imagemSelecionada = null;
-      this.imagemPreview = null;
+    this.imagemSelecionada = null;
+    this.imagemPreview = null;
       this.midiaPreviewInfo = null;
-      this.imagemAlterada = true;
+    this.imagemAlterada = true;
       this.cdr.detectChanges();
     }
   }
@@ -987,10 +987,10 @@ export class CadastroProdutoComponent implements OnInit {
       this.mostrarDialogDeletarConteudo.set(true);
     } else {
       // Se não houver idMidia, apenas limpar localmente
-      this.arquivoConteudoSelecionado = null;
-      this.arquivoConteudoPreview = null;
-      this.arquivoConteudoNome = null;
-      this.arquivoConteudoTipo = null;
+    this.arquivoConteudoSelecionado = null;
+    this.arquivoConteudoPreview = null;
+    this.arquivoConteudoNome = null;
+    this.arquivoConteudoTipo = null;
       this.midiaConteudoInfo = null;
       this.cdr.detectChanges();
     }

@@ -1,13 +1,36 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { catchError, Observable, of, switchMap } from 'rxjs';
 import { PagedResult, Produto, ProdutoCompleto } from '../models/produto.model';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProdutoService {
-  constructor(private http: HttpClient) { }
+  private authService = inject(AuthService);
+  private http = inject(HttpClient);
+
+  comprarProduto(idProduto: string): Observable<void> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.post<void>(
+          `http://localhost:8080/api/v1/produtos/${idProduto}/comprar`,
+          {},
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        ).pipe(
+          catchError((error) => {
+            console.error('Erro ao comprar produto:', error);
+            throw error;
+          })
+        );
+      })
+    );
+  }
 
   adicionarProduto(dtoProduto: any, dominioArtesao: string): Observable<any> {
     return this.http.post<any>(

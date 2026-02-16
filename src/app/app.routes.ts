@@ -9,6 +9,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { CadastroComponent } from './pages/cadastro/cadastro.component';
 import { MeuPerfilComponent } from './pages/meu-perfil/meu-perfil.component';
 import { ProdutoDetalheComponent } from './pages/produto-detalhe/produto-detalhe.component';
+import { BibliotecaComponent } from './pages/biblioteca/biblioteca.component';
 
 export const routes: Routes = [
   { path: '', component: PaginaInicialComponent },
@@ -34,5 +35,6 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'cadastro', component: CadastroComponent },
   { path: 'meu-perfil', component: MeuPerfilComponent, canActivate: [authGuard] },
+  { path: 'biblioteca', component: BibliotecaComponent, canActivate: [authGuard] },
   { path: '**', component: PaginaNaoEncontradaComponent }
 ];

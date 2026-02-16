@@ -157,10 +157,17 @@ import { Produto } from '../../models/produto.model';
 
                 <div class="space-y-2">
                   <button
-                    class="w-full py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors shadow-md hover:shadow-lg"
+                    (click)="onComprarProduto()"
+                    [disabled]="comprando()"
+                    class="w-full py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {{ produto.gratuito ? 'Baixar agora' : 'Comprar' }}
+                    {{ comprando() ? 'Processando...' : (produto.gratuito ? 'Adicionar a biblioteca' : 'Comprar') }}
                   </button>
+                  @if (mensagemCompra()) {
+                    <p class="text-xs" [class.text-green-400]="compraSucesso()" [class.text-red-400]="!compraSucesso()">
+                      {{ mensagemCompra() }}
+                    </p>
+                  }
                   <p class="text-xs text-scroll-beige/60">
                     * Integração com carrinho/pagamento será adicionada em breve.
                   </p>
@@ -188,6 +195,9 @@ export class ProdutoDetalheComponent implements OnInit {
   produto: Produto | null = null;
   carregando = signal<boolean>(true);
   erro = signal<string | null>(null);
+  comprando = signal<boolean>(false);
+  mensagemCompra = signal<string | null>(null);
+  compraSucesso = signal<boolean>(false);
 
   ngOnInit(): void {
     const nomeParam = this.route.snapshot.paramMap.get('nomeNormalizado');
@@ -209,6 +219,48 @@ export class ProdutoDetalheComponent implements OnInit {
         console.error('Erro ao carregar produto para visualização:', error);
         this.erro.set('Erro ao carregar informações do produto. Tente novamente mais tarde.');
         this.carregando.set(false);
+      },
+    });
+  }
+
+  onComprarProduto() {
+    if (!this.produto) {
+      return;
+    }
+
+    // Usar nomeNormalizado como identificador do produto
+    const idProduto = this.produto.nomeNormalizado;
+
+    this.comprando.set(true);
+    this.mensagemCompra.set(null);
+    this.compraSucesso.set(false);
+
+    this.produtoService.comprarProduto(idProduto).subscribe({
+      next: () => {
+        this.compraSucesso.set(true);
+        this.mensagemCompra.set(
+          this.produto?.gratuito
+            ? 'Download iniciado com sucesso!'
+            : 'Compra realizada com sucesso!'
+        );
+        this.comprando.set(false);
+      },
+      error: (error) => {
+        console.error('Erro ao comprar produto:', error);
+        this.compraSucesso.set(false);
+        
+        // Verificar se o produto já foi comprado
+        if (error?.error?.codigoErro === 'PRODUTO_JA_COMPRADO') {
+          this.mensagemCompra.set(
+            error?.error?.mensagem || 'Este produto já foi comprado por você.'
+          );
+        } else {
+          this.mensagemCompra.set(
+            error?.error?.mensagem || error?.error?.message || 'Erro ao processar a compra. Tente novamente.'
+          );
+        }
+        
+        this.comprando.set(false);
       },
     });
   }

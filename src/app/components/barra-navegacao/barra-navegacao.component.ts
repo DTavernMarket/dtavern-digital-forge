@@ -195,10 +195,10 @@ import { Subscription } from 'rxjs';
                     <!-- Opções específicas para COMPRADOR -->
                     <ng-container *ngIf="obterTipoUsuario() === 'COMPRADOR'">
                       <button 
-                        (click)="fecharMenuPerfil()"
+                        (click)="irParaBiblioteca()"
                         class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
                       >
-                        Meus Pedidos
+                        Minha biblioteca
                       </button>
                     </ng-container>
                     
@@ -405,6 +405,11 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   fecharMenuPerfil() {
     this.menuPerfilAberto.set(false);
     this.menuLojaAberto.set(false);
+  }
+
+  irParaBiblioteca() {
+    this.fecharMenuPerfil();
+    this.router.navigate(['/biblioteca']);
   }
 
   realizarLogout() {
