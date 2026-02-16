@@ -7,11 +7,13 @@ import {
   signOut,
   User as FirebaseUser
 } from 'firebase/auth';
-import { BehaviorSubject, Observable, from, of } from 'rxjs';
+import { BehaviorSubject, Observable, from, of, throwError } from 'rxjs';
 import { filter, map, switchMap, tap, catchError } from 'rxjs/operators';
 import { auth } from '../config/firebase.config';
 import { AuthResponse, User } from '../models/auth.model';
 import { CadastroLojaRequest } from '../models/artesao.model';
+import { sendPasswordResetEmail } from "firebase/auth";
+
 @Injectable({
   providedIn: 'root'
 })
@@ -66,7 +68,7 @@ export class AuthService {
           console.error('Erro ao obter token atualizado:', error);
           this.currentUserSubject.next(null);
           this.idTokenSubject.next(null);
-          
+
           // Tentar fazer signOut para limpar o estado do Firebase
           try {
             await signOut(auth);
@@ -109,7 +111,7 @@ export class AuthService {
               email: cred.user.email,
               displayName: cred.user.displayName || null
             };
-            
+
             this.idTokenSubject.next(token);
             this.currentUserSubject.next(user);
           }),
@@ -139,6 +141,28 @@ export class AuthService {
       tap(() => {
         this.currentUserSubject.next(null);
         this.idTokenSubject.next(null);
+      })
+    );
+  }
+
+
+  resetarSenha(email: string): Observable<void> {
+    const emailLimpo = email?.trim();
+
+    // Validação básica de e-mail antes de chamar o Firebase
+    if (!emailLimpo) {
+      return throwError(() => new Error('E-mail é obrigatório para redefinir a senha.'));
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailLimpo)) {
+      return throwError(() => new Error('Informe um e-mail válido para redefinir a senha.'));
+    }
+
+    return from(sendPasswordResetEmail(auth, emailLimpo)).pipe(
+      catchError((error) => {
+        console.error('Erro ao enviar e-mail de redefinição de senha:', error);
+        return throwError(() => error);
       })
     );
   }
