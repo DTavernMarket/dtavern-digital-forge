@@ -1,22 +1,24 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 import { RodapeComponent } from '../../components/rodape/rodape.component';
 import { ClienteService } from '../../services/cliente.service';
-import { Produto } from '../../models/produto.model';
+import { ProdutoService } from '../../services/produto.service';
+import { Venda } from '../../models/venda.model';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
     selector: 'app-biblioteca',
     standalone: true,
     imports: [CommonModule, FormsModule, RouterModule, BarraNavegacaoComponent, RodapeComponent],
     template: `
-    <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown font-body">
+    <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown font-body flex flex-col">
       <app-barra-navegacao [isFixed]="false" />
 
       <!-- Layout Principal -->
-      <section class="py-8">
+      <section class="py-8 flex-1">
         <div class="container mx-auto px-4">
           <!-- Título da Página -->
           <div class="mb-8">
@@ -84,107 +86,103 @@ import { Produto } from '../../models/produto.model';
             </div>
           }
 
-          <!-- Grid de Produtos -->
-          @if (!carregando() && produtos().length > 0) {
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              @for (produto of produtos(); track produto.nomeNormalizado) {
+          <!-- Lista de Produtos em Formato Horizontal -->
+          @if (!carregando() && biblioteca().length > 0) {
+            <div class="space-y-4">
+              @for (item of biblioteca(); track item.produto.nomeNormalizado) {
                 <div
-                  [routerLink]="['/produtos', produto.nomeNormalizado]"
-                  class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl overflow-hidden hover:border-candlelight-gold/50 hover:shadow-lg transition-all duration-300 group cursor-pointer"
+                  class="bg-midnight-brown/50 backdrop-blur-sm border border-brass-accent/30 rounded-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                 >
-                  <!-- Imagem do Produto -->
-                  <div
-                    class="relative aspect-square overflow-hidden bg-gradient-to-br from-midnight-brown/40 to-tavern-wood/20"
-                  >
-                    @if (produto.midiaPreview?.url) {
-                      <img
-                        [src]="produto.midiaPreview?.url || ''"
-                        [alt]="produto.nome"
-                        class="w-full h-full object-cover"
-                      />
-                    } @else {
-                      <div class="w-full h-full flex items-center justify-center">
-                        <svg
-                          class="w-20 h-20 text-scroll-beige/20 group-hover:text-scroll-beige/30 transition-colors"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="1.5"
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  <div class="flex space-x-6">
+                    <!-- Imagem do Produto -->
+                    <div class="flex-shrink-0">
+                      <div class="relative w-32 h-32 bg-tavern-wood/20 rounded-lg overflow-hidden">
+                        @if (item.produto.midiaPreview?.url) {
+                          <img
+                            [src]="item.produto.midiaPreview?.url || ''"
+                            [alt]="item.produto.nome"
+                            class="w-full h-full object-cover"
                           />
-                        </svg>
-                      </div>
-                    }
-
-                    <!-- Badge de Categoria -->
-                    <div class="absolute top-3 left-3">
-                      <span
-                        class="px-3 py-1.5 bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
-                      >
-                        {{ produto.categoriaCodigo }}
-                      </span>
-                    </div>
-
-                    <!-- Badge Grátis -->
-                    @if (produto.gratuito) {
-                      <div class="absolute top-3 right-3">
-                        <span
-                          class="px-3 py-1.5 bg-green-500/90 text-white text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
-                        >
-                          Grátis
-                        </span>
-                      </div>
-                    }
-                  </div>
-
-                  <!-- Informações do Produto -->
-                  <div class="p-5 space-y-3">
-                    <!-- Nome do Produto -->
-                    <h3
-                      class="font-semibold text-scroll-beige text-lg group-hover:text-candlelight-gold transition-colors line-clamp-2 min-h-[3.5rem]"
-                    >
-                      {{ produto.nome }}
-                    </h3>
-
-                    <!-- Resumo/Descrição -->
-                    <p class="text-scroll-beige/70 text-sm line-clamp-3 min-h-[4rem]">
-                      {{ produto.descricao.substring(0, 100) }}...
-                    </p>
-
-                    <!-- Preço -->
-                    <div class="flex items-center justify-between pt-2 border-t border-brass-accent/20">
-                      <div class="flex flex-col">
-                        @if (produto.gratuito) {
-                          <span class="text-candlelight-gold font-bold text-xl">
-                            Grátis
-                          </span>
                         } @else {
-                          <div class="flex items-baseline gap-2">
-                            <span class="text-candlelight-gold font-bold text-xl">
-                              R$
-                              {{
-                                (produto.valorPromocional != null
-                                  ? produto.valorPromocional
-                                  : produto.valorUnitario
-                                )
-                                  .toFixed(2)
-                                  .replace('.', ',')
-                              }}
-                            </span>
-                            @if (produto.promocaoPorcentagem && produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
-                              <span
-                                class="text-scroll-beige/50 text-sm line-through"
-                              >
-                                R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
-                              </span>
-                            }
+                          <div class="w-full h-full flex items-center justify-center">
+                            <svg
+                              class="w-16 h-16 text-scroll-beige/30"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                              />
+                            </svg>
                           </div>
                         }
+                        <!-- Badge de Categoria -->
+                        <div class="absolute top-2 left-2">
+                          <span
+                            class="bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold px-2 py-1 rounded-full"
+                          >
+                            {{ item.produto.categoriaCodigo }}
+                          </span>
+                        </div>
                       </div>
+                    </div>
+
+                    <!-- Informações do Produto -->
+                    <div class="flex-1 min-w-0">
+                      <div class="space-y-3">
+                        <!-- Nome do Produto -->
+                        <div>
+                          <h3
+                            [routerLink]="['/produtos', item.produto.nomeNormalizado]"
+                            class="text-xl font-semibold text-scroll-beige hover:text-candlelight-gold transition-colors cursor-pointer inline-block"
+                          >
+                            {{ item.produto.nome }}
+                          </h3>
+                        </div>
+
+                        <!-- Descrição -->
+                        <p class="text-sm text-scroll-beige/70 line-clamp-2">
+                          {{ item.produto.descricao.substring(0, 100) || '' }}...
+                        </p>
+
+                        <!-- Nome da Loja -->
+                        @if (item.produto.nomeLoja && item.produto.dominioLoja) {
+                          <div class="pt-1">
+                            <p class="text-sm text-scroll-beige/60">
+                              por
+                              <a
+                                [routerLink]="['/lojas', item.produto.dominioLoja]"
+                                class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-all duration-200 cursor-pointer"
+                                (click)="$event.stopPropagation()"
+                              >
+                                {{ item.produto.nomeLoja }}
+                              </a>
+                            </p>
+                          </div>
+                        }
+
+                        <!-- Data de Compra -->
+                        <div class="pt-1">
+                          <p class="text-xs text-scroll-beige/60">
+                            Comprado em {{ formatarData(item.dataCompra) }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Botão de Download -->
+                    <div class="flex-shrink-0 flex items-center">
+                      <button
+                        (click)="onDownload($event, item); $event.stopPropagation()"
+                        [disabled]="baixando(item.produto.nomeNormalizado)"
+                        class="px-6 py-3 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {{ baixando(item.produto.nomeNormalizado) ? 'Baixando...' : 'Download' }}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -216,7 +214,7 @@ import { Produto } from '../../models/produto.model';
           }
 
           <!-- Mensagem quando não há produtos -->
-          @if (!carregando() && produtos().length === 0) {
+          @if (!carregando() && biblioteca().length === 0) {
             <div class="text-center py-12">
               <svg
                 class="w-16 h-16 text-scroll-beige/30 mx-auto mb-4"
@@ -247,17 +245,33 @@ import { Produto } from '../../models/produto.model';
       <app-rodape />
     </div>
   `,
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    `,
+  ],
 })
 export class BibliotecaComponent implements OnInit {
     private clienteService = inject(ClienteService);
+    private produtoService = inject(ProdutoService);
 
-    produtos = signal<Produto[]>([]);
+    biblioteca = signal<Venda[]>([]);
     carregando = signal<boolean>(true);
     termoBusca = '';
     paginaAtual = signal<number>(0);
     totalPages = signal<number>(0);
     totalElements = signal<number>(0);
     tamanhoPagina = 12;
+    produtosBaixando = signal<Set<string>>(new Set());
 
     ngOnInit(): void {
         this.buscarProdutos();
@@ -273,7 +287,7 @@ export class BibliotecaComponent implements OnInit {
                 next: (resultado) => {
 
                     if (resultado) {
-                        this.produtos.set(resultado.content);
+                        this.biblioteca.set(resultado.content);
                         this.totalPages.set(resultado.totalPages);
                         this.totalElements.set(resultado.totalElements);
                         this.carregando.set(false);
@@ -281,7 +295,7 @@ export class BibliotecaComponent implements OnInit {
                 },
                 error: (error) => {
                     console.error('Erro ao carregar biblioteca:', error);
-                    this.produtos.set([]);
+                    this.biblioteca.set([]);
                     this.carregando.set(false);
                 },
             });
@@ -299,17 +313,90 @@ export class BibliotecaComponent implements OnInit {
             .getBibliotecaCliente(pagina, this.tamanhoPagina, this.termoBusca || undefined)
             .subscribe({
                 next: (resultado) => {
-                    this.produtos.set(resultado.content);
-                    this.totalPages.set(resultado.totalPages);
-                    this.totalElements.set(resultado.totalElements);
-                    this.carregando.set(false);
+                    if (resultado) {
+                        this.biblioteca.set(resultado.content);
+                        this.totalPages.set(resultado.totalPages);
+                        this.totalElements.set(resultado.totalElements);
+                        this.carregando.set(false);
+                    }
                 },
                 error: (error) => {
                     console.error('Erro ao carregar biblioteca:', error);
-                    this.produtos.set([]);
+                    this.biblioteca.set([]);
                     this.carregando.set(false);
                 },
             });
+    }
+
+    formatarData(data: Date | string): string {
+        const dataObj = typeof data === 'string' ? new Date(data) : data;
+        return dataObj.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+
+    async onDownload($event: Event, venda: Venda): Promise<void> {
+        console.log('onDownload', venda);
+
+        if (!venda || !venda.produto) {
+            console.error('Venda ou produto não encontrado', venda);
+            alert('Erro: não foi possível identificar o produto para download.');
+            return;
+        }
+
+        const nomeNormalizado = venda.produto.nomeNormalizado;
+
+        if (!nomeNormalizado) {
+            console.error('Nome normalizado do produto não encontrado');
+            alert('Erro: não foi possível identificar o produto para download.');
+            return;
+        }
+
+        // Adicionar produto à lista de downloads em andamento
+        this.produtosBaixando.update(set => {
+            const newSet = new Set(set);
+            newSet.add(nomeNormalizado);
+            return newSet;
+        });
+
+        try {
+            const blob = await firstValueFrom(
+                this.produtoService.downloadMidiaConteudoProdutoCliente(nomeNormalizado)
+            );
+
+            // Criar URL temporária para o blob
+            const url = window.URL.createObjectURL(blob);
+
+            // Usar nome normalizado como nome de arquivo padrão
+            const nomeArquivo = `${venda.produto.nomeNormalizado}-conteudo`;
+
+            // Criar elemento <a> temporário para fazer o download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = nomeArquivo;
+            document.body.appendChild(link);
+            link.click();
+
+            // Limpar
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Erro ao baixar arquivo de conteúdo:', error);
+            alert('Erro ao baixar o arquivo. Verifique se você tem permissão para baixar este produto.');
+        } finally {
+            // Remover produto da lista de downloads em andamento
+            this.produtosBaixando.update(set => {
+                const newSet = new Set(set);
+                newSet.delete(nomeNormalizado);
+                return newSet;
+            });
+        }
+    }
+
+    baixando(nomeNormalizado: string): boolean {
+        return this.produtosBaixando().has(nomeNormalizado);
     }
 }
 

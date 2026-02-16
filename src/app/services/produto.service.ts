@@ -146,6 +146,19 @@ export class ProdutoService {
   }
 
   /**
+   * Faz download do arquivo de conteúdo do produto (apenas para cliente)
+   * @param idProduto ID ou nome normalizado do produto
+   */
+  downloadMidiaConteudoProdutoCliente(idProduto: string): Observable<Blob> {
+    return this.http.get(
+      `http://localhost:8080/api/v1/produtos/${idProduto}/download-cliente`,
+      {
+        responseType: 'blob'
+      }
+    );
+  }
+
+  /**
    * Deleta um produto pelo nome normalizado
    * @param nomeProdutoNormalizado Nome normalizado do produto
    */

@@ -6,6 +6,7 @@ import { MeResponseCliente } from '../models/auth.model';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { PagedResult, Produto } from '../models/produto.model';
+import { Venda } from '../models/venda.model';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +19,7 @@ export class ClienteService {
         return this.http.post<void>('http://localhost:8080/api/v1/client/clientes/register', cliente);
     }
 
-    getBibliotecaCliente(page: number = 0, size: number = 10, termoBusca?: string): Observable<PagedResult<Produto>> {
+    getBibliotecaCliente(page: number = 0, size: number = 10, termoBusca?: string): Observable<PagedResult<Venda>> {
 
         let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
 
@@ -28,7 +29,7 @@ export class ClienteService {
 
         return this.authService.getCurrentToken().pipe(
             switchMap(token => {
-                return this.http.get<PagedResult<Produto>>('http://localhost:8080/api/v1/clientes/biblioteca', {
+                return this.http.get<PagedResult<Venda>>('http://localhost:8080/api/v1/clientes/biblioteca', {
                     params: params,
                     headers: {
                         'Authorization': `Bearer ${token}`
