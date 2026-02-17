@@ -1,8 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, Observable, of, switchMap } from 'rxjs';
+import { catchError, Observable, switchMap } from 'rxjs';
 import { PagedResult, Produto, ProdutoCompleto } from '../models/produto.model';
 import { AuthService } from './auth.service';
+import { PagamentoPixResponse } from '../models/pagamento.model';
 
 @Injectable({
   providedIn: 'root',
@@ -11,16 +12,17 @@ export class ProdutoService {
   private authService = inject(AuthService);
   private http = inject(HttpClient);
 
-  comprarProduto(idProduto: string): Observable<void> {
+  comprarProduto(idProduto: string): Observable<PagamentoPixResponse> {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {
-        return this.http.post<void>(
+        return this.http.post<PagamentoPixResponse>(
           `http://localhost:8080/api/v1/produtos/${idProduto}/comprar`,
           {},
           {
             headers: {
               'Authorization': `Bearer ${token}`
-            }
+            },
+            responseType: 'json'
           }
         ).pipe(
           catchError((error) => {
