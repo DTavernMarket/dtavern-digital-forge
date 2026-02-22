@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, computed, inject, OnDestroy, OnInit, signal, effect } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, OnDestroy, OnInit, signal, effect, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
@@ -160,23 +160,64 @@ import { auth } from '../../config/firebase.config';
                 Novo produto
               </button>
             }
+
+            @if (isOwner() != true) {
+            <!-- Botão de Seguir -->
               <button
                 class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors"
               >
                 Seguir
               </button>
+            }
+
+            <!-- Configuração da loja -->
+            @if (isOwner() === true) {
+              <div class="relative" #menuConfiguracaoContainer>
+                <button 
+                  (click)="menuConfiguracaoAberto.set(!menuConfiguracaoAberto())"
+                  class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </button>
+                
+                <!-- Dropdown de Configuração -->
+                @if (menuConfiguracaoAberto()) {
+                  <div class="absolute right-0 mt-2 w-48 bg-midnight-brown/95 border border-brass-accent/40 rounded-lg shadow-xl z-50">
+                    <div class="py-2">
+                      <button
+                        (click)="mudarFotoLoja(); menuConfiguracaoAberto.set(false)"
+                        class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                      >
+                        Mudar foto da loja
+                      </button>
+                      <button
+                        (click)="mudarHeaderLoja(); menuConfiguracaoAberto.set(false)"
+                        class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                      >
+                        Mudar header da loja
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
               <button class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
-              </button>
-              <button class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <!-- Icone de Compartilhar -->
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -729,6 +770,9 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
   descricaoSobreEditada = signal<string>('');
   salvandoSobre = signal<boolean>(false);
   mostrarDialogCancelar = signal<boolean>(false);
+  menuConfiguracaoAberto = signal<boolean>(false);
+
+  @ViewChild('menuConfiguracaoContainer') menuConfiguracaoContainer!: ElementRef;
 
   produtosFiltrados = computed(() => {
     let produtos = this.produtosArtesao();
@@ -1016,5 +1060,25 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
       return ['/lojas', dominio, aba];
     }
     return ['/'];
+  }
+
+  mudarFotoLoja() {
+    // TODO: Implementar funcionalidade de mudar foto da loja
+    console.log('Mudar foto da loja');
+  }
+
+  mudarHeaderLoja() {
+    // TODO: Implementar funcionalidade de mudar header da loja
+    console.log('Mudar header da loja');
+  }
+
+  @HostListener('document:click', ['$event'])
+  fecharMenuConfiguracaoAoClicarFora(event: Event) {
+    if (this.menuConfiguracaoContainer && this.menuConfiguracaoAberto()) {
+      const target = event.target as HTMLElement;
+      if (!this.menuConfiguracaoContainer.nativeElement.contains(target)) {
+        this.menuConfiguracaoAberto.set(false);
+      }
+    }
   }
 }

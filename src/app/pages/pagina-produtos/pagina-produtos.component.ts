@@ -4,9 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 import { RodapeComponent } from '../../components/rodape/rodape.component';
-import { ProdutoService } from '../../services/produto.service';
 import { ArtesaoService } from '../../services/artesao.service';
-import { Produto } from '../../models/produto.model';
+import { LojaMaisVendas } from '../../models/artesao.model';
 
 @Component({
   selector: 'app-pagina-produtos',
@@ -35,7 +34,7 @@ import { Produto } from '../../models/produto.model';
                        type="text"
                        [ngModel]="termoBusca()"
                        (ngModelChange)="atualizarBusca($event)"
-                       placeholder="Buscar produtos..."
+                       placeholder="Buscar artesãos..."
                        class="w-full px-4 py-3 pl-10 bg-stone-gray/20 backdrop-blur-sm border border-brass-accent/30 rounded-lg text-scroll-beige placeholder-scroll-beige/50 focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50"
                      />
                      <svg
@@ -87,249 +86,85 @@ import { Produto } from '../../models/produto.model';
                    </div>
                  </div>
 
-                 <!-- Categorias -->
-                 <div class="mb-6">
-                   <h3 class="text-lg font-semibold text-scroll-beige mb-4">Categorias</h3>
-                   <div class="space-y-2">
-                     <button
-                       (click)="categoriaSelecionada.set('')"
-                       [class]="
-                         !categoriaSelecionada()
-                           ? 'bg-candlelight-gold/20 text-candlelight-gold'
-                           : 'text-scroll-beige/70 hover:text-scroll-beige'
-                       "
-                       class="w-full text-left px-3 py-2 rounded-lg transition-colors text-sm"
-                     >
-                       Todas as Categorias
-                     </button>
-                     <button
-                       *ngFor="let categoria of categorias"
-                       (click)="categoriaSelecionada.set(categoria)"
-                       [class]="
-                         categoriaSelecionada() === categoria
-                           ? 'bg-candlelight-gold/20 text-candlelight-gold'
-                           : 'text-scroll-beige/70 hover:text-scroll-beige'
-                       "
-                       class="w-full text-left px-3 py-2 rounded-lg transition-colors text-sm"
-                     >
-                       {{ categoria }}
-                     </button>
-                   </div>
-                 </div>
-
-                 <!-- Filtros Adicionais -->
-                 <div class="mb-6">
-                   <h3 class="text-lg font-semibold text-scroll-beige mb-4">Filtros Avançados</h3>
-
-                   <!-- Faixa de Preço -->
-                   <div class="mb-4">
-                     <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
-                       Faixa de Preço
-                     </label>
-                     <div class="flex space-x-2">
-                       <div class="w-1/3">
-                         <label class="block text-xs font-medium text-scroll-beige/70 mb-1">Mínimo</label>
-                         <div class="relative">
-                           <span
-                             class="absolute left-2 top-1/2 transform -translate-y-1/2 text-candlelight-gold/80 text-sm font-medium"
-                           >
-                             R$
-                           </span>
-                           <input
-                             type="text"
-                             [ngModel]="precoMinimoFormatado()"
-                             (ngModelChange)="aplicarMascaraPreco($event, 'min')"
-                             (blur)="aplicarFiltroPreco()"
-                             placeholder="0,00"
-                             class="w-full pl-8 pr-2 py-1 bg-stone-gray/20 border border-brass-accent/30 rounded-lg text-scroll-beige placeholder-scroll-beige/50 focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50 text-sm"
-                           />
-                         </div>
-                       </div>
-                       <div class="w-1/3">
-                         <label class="block text-xs font-medium text-scroll-beige/70 mb-1">Máximo</label>
-                         <div class="relative">
-                           <span
-                             class="absolute left-2 top-1/2 transform -translate-y-1/2 text-candlelight-gold/80 text-sm font-medium"
-                           >
-                             R$
-                           </span>
-                           <input
-                             type="text"
-                             [ngModel]="precoMaximoFormatado()"
-                             (ngModelChange)="aplicarMascaraPreco($event, 'max')"
-                             (blur)="aplicarFiltroPreco()"
-                             placeholder="0,00"
-                             class="w-full pl-8 pr-2 py-1 bg-stone-gray/20 border border-brass-accent/30 rounded-lg text-scroll-beige placeholder-scroll-beige/50 focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50 text-sm"
-                           />
-                         </div>
-                       </div>
-                     </div>
-                   </div>
-
-                   <!-- Avaliação Mínima -->
-                   <div class="mb-4">
-                     <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
-                       Avaliação Mínima
-                     </label>
-                     <div class="flex items-center space-x-2">
-                       <div class="flex items-center">
-                         <svg
-                           class="w-4 h-4 text-candlelight-gold"
-                           fill="currentColor"
-                           viewBox="0 0 20 20"
-                         >
-                           <path
-                             d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                           />
-                         </svg>
-                         <span class="ml-1 text-scroll-beige/80">4.0+</span>
-                       </div>
-                     </div>
-                   </div>
-                 </div>
-
                  <!-- Contador de Resultados -->
                  <div class="pt-4 border-t border-brass-accent/20">
                    <p class="text-sm text-scroll-beige/70">
-                     {{ produtosFiltrados().length }} produto(s) encontrado(s)
+                     {{ artesoesFiltrados().length }} artesãos encontrados
                    </p>
                  </div>
                </div>
              </div>
 
-             <!-- Área Principal dos Produtos (Direita) -->
+             <!-- Área Principal dos Artesãos (Direita) -->
              <div class="flex-1">
-               <!-- Lista de Produtos em Formato Horizontal -->
+               <!-- Lista de Artesãos em Formato Horizontal -->
                <div class="space-y-4">
                  <div
-                   *ngFor="let produto of produtosFiltrados(); trackBy: rastrearProduto"
-                   class="bg-midnight-brown/50 backdrop-blur-sm border border-brass-accent/30 rounded-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                   *ngFor="let artesao of artesoesFiltrados(); trackBy: rastrearArtesao"
+                   class="bg-midnight-brown/50 backdrop-blur-sm border border-brass-accent/30 rounded-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+                   [routerLink]="['/lojas', artesao.dominioLoja]"
                  >
                   <div class="flex space-x-6">
-                    <!-- Imagem do Produto -->
+                    <!-- Ícone do Artesão -->
                     <div class="flex-shrink-0">
-                      <div class="relative w-32 h-32 bg-tavern-wood/20 rounded-lg overflow-hidden">
-                        <!-- Imagem de Preview ou Placeholder -->
-                        <img
-                          *ngIf="produto.midiaPreview?.url"
-                          [src]="produto.midiaPreview?.url"
-                          [alt]="produto.nome"
-                          class="w-full h-full object-cover"
-                        />
-                        <div
-                          *ngIf="!produto.midiaPreview?.url"
-                          class="w-full h-full flex items-center justify-center"
+                      <div class="relative w-32 h-32 bg-tavern-wood/20 rounded-lg overflow-hidden flex items-center justify-center">
+                        <svg
+                          class="w-16 h-16 text-scroll-beige/30"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
                         >
-                          <svg
-                            class="w-16 h-16 text-scroll-beige/30"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                            />
-                          </svg>
-                        </div>
-                        <div class="absolute top-2 left-2">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                          />
+                        </svg>
+                        <div class="absolute top-2 right-2">
                           <span
                             class="bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold px-2 py-1 rounded-full"
                           >
-                            {{ produto.categoriaCodigo }}
+                            {{ artesao.qtdVendas }} venda(s)
                           </span>
                         </div>
-                        <div *ngIf="produto.gratuito" class="absolute top-2 right-2">
-                          <span
-                            class="bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-full"
-                          >
-                            Grátis
-                          </span>
-                        </div>
-                        
                       </div>
                     </div>
 
-                    <!-- Informações do Produto -->
+                    <!-- Informações do Artesão -->
                     <div class="flex-1 min-w-0">
                       <div class="space-y-3">
                         <!-- Nome -->
                         <div>
                           <h3
-                            class="text-xl font-semibold text-scroll-beige hover:text-candlelight-gold transition-colors cursor-pointer"
+                            class="text-xl font-semibold text-scroll-beige hover:text-candlelight-gold transition-colors"
                           >
-                            {{ produto.nome }}
+                            {{ artesao.nomeLoja }}
                           </h3>
                         </div>
 
                         <!-- Descrição -->
                         <p class="text-sm text-scroll-beige/70 line-clamp-2">
-                          {{ produto.descricao.substring(0, 100) || '' }}...
+                          {{ artesao.descricaoLoja || 'Sem descrição disponível' }}
                         </p>
 
-                        <!-- Nome da Loja -->
-                        <div *ngIf="produto.nomeLoja && produto.dominioLoja" class="pt-1">
+                        <!-- Domínio -->
+                        <div class="pt-1">
                           <p class="text-sm text-scroll-beige/60">
-                            por
-                            <a
-                              [routerLink]="['/lojas', produto.dominioLoja]"
-                              class="text-candlelight-gold hover:text-candlelight-gold/80 hover:underline transition-all duration-200 cursor-pointer"
-                              (click)="$event.stopPropagation()"
-                            >
-                              {{ produto.nomeLoja }}
-                            </a>
+                            @{{ artesao.dominioLoja }}
                           </p>
                         </div>
 
                       </div>
                     </div>
 
-                    <!-- Preço e Ações -->
-                    <div class="flex-shrink-0 flex flex-col items-end justify-between">
-                      <!-- Preço -->
+                    <!-- Informações de Vendas -->
+                    <div class="flex-shrink-0 flex flex-col items-end justify-center">
                       <div class="text-right">
-                        @if (produto.gratuito) {
-                        <div class="text-2xl font-bold text-green-500">
-                          Grátis
+                        <div class="text-sm text-scroll-beige/60 mb-1">Total de vendas</div>
+                        <div class="text-2xl font-bold text-candlelight-gold">
+                          {{ artesao.qtdVendas }}
                         </div>
-                        } @else {
-                        <div class="text-right">
-                          <div class="text-2xl font-bold text-scroll-beige">
-                            R$
-                            {{
-                              (produto.valorPromocional != null
-                                ? produto.valorPromocional
-                                : produto.valorUnitario
-                              )
-                                .toFixed(2)
-                                .replace('.', ',')
-                            }}
-                          </div>
-                          @if (produto.promocaoPorcentagem && produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
-                          <div
-                            class="text-sm text-scroll-beige/60 line-through"
-                          >
-                            R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
-                          </div>
-                          }
-                        </div>
-                          }
-                      </div>
-
-                      <!-- Botões de Ação -->
-                      <div class="flex flex-col space-y-2">
-                        <button
-                          class="px-6 py-3 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-sm"
-                        >
-                          Adicionar ao Carrinho
-                        </button>
-                        <button
-                          class="px-6 py-2 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-brass-accent/10 transition-colors text-sm"
-                        >
-                          Favoritar
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -337,7 +172,7 @@ import { Produto } from '../../models/produto.model';
               </div>
 
                <!-- Estado Vazio -->
-               <div *ngIf="produtosFiltrados().length === 0" class="text-center py-12">
+               <div *ngIf="artesoesFiltrados().length === 0" class="text-center py-12">
                  <svg
                    class="w-16 h-16 text-scroll-beige/30 mx-auto mb-4"
                    fill="none"
@@ -352,41 +187,9 @@ import { Produto } from '../../models/produto.model';
                    />
                  </svg>
                  <h3 class="text-xl font-semibold text-scroll-beige mb-2">
-                   Nenhum produto encontrado
+                   Nenhum artesão encontrado
                  </h3>
-                 <p class="text-scroll-beige/60">Tente ajustar os filtros ou termos de busca.</p>
-               </div>
-
-               <!-- Paginação -->
-               <div *ngIf="produtosFiltrados().length > 0" class="mt-12 flex justify-center">
-                 <div class="flex space-x-2">
-                   <button
-                     class="px-4 py-2 border border-brass-accent/30 rounded-lg text-scroll-beige hover:bg-candlelight-gold/10 transition-colors"
-                     [disabled]="paginaAtual() === 1"
-                   >
-                     Anterior
-                   </button>
-                   <button
-                     class="px-4 py-2 bg-candlelight-gold text-tavern-wood rounded-lg font-medium"
-                   >
-                     1
-                   </button>
-                   <button
-                     class="px-4 py-2 border border-brass-accent/30 rounded-lg text-scroll-beige hover:bg-candlelight-gold/10 transition-colors"
-                   >
-                     2
-                   </button>
-                   <button
-                     class="px-4 py-2 border border-brass-accent/30 rounded-lg text-scroll-beige hover:bg-candlelight-gold/50 transition-colors"
-                   >
-                     3
-                   </button>
-                   <button
-                     class="px-4 py-2 border border-brass-accent/30 rounded-lg text-scroll-beige hover:bg-candlelight-gold/10 transition-colors"
-                   >
-                     Próxima
-                   </button>
-                 </div>
+                 <p class="text-scroll-beige/60">Tente ajustar os termos de busca.</p>
                </div>
              </div>
            </div>
@@ -413,99 +216,65 @@ import { Produto } from '../../models/produto.model';
 })
 export class PaginaProdutosComponent implements OnInit {
   private artesaoService = inject(ArtesaoService);
-  private produtoService = inject(ProdutoService);
-  private produtos = signal<Produto[]>([]);
+  private artesoes = signal<LojaMaisVendas[]>([]);
   private resultadoPaginado = signal<any>(null);
 
-  // Computed para produtos filtrados
-  produtosFiltrados = computed(() => {
-    let produtos = this.produtos();
+  // Computed para artesãos filtrados
+  artesoesFiltrados = computed(() => {
+    let artesoes = this.artesoes();
+    const termo = this.termoBusca().toLowerCase().trim();
 
-    // Filtrar por categoria
-    if (this.categoriaSelecionada()) {
-      produtos = produtos.filter((p) => p.categoriaCodigo === this.categoriaSelecionada());
-    }
-
-    // Filtrar por preço
-    if (this.precoMinimo() !== null) {
-      produtos = produtos.filter((p) => {
-        const precoBase = p.valorPromocional ?? p.valorUnitario;
-        const precoFinal = p.gratuito ? 0 : precoBase;
-        return precoFinal >= this.precoMinimo()!;
-      });
-    }
-    if (this.precoMaximo() !== null) {
-      produtos = produtos.filter((p) => {
-        const precoBase = p.valorPromocional ?? p.valorUnitario;
-        const precoFinal = p.gratuito ? 0 : precoBase;
-        return precoFinal <= this.precoMaximo()!;
-      });
+    // Filtrar por termo de busca
+    if (termo) {
+      artesoes = artesoes.filter((a) =>
+        a.nomeLoja.toLowerCase().includes(termo) ||
+        a.descricaoLoja.toLowerCase().includes(termo) ||
+        a.dominioLoja.toLowerCase().includes(termo)
+      );
     }
 
     // Ordenar
     switch (this.ordenacaoSelecionada()) {
-      case 'preco-menor':
-        produtos = produtos.sort((a, b) => {
-          const precoBaseA = a.valorPromocional ?? a.valorUnitario;
-          const precoBaseB = b.valorPromocional ?? b.valorUnitario;
-          const precoA = a.gratuito ? 0 : precoBaseA;
-          const precoB = b.gratuito ? 0 : precoBaseB;
-          return precoA - precoB;
-        });
+      case 'vendas-maior':
+        artesoes = artesoes.sort((a, b) => b.qtdVendas - a.qtdVendas);
         break;
-      case 'preco-maior':
-        produtos = produtos.sort((a, b) => {
-          const precoBaseA = a.valorPromocional ?? a.valorUnitario;
-          const precoBaseB = b.valorPromocional ?? b.valorUnitario;
-          const precoA = a.gratuito ? 0 : precoBaseA;
-          const precoB = b.gratuito ? 0 : precoBaseB;
-          return precoB - precoA;
-        });
+      case 'vendas-menor':
+        artesoes = artesoes.sort((a, b) => a.qtdVendas - b.qtdVendas);
+        break;
+      case 'nome-asc':
+        artesoes = artesoes.sort((a, b) => a.nomeLoja.localeCompare(b.nomeLoja));
+        break;
+      case 'nome-desc':
+        artesoes = artesoes.sort((a, b) => b.nomeLoja.localeCompare(a.nomeLoja));
         break;
       case 'relevancia':
       default:
-        produtos = produtos.sort((a, b) => a.nome.localeCompare(b.nome));
+        // Por padrão, manter a ordem do backend (mais vendas primeiro)
+        artesoes = artesoes.sort((a, b) => b.qtdVendas - a.qtdVendas);
         break;
     }
 
-    return produtos;
+    return artesoes;
   });
 
-  rastrearProduto(index: number, produto: Produto) {
-    return produto.nomeNormalizado || produto.nome;
+  rastrearArtesao(index: number, artesao: LojaMaisVendas) {
+    return artesao.idLoja || artesao.dominioLoja;
   }
 
   // Estados reativos para filtros
   termoBusca = signal('');
-  categoriaSelecionada = signal('');
   ordenacaoSelecionada = signal('relevancia');
   paginaAtual = signal(1);
   dropdownOrdenacao = signal(false);
 
-  // Filtros de preço
-  precoMinimo = signal<number | null>(null);
-  precoMaximo = signal<number | null>(null);
-
-  // Categorias disponíveis (hardcoded por enquanto, pode vir do backend depois)
-  categorias = ['token', 'mapa', 'aventura', 'trilha-sonora', 'ferramenta', 'outro'];
-
   // Opções de ordenação
   opcoesOrdenacao = [
     { value: 'relevancia', label: 'Mais Relevantes' },
-    { value: 'preco-menor', label: 'Menor Preço' },
-    { value: 'preco-maior', label: 'Maior Preço' },
+    { value: 'vendas-maior', label: 'Mais Vendas' },
+    { value: 'vendas-menor', label: 'Menos Vendas' },
+    { value: 'nome-asc', label: 'Nome (A-Z)' },
+    { value: 'nome-desc', label: 'Nome (Z-A)' },
   ];
-
-  // Signals formatados para exibição
-  precoMinimoFormatado = computed(() => {
-    const valor = this.precoMinimo();
-    return valor ? this.formatarPreco(valor) : '';
-  });
-
-  precoMaximoFormatado = computed(() => {
-    const valor = this.precoMaximo();
-    return valor ? this.formatarPreco(valor) : '';
-  });
 
 
   constructor(private route: ActivatedRoute, private router: Router) { }
@@ -516,36 +285,29 @@ export class PaginaProdutosComponent implements OnInit {
       if (params['pesquisa']) {
         this.termoBusca.set(params['pesquisa']);
       }
-      if (params['produto']) {
-        // Aqui você pode implementar a lógica para destacar um produto específico
-        // Por exemplo, rolar para o produto ou aplicar um filtro especial
-      }
     });
-    this.carregarProdutos();
+    this.carregarArtesoes();
   }
 
   atualizarBusca(termo: string) {
     this.termoBusca.set(termo);
-    this.paginaAtual.set(1); // Resetar para primeira página ao buscar
     // Atualizar a URL com o termo de busca
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { pesquisa: termo || null },
       queryParamsHandling: 'merge',
     });
-    this.carregarProdutos();
   }
 
-  private carregarProdutos() {
-    const page = this.paginaAtual() - 1; // Backend usa indexação baseada em 0
-    this.produtoService.buscarProdutos(this.termoBusca(), page, 10).subscribe({
+  private carregarArtesoes() {
+    this.artesaoService.buscarLojasMaisVendas().subscribe({
       next: (resultado) => {
         this.resultadoPaginado.set(resultado);
-        this.produtos.set(resultado.content);
+        this.artesoes.set(resultado.content);
       },
       error: (error) => {
-        console.error('Erro ao carregar produtos:', error);
-        this.produtos.set([]);
+        console.error('Erro ao carregar artesãos:', error);
+        this.artesoes.set([]);
       }
     });
   }
@@ -559,73 +321,6 @@ export class PaginaProdutosComponent implements OnInit {
   selecionarOrdenacao(valor: string) {
     this.ordenacaoSelecionada.set(valor);
     this.dropdownOrdenacao.set(false);
-  }
-
-  // Métodos para máscara de preço
-  aplicarMascaraPreco(valor: string, tipo: 'min' | 'max') {
-    // Remove tudo que não é número
-    const apenasNumeros = valor.replace(/\D/g, '');
-
-    if (apenasNumeros === '') {
-      if (tipo === 'min') {
-        this.precoMinimo.set(null);
-      } else {
-        this.precoMaximo.set(null);
-      }
-      return;
-    }
-
-    // Converte para centavos e depois para reais
-    const valorEmCentavos = parseInt(apenasNumeros);
-    const valorEmReais = valorEmCentavos / 100;
-
-    if (tipo === 'min') {
-      this.precoMinimo.set(valorEmReais);
-    } else {
-      this.precoMaximo.set(valorEmReais);
-    }
-  }
-
-  formatarPreco(valor: number): string {
-    return valor.toFixed(2).replace('.', ',');
-  }
-
-  aplicarFiltroPreco() {
-    // Este método é chamado quando o usuário sai do campo (blur)
-    // Pode ser usado para aplicar filtros adicionais se necessário
-    console.log('Filtros de preço aplicados:', {
-      min: this.precoMinimo(),
-      max: this.precoMaximo(),
-    });
-  }
-
-  ordenarProdutos(produtos: Produto[]): Produto[] {
-    switch (this.ordenacaoSelecionada()) {
-      case 'preco-menor':
-        return produtos.sort((a, b) => {
-          const precoBaseA = a.valorPromocional ?? a.valorUnitario;
-          const precoBaseB = b.valorPromocional ?? b.valorUnitario;
-          const precoA = a.gratuito ? 0 : precoBaseA;
-          const precoB = b.gratuito ? 0 : precoBaseB;
-          return precoA - precoB;
-        });
-      case 'preco-maior':
-        return produtos.sort((a, b) => {
-          const precoBaseA = a.valorPromocional ?? a.valorUnitario;
-          const precoBaseB = b.valorPromocional ?? b.valorUnitario;
-          const precoA = a.gratuito ? 0 : precoBaseA;
-          const precoB = b.gratuito ? 0 : precoBaseB;
-          return precoB - precoA;
-        });
-      default:
-        return produtos;
-    }
-  }
-
-  getArtesaoDominio(nomeArtesao: string): string {
-    const artesaos = this.artesaoService.buscarArtesoes(nomeArtesao);
-    const artesao = artesaos.find((a) => a.nome === nomeArtesao);
-    return artesao?.dominio || '';
   }
 
 }

@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, Injectable, signal, inject } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { Artesao, CadastroLojaRequest, LojaResponse } from '../models/artesao.model';
+import { Artesao, CadastroLojaRequest, LojaResponse, LojaMaisVendas } from '../models/artesao.model';
 import { PagedResult } from '../models/produto.model';
 import { AuthService } from './auth.service';
 import { EditarLojaRequest, MeResponseLoja } from '../models/auth.model';
@@ -175,6 +175,15 @@ export class ArtesaoService {
           }
         );
       })
+    );
+  }
+
+  /**
+   * Busca lojas com mais vendas
+   */
+  buscarLojasMaisVendas(): Observable<PagedResult<LojaMaisVendas>> {
+    return this.http.get<PagedResult<LojaMaisVendas>>(
+      'http://localhost:8080/api/v1/client/lojas/mais-vendas'
     );
   }
 }

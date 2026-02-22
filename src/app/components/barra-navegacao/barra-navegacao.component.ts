@@ -101,10 +101,7 @@ import { Subscription } from 'rxjs';
                 Início
               </a>
               <a routerLink="/produtos" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
-                Produtos
-              </a>
-              <a href="#artesaos" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
-                Artesãos
+                Explorar
               </a>
               <a href="#sobre" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
                 Sobre
@@ -253,10 +250,7 @@ import { Subscription } from 'rxjs';
               Início
             </a>
             <a routerLink="/produtos" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
-              Produtos
-            </a>
-            <a href="#artesaos" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
-              Artesãos
+              Explorar
             </a>
             <a href="#sobre" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
               Sobre
