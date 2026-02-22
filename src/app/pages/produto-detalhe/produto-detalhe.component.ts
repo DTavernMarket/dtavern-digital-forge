@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 import { ProdutoService } from '../../services/produto.service';
 import { Produto } from '../../models/produto.model';
+import { PagamentoPixResponse } from '../../models/pagamento.model';
 
 @Component({
   selector: 'app-produto-detalhe',
@@ -157,10 +158,17 @@ import { Produto } from '../../models/produto.model';
 
                 <div class="space-y-2">
                   <button
-                    class="w-full py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors shadow-md hover:shadow-lg"
+                    (click)="onComprarProduto()"
+                    [disabled]="comprando()"
+                    class="w-full py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {{ produto.gratuito ? 'Baixar agora' : 'Comprar' }}
+                    {{ comprando() ? 'Processando...' : (produto.gratuito ? 'Adicionar a biblioteca' : 'Comprar com Pix') }}
                   </button>
+                  @if (mensagemCompra()) {
+                    <p class="text-xs" [class.text-green-400]="compraSucesso()" [class.text-red-400]="!compraSucesso()">
+                      {{ mensagemCompra() }}
+                    </p>
+                  }
                   <p class="text-xs text-scroll-beige/60">
                     * Integração com carrinho/pagamento será adicionada em breve.
                   </p>
@@ -179,15 +187,93 @@ import { Produto } from '../../models/produto.model';
         }
       </div>
     </div>
+
+    <!-- Dialog de Pagamento PIX -->
+    @if (mostrarDialogPix()) {
+      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" (click)="fecharDialogPix()">
+        <div class="bg-midnight-brown border border-brass-accent/40 rounded-xl p-6 max-w-md w-full shadow-2xl" (click)="$event.stopPropagation()">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-scroll-beige">Pagamento PIX</h2>
+            <button
+              (click)="fecharDialogPix()"
+              class="text-scroll-beige/70 hover:text-scroll-beige transition-colors"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Valor -->
+            <div class="text-center">
+              <p class="text-sm text-scroll-beige/70 mb-1">Valor a pagar</p>
+              <p class="text-2xl font-bold text-candlelight-gold">R$ {{ pagamentoPix()?.amount || '0,00' }}</p>
+            </div>
+
+            <!-- Contador Regressivo -->
+            <div class="text-center">
+              <p class="text-sm text-scroll-beige/70 mb-1">Tempo restante</p>
+              <p class="text-xl font-semibold" [class.text-red-400]="tempoRestante() <= 60" [class.text-scroll-beige]="tempoRestante() > 60">
+                {{ formatarTempoRestante() }}
+              </p>
+            </div>
+
+            <!-- QR Code -->
+            @if (pagamentoPix()?.qrCodeBase64) {
+              <div class="flex justify-center bg-white p-4 rounded-lg">
+                <img
+                  [src]="'data:image/png;base64,' + pagamentoPix()!.qrCodeBase64"
+                  alt="QR Code PIX"
+                  class="max-w-full h-auto"
+                />
+              </div>
+            }
+
+            <!-- Código PIX Literal -->
+            @if (pagamentoPix()?.qrCode) {
+              <div class="space-y-2">
+                <p class="text-sm text-scroll-beige/70">Código PIX (copiar e colar)</p>
+                <div class="bg-tavern-wood/30 border border-brass-accent/20 rounded-lg p-3">
+                  <p class="text-xs text-scroll-beige break-all font-mono select-all">
+                    {{ pagamentoPix()!.qrCode }}
+                  </p>
+                </div>
+                <button
+                  (click)="copiarCodigoPix()"
+                  class="w-full py-2 bg-candlelight-gold/80 text-tavern-wood font-medium rounded-lg hover:bg-candlelight-gold transition-colors text-sm"
+                >
+                  {{ codigoCopiado() ? 'Código copiado!' : 'Copiar código PIX' }}
+                </button>
+              </div>
+            }
+
+            <p class="text-xs text-center text-scroll-beige/60">
+              Escaneie o QR code ou copie o código PIX para realizar o pagamento
+            </p>
+          </div>
+        </div>
+      </div>
+    }
   `,
 })
-export class ProdutoDetalheComponent implements OnInit {
+export class ProdutoDetalheComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private produtoService = inject(ProdutoService);
 
   produto: Produto | null = null;
   carregando = signal<boolean>(true);
   erro = signal<string | null>(null);
+  comprando = signal<boolean>(false);
+  mensagemCompra = signal<string | null>(null);
+  compraSucesso = signal<boolean>(false);
+  
+  // Dialog PIX
+  mostrarDialogPix = signal<boolean>(false);
+  pagamentoPix = signal<PagamentoPixResponse | null>(null);
+  tempoRestante = signal<number>(0);
+  codigoCopiado = signal<boolean>(false);
+  private intervaloContador: any = null;
 
   ngOnInit(): void {
     const nomeParam = this.route.snapshot.paramMap.get('nomeNormalizado');
@@ -211,6 +297,111 @@ export class ProdutoDetalheComponent implements OnInit {
         this.carregando.set(false);
       },
     });
+  }
+
+  onComprarProduto() {
+    if (!this.produto) {
+      return;
+    }
+
+    // Usar nomeNormalizado como identificador do produto
+    const idProduto = this.produto.nomeNormalizado;
+
+    this.comprando.set(true);
+    this.mensagemCompra.set(null);
+    this.compraSucesso.set(false);
+
+    this.produtoService.comprarProduto(idProduto).subscribe({
+      next: (pagamentoPixResponse: PagamentoPixResponse) => {
+        this.pagamentoPix.set(pagamentoPixResponse);
+        this.mostrarDialogPix.set(true);
+
+        console.log(this.pagamentoPix());
+        console.log(this.mostrarDialogPix());
+        this.iniciarContadorRegressivo(pagamentoPixResponse.expiresAt);
+        this.compraSucesso.set(true);
+        this.comprando.set(false);
+      },
+      error: (error) => {
+        console.error('Erro ao comprar produto:', error);
+        this.compraSucesso.set(false);
+
+        // Verificar se o produto já foi comprado
+        if (error?.error?.codigoErro === 'PRODUTO_JA_COMPRADO') {
+          this.mensagemCompra.set(
+            error?.error?.mensagem || 'Este produto já foi comprado por você.'
+          );
+        } else {
+          this.mensagemCompra.set(
+            error?.error?.mensagem || error?.error?.message || 'Erro ao processar a compra. Tente novamente.'
+          );
+        }
+
+        this.comprando.set(false);
+      },
+    });
+  }
+
+  iniciarContadorRegressivo(expiresAt: string): void {
+    const dataExpiracao = new Date(expiresAt).getTime();
+    
+    const atualizarContador = () => {
+      const agora = new Date().getTime();
+      const diferenca = Math.max(0, dataExpiracao - agora);
+      const segundos = Math.floor(diferenca / 1000);
+      
+      this.tempoRestante.set(segundos);
+      
+      // if (segundos <= 0) {
+      //   this.pararContador();
+      //   this.fecharDialogPix();
+      //   alert('O tempo para pagamento expirou. Por favor, tente novamente.');
+      // }
+    };
+    
+    atualizarContador();
+    this.intervaloContador = setInterval(atualizarContador, 1000);
+  }
+
+  pararContador(): void {
+    if (this.intervaloContador) {
+      clearInterval(this.intervaloContador);
+      this.intervaloContador = null;
+    }
+  }
+
+  formatarTempoRestante(): string {
+    const segundos = this.tempoRestante();
+    const minutos = Math.floor(segundos / 60);
+    const segundosRestantes = segundos % 60;
+    return `${String(minutos).padStart(2, '0')}:${String(segundosRestantes).padStart(2, '0')}`;
+  }
+
+  fecharDialogPix(): void {
+    this.pararContador();
+    this.mostrarDialogPix.set(false);
+    this.pagamentoPix.set(null);
+    this.tempoRestante.set(0);
+    this.codigoCopiado.set(false);
+  }
+
+  copiarCodigoPix(): void {
+    const codigo = this.pagamentoPix()?.qrCode;
+    if (codigo) {
+      navigator.clipboard.writeText(codigo).then(() => {
+        this.codigoCopiado.set(true);
+        setTimeout(() => {
+          this.codigoCopiado.set(false);
+        }, 2000);
+      }).catch(err => {
+        console.error('Erro ao copiar código:', err);
+        alert('Erro ao copiar código. Tente selecionar e copiar manualmente.');
+      });
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.pararContador();
   }
 }
 

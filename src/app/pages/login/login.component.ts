@@ -52,10 +52,28 @@ import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
                 placeholder="••••••••"
               />
             </div>
+
+            <!-- Esqueci minha senha -->
+            <div class="flex justify-end">
+              <button
+                type="button"
+                (click)="onForgotPassword()"
+                [disabled]="resetLoading()"
+                class="text-candlelight-gold text-sm hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {{ resetLoading() ? 'Enviando e-mail...' : 'Esqueci minha senha' }}
+              </button>
+            </div>
             
             @if (errorMessage) {
               <div class="text-red-400 text-sm">
                 {{ errorMessage }}
+              </div>
+            }
+
+            @if (resetMessage) {
+              <div class="text-green-400 text-sm">
+                {{ resetMessage }}
               </div>
             }
             
@@ -90,10 +108,13 @@ export class LoginComponent {
   password = '';
   loading = signal<boolean>(false);
   errorMessage: string = '';
+  resetLoading = signal<boolean>(false);
+  resetMessage: string = '';
 
   onLogin() {
     this.loading.set(true);
     this.errorMessage = '';
+    this.resetMessage = '';
 
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
@@ -107,6 +128,45 @@ export class LoginComponent {
       },
       complete: () => {
         this.loading.set(false);
+      }
+    });
+  }
+
+  onForgotPassword() {
+    // Limpar mensagens anteriores
+    this.errorMessage = '';
+    this.resetMessage = '';
+
+    const emailTrim = this.email?.trim();
+
+    if (!emailTrim) {
+      this.errorMessage = 'Informe seu e-mail para redefinir a senha.';
+      return;
+    }
+
+    this.resetLoading.set(true);
+
+    this.authService.resetarSenha(emailTrim).subscribe({
+      next: () => {
+        this.resetMessage =
+          'Você receberá um e-mail para redefinir sua senha em poucos instantes.';
+      },
+      error: (error) => {
+        console.error('Erro ao solicitar redefinição de senha:', error);
+
+        // Se for erro vindo do Firebase, tentar traduzir
+        if (error?.code) {
+          this.errorMessage = getFirebaseErrorMessage(error.code);
+        } else if (error?.message) {
+          this.errorMessage = error.message;
+        } else {
+          this.errorMessage = 'Não foi possível enviar o e-mail de redefinição de senha. Tente novamente.';
+        }
+
+        this.resetLoading.set(false);
+      },
+      complete: () => {
+        this.resetLoading.set(false);
       }
     });
   }

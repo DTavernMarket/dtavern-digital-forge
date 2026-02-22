@@ -1,13 +1,38 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { catchError, Observable, switchMap } from 'rxjs';
 import { PagedResult, Produto, ProdutoCompleto } from '../models/produto.model';
+import { AuthService } from './auth.service';
+import { PagamentoPixResponse } from '../models/pagamento.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProdutoService {
-  constructor(private http: HttpClient) { }
+  private authService = inject(AuthService);
+  private http = inject(HttpClient);
+
+  comprarProduto(idProduto: string): Observable<PagamentoPixResponse> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.post<PagamentoPixResponse>(
+          `http://localhost:8080/api/v1/produtos/${idProduto}/comprar`,
+          {},
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            responseType: 'json'
+          }
+        ).pipe(
+          catchError((error) => {
+            console.error('Erro ao comprar produto:', error);
+            throw error;
+          })
+        );
+      })
+    );
+  }
 
   adicionarProduto(dtoProduto: any, dominioArtesao: string): Observable<any> {
     return this.http.post<any>(
@@ -116,6 +141,19 @@ export class ProdutoService {
   downloadMidiaConteudoProdutoDonoLoja(idProduto: string): Observable<Blob> {
     return this.http.get(
       `http://localhost:8080/api/v1/produtos/${idProduto}/download-loja`,
+      {
+        responseType: 'blob'
+      }
+    );
+  }
+
+  /**
+   * Faz download do arquivo de conteúdo do produto (apenas para cliente)
+   * @param idProduto ID ou nome normalizado do produto
+   */
+  downloadMidiaConteudoProdutoCliente(idProduto: string): Observable<Blob> {
+    return this.http.get(
+      `http://localhost:8080/api/v1/produtos/${idProduto}/download-cliente`,
       {
         responseType: 'blob'
       }
