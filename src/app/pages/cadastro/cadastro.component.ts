@@ -1,8 +1,8 @@
 // src/app/pages/cadastro/cadastro.component.ts
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ArtesaoService } from '../../services/artesao.service';
 import { AuthService } from '../../services/auth.service';
 import { ClienteService } from '../../services/cliente.service';
@@ -354,11 +354,12 @@ import { ClienteService } from '../../services/cliente.service';
     </div>
   `
 })
-export class CadastroComponent {
+export class CadastroComponent implements OnInit {
   private authService = inject(AuthService);
   private artesaoService = inject(ArtesaoService);
   private clienteService = inject(ClienteService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   step = 1;
   tipoUsuario: 'artesao' | 'cliente' | null = null;
@@ -378,6 +379,13 @@ export class CadastroComponent {
   dataNascimentoError = '';
   senhaError = '';
   confirmacaoSenhaError = '';
+
+  ngOnInit(): void {
+    const cadastro = this.route.snapshot.queryParamMap.get('cadastro');
+    if (cadastro === 'artesao' || cadastro === 'cliente') {
+      this.tipoUsuario = cadastro;
+    }
+  }
 
   selecionarTipoUsuario(tipo: 'artesao' | 'cliente') {
     this.tipoUsuario = tipo;

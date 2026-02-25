@@ -2,7 +2,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
 
@@ -103,6 +103,7 @@ import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
 export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   email = '';
   password = '';
@@ -117,8 +118,13 @@ export class LoginComponent {
     this.resetMessage = '';
 
     this.authService.login(this.email, this.password).subscribe({
-      next: (response) => {
-        this.router.navigate(['/']); // Redirecionar após login
+      next: () => {
+        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+        if (returnUrl && returnUrl.startsWith('/')) {
+          this.router.navigateByUrl(returnUrl);
+        } else {
+          this.router.navigate(['/']);
+        }
       },
       error: (error) => {
         console.log('error:', error);

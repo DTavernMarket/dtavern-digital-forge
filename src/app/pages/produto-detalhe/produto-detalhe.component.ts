@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
+import { AuthService } from '../../services/auth.service';
 import { ProdutoService } from '../../services/produto.service';
 import { Produto } from '../../models/produto.model';
 import { PagamentoPixResponse } from '../../models/pagamento.model';
@@ -259,6 +260,8 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
 })
 export class ProdutoDetalheComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private authService = inject(AuthService);
   private produtoService = inject(ProdutoService);
 
   produto: Produto | null = null;
@@ -304,6 +307,11 @@ export class ProdutoDetalheComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (this.authService.getCurrentUser() === null) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
+      return;
+    }
+
     // Usar nomeNormalizado como identificador do produto
     const idProduto = this.produto.nomeNormalizado;
 
@@ -316,8 +324,6 @@ export class ProdutoDetalheComponent implements OnInit, OnDestroy {
         this.pagamentoPix.set(pagamentoPixResponse);
         this.mostrarDialogPix.set(true);
 
-        console.log(this.pagamentoPix());
-        console.log(this.mostrarDialogPix());
         this.iniciarContadorRegressivo(pagamentoPixResponse.expiresAt);
         this.compraSucesso.set(true);
         this.comprando.set(false);

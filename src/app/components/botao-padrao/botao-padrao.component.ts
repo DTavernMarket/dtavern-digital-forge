@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
   template: `
     <button
       [routerLink]="routerLink"
+      [queryParams]="queryParams"
       [type]="type"
       [disabled]="disabled"
       [class]="getClasses()"
@@ -62,7 +63,8 @@ import { RouterModule } from '@angular/router';
   ],
 })
 export class BotaoPadraoComponent {
-  @Input() routerLink?: string;
+  @Input() routerLink?: string | unknown[];
+  @Input() queryParams?: Record<string, string>;
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() disabled = false;
   @Input() size: 'sm' | 'md' | 'lg' = 'md';

@@ -48,3 +48,19 @@ export interface ProdutoCompleto {
   midiaPreview: Midia;
   midiaConteudo: Midia;
 }
+
+/** DTO retornado pelo endpoint de produtos mais vendidos (ProdutosMaisVendidosProjection). */
+export interface ProdutosMaisVendidosDTO {
+  quantidadeVendas: number;
+  idProduto: string;
+  nomeProduto: string;
+  nomeProdutoNormalizado: string;
+  codigoCategoria: string;
+  nomeCategoria: string;
+  descricaoProduto: string;
+  valorUnitario: number;
+  promocaoPorcentagem: number | null;
+  valorPromocional: number | null;
+  urlPreview: string;
+  flagGratuito: boolean;
+}

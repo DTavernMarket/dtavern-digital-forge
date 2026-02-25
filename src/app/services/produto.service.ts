@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, switchMap } from 'rxjs';
-import { PagedResult, Produto, ProdutoCompleto } from '../models/produto.model';
+import { PagedResult, Produto, ProdutoCompleto, ProdutosMaisVendidosDTO } from '../models/produto.model';
 import { AuthService } from './auth.service';
 import { PagamentoPixResponse } from '../models/pagamento.model';
 
@@ -73,12 +73,30 @@ export class ProdutoService {
   }
 
   /**
+   * Lista os produtos mais vendidos do DTavern (endpoint público).
+   * @param page Página (0-based). Default: 0
+   * @param size Tamanho da página. Default: 10
+   */
+  listarProdutosMaisVendidos(
+    page: number = 0,
+    size: number = 10
+  ): Observable<PagedResult<ProdutosMaisVendidosDTO>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    return this.http.get<PagedResult<ProdutosMaisVendidosDTO>>(
+      'http://localhost:8080/api/v1/client/produtos/mais-vendidos',
+      { params }
+    );
+  }
+
+  /**
    * Busca um produto pelo nome normalizado (slug)
    * @param nomeProdutoNormalizado Nome normalizado do produto
    */
   buscarProdutoPorNomeNormalizado(nomeProdutoNormalizado: string): Observable<Produto> {
     return this.http.get<Produto>(
-      `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}`
+      `http://localhost:8080/api/v1/client/produtos/${nomeProdutoNormalizado}`
     );
   }
 

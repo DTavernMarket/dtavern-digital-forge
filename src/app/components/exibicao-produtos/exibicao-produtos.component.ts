@@ -1,9 +1,8 @@
-import { Component, inject, Signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { ProdutoService } from '../../services/produto.service';
-import { ArtesaoService } from '../../services/artesao.service';
-import { Produto } from '../../models/produto.model';
+import { ProdutosMaisVendidosDTO } from '../../models/produto.model';
 
 @Component({
   selector: 'app-exibicao-produtos',
@@ -27,21 +26,36 @@ import { Produto } from '../../models/produto.model';
 
         <!-- Grid de Produtos -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          <div
-            *ngFor="let produto of produtosEmDestaque"
-            class="group bg-midnight-brown/50 backdrop-blur-sm border-brass-accent/30 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-lg"
+          <a
+            *ngFor="let produto of produtosEmDestaque; let i = index"
+            [routerLink]="['/produtos', produto.nomeProdutoNormalizado]"
+            class="group block bg-midnight-brown/50 backdrop-blur-sm border-brass-accent/30 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-lg cursor-pointer no-underline"
           >
             <!-- Imagem do Produto -->
             <div class="relative overflow-hidden bg-tavern-wood/20 h-48">
-              <!-- Imagem de Preview ou Placeholder -->
+              <!-- Indicador de pódio (1º, 2º, 3º) + vendas -->
+              <div
+                class="absolute top-3 left-3 z-10 flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-bold shadow-md"
+                [ngClass]="{
+                  'bg-amber-400/95 text-amber-950': i === 0,
+                  'bg-slate-300/95 text-slate-800': i === 1,
+                  'bg-amber-700/95 text-amber-100': i === 2
+                }"
+              >
+                <span class="tabular-nums">{{ i + 1 }}º</span>
+                <span class="opacity-90 font-medium">·</span>
+                <span class="tabular-nums">{{ produto.quantidadeVendas }} {{ produto.quantidadeVendas === 1 ? 'compra' : 'compras' }}</span>
+              </div>
+
+            <!-- Imagem de Preview ou Placeholder -->
               <img
-                *ngIf="produto.midiaPreview?.url"
-                [src]="produto.midiaPreview?.url"
-                [alt]="produto.nome"
+                *ngIf="produto.urlPreview"
+                [src]="produto.urlPreview"
+                [alt]="produto.nomeProduto"
                 class="w-full h-full object-cover"
               />
               <div
-                *ngIf="!produto.midiaPreview?.url"
+                *ngIf="!produto.urlPreview"
                 class="w-full h-full flex items-center justify-center"
               >
                 <svg
@@ -63,14 +77,14 @@ import { Produto } from '../../models/produto.model';
               ></div>
 
               <!-- Badge da Categoria -->
-              <div class="absolute top-3 left-3">
+              <div class="absolute bottom-3 left-3 z-10">
                 <span
                   class="bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold px-3 py-1 rounded-full"
                 >
-                  {{ produto.categoriaCodigo }}
+                  {{ produto.nomeCategoria }}
                 </span>
               </div>
-              <div *ngIf="produto.gratuito" class="absolute top-3 right-3">
+              <div *ngIf="produto.flagGratuito" class="absolute top-3 right-3 z-10">
                 <span
                   class="bg-green-500 text-white text-xs font-semibold px-3 py-1 rounded-full"
                 >
@@ -86,21 +100,21 @@ import { Produto } from '../../models/produto.model';
                 <h3
                   class="text-lg font-semibold text-scroll-beige group-hover:text-candlelight-gold transition-colors"
                 >
-                  {{ produto.nome }}
+                  {{ produto.nomeProduto }}
                 </h3>
               </div>
 
               <p class="text-sm text-scroll-beige/70 line-clamp-2">
-                {{ produto.descricao || '' }}
+                {{ produto.descricaoProduto || '' }}
               </p>
 
-              <!-- Preço e Botão de Compra -->
+              <!-- Preço -->
               <div class="flex items-center justify-between pt-2">
                 <div>
-                  <span *ngIf="produto.gratuito" class="text-lg font-bold text-scroll-beige">
+                  <span *ngIf="produto.flagGratuito" class="text-lg font-bold text-scroll-beige">
                     Grátis
                   </span>
-                  <div *ngIf="!produto.gratuito" class="flex items-baseline gap-2">
+                  <div *ngIf="!produto.flagGratuito" class="flex items-baseline gap-2">
                     <span class="text-lg font-bold text-scroll-beige">
                       R$
                       {{
@@ -120,14 +134,9 @@ import { Produto } from '../../models/produto.model';
                     </span>
                   </div>
                 </div>
-                <button
-                  class="px-4 py-2 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-sm"
-                >
-                  {{ false ? 'Baixar' : 'Adicionar ao Carrinho' }}
-                </button>
               </div>
             </div>
-          </div>
+          </a>
         </div>
 
         <!-- Botão Ver Todos -->
@@ -165,23 +174,20 @@ import { Produto } from '../../models/produto.model';
     `,
   ],
 })
-export class ExibicaoProdutosComponent {
-  produtosEmDestaque: Produto[] = [];
-  private router = inject(Router);
+export class ExibicaoProdutosComponent implements OnInit {
+  private produtoService = inject(ProdutoService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
-  constructor(private produtoService: ProdutoService, private artesaoService: ArtesaoService) {
-    // Por enquanto, deixar vazio até ter uma API para buscar produtos em destaque
-    // TODO: Implementar busca de produtos em destaque do backend
-  }
 
-  rastrearProduto(index: number, produto: Produto) {
-    return produto.nomeNormalizado || produto.nome;
-  }
+  /** Produtos mais vendidos (3 itens). O async pipe evita ExpressionChangedAfterItHasBeenCheckedError. */
+  produtosEmDestaque: ProdutosMaisVendidosDTO[] = [];
+  ngOnInit(): void {
+    this.produtoService.listarProdutosMaisVendidos(0, 3).subscribe({
+      next: (resultado) => {
+        this.produtosEmDestaque = resultado.content;
 
-  getArtesaoDominio(nomeArtesao: string): string {
-    const artesao = this.artesaoService
-      .obterArtesoes()()
-      .find((a) => a.nome === nomeArtesao);
-    return artesao?.dominio || '';
+        this.changeDetectorRef.detectChanges();
+      }
+    });
   }
 }

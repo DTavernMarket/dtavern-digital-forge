@@ -27,9 +27,10 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
 
         <!-- Grid de Artesãos -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          <div
+          <a
             *ngFor="let artesao of artesoesEmDestaque(); trackBy: rastrearArtesao"
-            class="group bg-midnight-brown/50 backdrop-blur-sm border border-brass-accent/30 rounded-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+            [routerLink]="['/lojas', artesao.dominio]"
+            class="group block bg-midnight-brown/50 backdrop-blur-sm border border-brass-accent/30 rounded-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 cursor-pointer no-underline"
           >
                          <!-- Avatar e Informações Básicas -->
              <div class="text-center mb-6 relative overflow-hidden rounded-lg h-32">
@@ -95,20 +96,12 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
                 <div class="text-xs text-scroll-beige/60">Seguidores</div>
               </div>
             </div>
-
-                         <!-- Botão Ver Loja -->
-             <button 
-               class="w-full px-4 py-2 bg-candlelight-gold text-tavern-wood font-medium rounded-lg hover:bg-candlelight-gold/90 transition-colors"
-               [routerLink]="['/lojas', artesao.dominio]"
-             >
-               Ver Loja
-             </button>
-          </div>
+          </a>
         </div>
 
                  <!-- Botão Seja um Artesão -->
          <div class="text-center">
-           <app-botao-padrao size="lg" routerLink="/seja-artesao">
+           <app-botao-padrao size="lg" [routerLink]="['/cadastro']" [queryParams]="{ cadastro: 'artesao' }">
              Seja um Artesão
              <svg class="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                <path

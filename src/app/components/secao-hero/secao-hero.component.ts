@@ -56,7 +56,7 @@ import { RouterModule } from '@angular/router';
             </button>
             <button
               class="px-8 py-4 border-2 border-candlelight-gold text-candlelight-gold rounded-lg font-medium hover:bg-candlelight-gold hover:text-tavern-wood transition-all duration-300 text-lg"
-            >
+              [routerLink]="['/cadastro']" [queryParams]="{ cadastro: 'artesao' }">
               Seja um Artesão
               <svg
                 class="w-5 h-5 ml-2 inline"
