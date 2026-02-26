@@ -78,9 +78,9 @@ import { RouterModule } from '@angular/router';
 
       <!-- Scroll Indicator -->
       <button
-        (click)="rolarParaProdutos()"
+        (click)="rolarParaArtesaos()"
         class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform duration-300 p-3 rounded-full hover:bg-scroll-beige/10"
-        aria-label="Rolar para seção de produtos"
+        aria-label="Rolar para seção de artesãos"
       >
         <svg
           class="w-9 h-9 text-candlelight-gold transition-colors duration-300"
@@ -107,10 +107,10 @@ import { RouterModule } from '@angular/router';
   ],
 })
 export class SecaoHeroComponent {
-  rolarParaProdutos(): void {
-    const elementoProdutos = document.getElementById('produtos');
-    if (elementoProdutos) {
-      elementoProdutos.scrollIntoView({
+  rolarParaArtesaos(): void {
+    const elementoArtesaos = document.getElementById('artesaos');
+    if (elementoArtesaos) {
+      elementoArtesaos.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
       });

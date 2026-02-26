@@ -13,7 +13,6 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
     CommonModule,
     BarraNavegacaoComponent,
     SecaoHeroComponent,
-    ExibicaoProdutosComponent,
     SecaoArtesoesComponent,
     RodapeComponent
   ],
@@ -22,7 +21,6 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
       <app-barra-navegacao [isFixed]="true" />
       <div>
         <app-secao-hero />
-        <app-exibicao-produtos />
         <app-secao-artesoes />
         <app-rodape />
       </div>

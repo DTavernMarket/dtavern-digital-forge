@@ -17,11 +17,11 @@ import { auth } from '../../config/firebase.config';
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
       <app-barra-navegacao [isFixed]="true" />
 
-      <!-- Header da Loja com Fundo do Artesão -->
-      <div class="relative h-96 overflow-hidden">
-        <!-- Imagem de Fundo -->
+      <!-- Header da Loja com Fundo do Artesão (z-20 para dropdown ficar acima da barra de abas; sem overflow-hidden para não cortar o dropdown) -->
+      <div class="relative z-20 h-96">
+        <!-- Imagem de Fundo (overflow-hidden só aqui para não cortar o dropdown do header) -->
         <div
-          class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          class="absolute inset-0 overflow-hidden bg-cover bg-center bg-no-repeat"
           [style.background-image]="'url(' + 'http://localhost:8080/cdn/default.png' + ')'"
         >
           <div class="absolute inset-0 bg-black/50"></div>
@@ -50,7 +50,62 @@ import { auth } from '../../config/firebase.config';
 
             <!-- Informações do Artesão -->
             <div class="text-white">
-              <h1 class="text-4xl font-medieval font-bold mb-2">{{ artesao()?.nome }}</h1>
+              <div class="flex items-center gap-3 mb-2">
+                <h1 class="text-4xl font-medieval font-bold">{{ artesao()?.nome }}</h1>
+                @if (isOwner() === true) {
+                  <div class="relative" #menuConfiguracaoContainer>
+                    <button
+                      type="button"
+                      (click)="menuConfiguracaoAberto.set(!menuConfiguracaoAberto())"
+                      class="p-1.5 rounded-lg text-white/80 hover:text-candlelight-gold hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50"
+                      title="Configurações da loja"
+                    >
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </button>
+                    @if (menuConfiguracaoAberto()) {
+                      <div class="absolute left-0 mt-2 w-48 bg-midnight-brown/95 border border-brass-accent/40 rounded-lg shadow-xl z-[100]">
+                        <div class="py-2">
+                          <button
+                            (click)="mudarFotoLoja(); menuConfiguracaoAberto.set(false)"
+                            class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Mudar foto da loja
+                          </button>
+                          <button
+                            (click)="mudarHeaderLoja(); menuConfiguracaoAberto.set(false)"
+                            class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Mudar header da loja
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+                <div class="relative">
+                  <button
+                    type="button"
+                    (click)="copiarUrlLoja()"
+                    class="p-1.5 rounded-lg text-white/80 hover:text-candlelight-gold hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50"
+                    [title]="urlCopiada() ? 'URL copiada!' : 'Copiar link da loja'"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <rect x="9" y="9" width="13" height="13" rx="1" />
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                    </svg>
+                  </button>
+                  @if (urlCopiada()) {
+                    <span
+                      class="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 px-2.5 py-1 text-xs font-medium text-tavern-wood bg-candlelight-gold rounded shadow-lg whitespace-nowrap z-10"
+                    >
+                      Copiado!
+                    </span>
+                  }
+                </div>
+              </div>
 
               <!-- Estatísticas -->
               <div class="flex items-center space-x-6 text-sm">
@@ -104,8 +159,8 @@ import { auth } from '../../config/firebase.config';
         </div>
       </div>
 
-      <!-- Navegação da Loja -->
-      <div class="bg-midnight-brown/80 border-b border-brass-accent/30">
+      <!-- Navegação da Loja (z-10 para ficar abaixo do dropdown de configuração do header) -->
+      <div class="relative z-10 bg-midnight-brown/80 border-b border-brass-accent/30">
         <div class="container mx-auto px-4">
           <div class="flex items-center justify-between py-4">
             <div class="flex items-center space-x-8">
@@ -161,71 +216,14 @@ import { auth } from '../../config/firebase.config';
               </button>
             }
 
+            <!--  Ainda não implementado: Botão de Seguir -->
             @if (isOwner() != true) {
             <!-- Botão de Seguir -->
-              <button
-                class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors"
-              >
+              <!-- <button
+                class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors">
                 Seguir
-              </button>
+              </button> -->
             }
-
-            <!-- Configuração da loja -->
-            @if (isOwner() === true) {
-              <div class="relative" #menuConfiguracaoContainer>
-                <button 
-                  (click)="menuConfiguracaoAberto.set(!menuConfiguracaoAberto())"
-                  class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors"
-                >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                    />
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                </button>
-                
-                <!-- Dropdown de Configuração -->
-                @if (menuConfiguracaoAberto()) {
-                  <div class="absolute right-0 mt-2 w-48 bg-midnight-brown/95 border border-brass-accent/40 rounded-lg shadow-xl z-50">
-                    <div class="py-2">
-                      <button
-                        (click)="mudarFotoLoja(); menuConfiguracaoAberto.set(false)"
-                        class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
-                      >
-                        Mudar foto da loja
-                      </button>
-                      <button
-                        (click)="mudarHeaderLoja(); menuConfiguracaoAberto.set(false)"
-                        class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
-                      >
-                        Mudar header da loja
-                      </button>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-
-              <button class="p-2 text-scroll-beige hover:text-candlelight-gold transition-colors">
-              <!-- Icone de Compartilhar -->
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                  />
-                </svg>
-              </button>
             </div>
           </div>
         </div>
@@ -771,6 +769,7 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
   salvandoSobre = signal<boolean>(false);
   mostrarDialogCancelar = signal<boolean>(false);
   menuConfiguracaoAberto = signal<boolean>(false);
+  urlCopiada = signal<boolean>(false);
 
   @ViewChild('menuConfiguracaoContainer') menuConfiguracaoContainer!: ElementRef;
 
@@ -1049,6 +1048,19 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
       sessionStorage.setItem('lojaDominio', dominioAtual);
     }
     this.router.navigate(['/novo-produto']);
+  }
+
+  /**
+   * Copia a URL atual da loja para a área de transferência.
+   */
+  copiarUrlLoja(): void {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      this.urlCopiada.set(true);
+      setTimeout(() => this.urlCopiada.set(false), 2000);
+    }).catch(() => {
+      console.error('Falha ao copiar URL.');
+    });
   }
 
   /**

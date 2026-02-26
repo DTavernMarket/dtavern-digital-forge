@@ -15,85 +15,22 @@ import { Subscription } from 'rxjs';
   template: `
     <nav [class]="isFixed ? 'fixed top-0 left-0 right-0 z-50 bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30' : 'relative bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30'">
       <div class="container mx-auto px-4">
-        <!-- Container principal com 3 seções -->
-        <div class="flex items-center justify-between py-4">
-          
-          <!-- SEÇÃO ESQUERDA: Logo -->
-          <div class="cursor-pointer flex items-center justify-center" (click)="irParaInicio()">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center">
-              <img src="assets/images/DTavern-icone.png" alt="DTavern" class="w-8 h-8 object-contain" />
+        <!-- Container principal: duas colunas iguais (esquerda/direita) para centralizar o meio -->
+        <div class="flex items-center py-4">
+          <!-- SEÇÃO ESQUERDA: Logo (ocupa espaço para equilibrar) -->
+          <div class="flex-1 flex items-center justify-start min-w-0">
+            <div class="cursor-pointer flex items-center justify-center" (click)="irParaInicio()">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center">
+                <img src="assets/images/DTavern-icone.png" alt="DTavern" class="w-8 h-8 object-contain" />
+              </div>
+              <span class="text-lg font-medieval font-bold text-scroll-beige ml-2">DTavern</span>
             </div>
-            <span class="text-lg font-medieval font-bold text-scroll-beige ml-2">DTavern</span>
           </div>
 
-          <!-- SEÇÃO MEIO: Barra de Pesquisa e Menu -->
-          <div class="flex-1 max-w-2xl mx-8 flex flex-col items-center space-y-2">
+          <!-- SEÇÃO MEIO: Barra de Pesquisa e Menu (centralizado) -->
+          <div class="flex-none flex flex-col items-center justify-center space-y-2 w-full max-w-2xl px-4">
             <!-- Barra de Pesquisa -->
-            <div class="relative w-full">
-              <input
-                type="text"
-                [(ngModel)]="termoPesquisa"
-                (input)="onPesquisaChange()"
-                (keyup.enter)="realizarPesquisa()"
-                placeholder="Pesquisar produtos, aventuras, mapas..."
-                class="w-full px-2 py-1 pl-8 pr-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60 focus:outline-none focus:ring-2 focus:ring-candlelight-gold focus:border-transparent transition-all duration-200 text-sm"
-              />
-              <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                <svg class="w-4 h-4 text-scroll-beige/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-              </div>
-              <button
-                *ngIf="termoPesquisa()"
-                (click)="limparPesquisa()"
-                class="absolute inset-y-0 right-0 pr-2 flex items-center text-scroll-beige/60 hover:text-scroll-beige transition-colors"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-              </button>
-
-              <!-- Resultados da Pesquisa em Tempo Real -->
-              <div 
-                *ngIf="resultadosPesquisa().length > 0 && termoPesquisa() && mostrarResultados()"
-                class="absolute top-full left-0 right-0 mt-2 bg-midnight-brown/95 border border-brass-accent/40 rounded-lg shadow-xl max-h-96 overflow-y-auto z-50"
-              >
-                <div class="p-2">
-                  <div 
-                    *ngFor="let produto of resultadosPesquisa()"
-                    (click)="selecionarProduto(produto)"
-                    class="flex items-center space-x-3 p-3 hover:bg-tavern-wood/20 rounded-lg cursor-pointer transition-colors"
-                  >
-                    <div class="w-12 h-12 bg-tavern-wood/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <svg class="w-6 h-6 text-scroll-beige/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                      </svg>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <h4 class="text-scroll-beige font-semibold truncate">{{ produto.nome }}</h4>
-                      <p class="text-scroll-beige/70 text-sm truncate">{{ produto.descricao.substring(0, 50) }}...</p>
-                      <div class="flex items-center space-x-2 mt-1">
-                      @if (produto.gratuito) {
-                        <span class="text-green-500 font-bold text-sm">Grátis</span>
-                      } @else {
-                        <span class="text-candlelight-gold font-bold">
-                          R$
-                          {{
-                            (produto.valorPromocional != null
-                              ? produto.valorPromocional
-                              : produto.valorUnitario
-                            )
-                              .toFixed(2)
-                              .replace('.', ',')
-                          }}
-                        </span>
-                      }
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            
 
             <!-- Menu de Navegação -->
             <div class="flex items-center space-x-8">
@@ -109,8 +46,8 @@ import { Subscription } from 'rxjs';
             </div>
           </div>
 
-          <!-- SEÇÃO DIREITA: Ações -->
-          <div class="flex items-center space-x-4">
+          <!-- SEÇÃO DIREITA: Ações (ocupa espaço igual ao da esquerda para manter o centro) -->
+          <div class="flex-1 flex items-center justify-end min-w-0 space-x-4">
             <!-- Elementos para usuário logado -->
             <ng-container *ngIf="estaAutenticado()">
               <!-- Perfil -->
