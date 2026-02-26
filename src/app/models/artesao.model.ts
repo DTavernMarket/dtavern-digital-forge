@@ -6,6 +6,8 @@ export interface LojaResponse {
   nome: string;
   email: string;
   descricao: string;
+  caminhoImagemPerfil: string;
+  caminhoImagemHeader: string;
 }
 
 // Interface mantida para compatibilidade com código existente
@@ -14,6 +16,10 @@ export interface Artesao {
   dominio: string;
   nome: string;
   biografia: string;
+  /** Caminho da imagem de perfil da loja (retornado pelo backend) */
+  caminhoImagemPerfil?: string;
+  /** Caminho da imagem de header/capa da loja (retornado pelo backend) */
+  caminhoImagemHeader?: string;
 }
 
 export interface RedesSociais {

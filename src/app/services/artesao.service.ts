@@ -186,4 +186,32 @@ export class ArtesaoService {
       'http://localhost:8080/api/v1/client/lojas/mais-vendas'
     );
   }
+
+  /**
+   * Faz upload de mídia da loja (foto de perfil ou header).
+   * Requer autenticação.
+   * @param arquivo Arquivo de imagem a ser enviado
+   * @param tipoMidia 'PERFIL' (foto da loja) ou 'HEADER' (imagem de capa)
+   */
+  uploadMidia(arquivo: File, tipoMidia: 'HEADER' | 'PERFIL'): Observable<unknown> {
+    const formData = new FormData();
+    formData.append('imagem', arquivo);
+
+    const params = new HttpParams().set('tipoMidia', tipoMidia);
+
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.post<unknown>(
+          'http://localhost:8080/api/v1/lojas/midia',
+          formData,
+          {
+            params,
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+      })
+    );
+  }
 }

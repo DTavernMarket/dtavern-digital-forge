@@ -8,7 +8,6 @@ import { Produto } from '../../models/produto.model';
 import { ArtesaoService } from '../../services/artesao.service';
 import { ProdutoService } from '../../services/produto.service';
 import { AuthService } from '../../services/auth.service';
-import { auth } from '../../config/firebase.config';
 @Component({
   selector: 'app-loja-artesao',
   standalone: true,
@@ -16,13 +15,38 @@ import { auth } from '../../config/firebase.config';
   template: `
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
       <app-barra-navegacao [isFixed]="true" />
+      <!-- Inputs ocultos para upload de foto e header da loja -->
+      <input
+        #inputFotoLoja
+        type="file"
+        accept="image/*"
+        class="hidden"
+        (change)="onArquivoFotoSelecionado($event)"
+      />
+      <input
+        #inputHeaderLoja
+        type="file"
+        accept="image/*"
+        class="hidden"
+        (change)="onArquivoHeaderSelecionado($event)"
+      />
+      <!-- Toast de mensagem do upload (sucesso ou erro) -->
+      @if (uploadMidiaMensagem()) {
+        <div
+          class="fixed top-24 left-1/2 -translate-x-1/2 z-[200] px-4 py-3 rounded-lg shadow-xl border border-brass-accent/40 max-w-sm text-center text-sm bg-midnight-brown/95"
+          [class.text-green-400]="uploadMidiaMensagem()?.startsWith('Upload concluído')"
+          [class.text-red-400]="uploadMidiaMensagem() && !uploadMidiaMensagem()?.startsWith('Upload concluído')"
+        >
+          {{ uploadMidiaMensagem() }}
+        </div>
+      }
 
       <!-- Header da Loja com Fundo do Artesão (z-20 para dropdown ficar acima da barra de abas; sem overflow-hidden para não cortar o dropdown) -->
       <div class="relative z-20 h-96">
         <!-- Imagem de Fundo (overflow-hidden só aqui para não cortar o dropdown do header) -->
         <div
           class="absolute inset-0 overflow-hidden bg-cover bg-center bg-no-repeat"
-          [style.background-image]="'url(' + 'http://localhost:8080/cdn/default.png' + ')'"
+          [style.background-image]="'url(' + artesao()?.caminhoImagemPerfil + ')'"
         >
           <div class="absolute inset-0 bg-black/50"></div>
         </div>
@@ -33,19 +57,10 @@ import { auth } from '../../config/firebase.config';
             <!-- Avatar do Artesão -->
             <div class="relative">
               <img
-                [src]="'http://localhost:8080/cdn/default.png'"
+                [src]="artesao()?.caminhoImagemPerfil"
                 [alt]="artesao()?.nome"
                 class="w-32 h-32 rounded-full border-4 border-candlelight-gold shadow-xl object-cover"
               />
-              <div
-                class="absolute -bottom-2 -right-2 w-8 h-8 bg-candlelight-gold rounded-full flex items-center justify-center"
-              >
-                <svg class="w-4 h-4 text-tavern-wood" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                  />
-                </svg>
-              </div>
             </div>
 
             <!-- Informações do Artesão -->
@@ -69,17 +84,26 @@ import { auth } from '../../config/firebase.config';
                       <div class="absolute left-0 mt-2 w-48 bg-midnight-brown/95 border border-brass-accent/40 rounded-lg shadow-xl z-[100]">
                         <div class="py-2">
                           <button
+                            type="button"
                             (click)="mudarFotoLoja(); menuConfiguracaoAberto.set(false)"
-                            class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                            [disabled]="uploadMidiaLoading()"
+                            class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            Mudar foto da loja
+                            {{ uploadMidiaLoading() ? 'Enviando...' : 'Mudar foto da loja' }}
                           </button>
                           <button
+                            type="button"
                             (click)="mudarHeaderLoja(); menuConfiguracaoAberto.set(false)"
-                            class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                            [disabled]="uploadMidiaLoading()"
+                            class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            Mudar header da loja
+                            {{ uploadMidiaLoading() ? 'Enviando...' : 'Mudar header da loja' }}
                           </button>
+                          @if (uploadMidiaMensagem()) {
+                            <p class="px-4 py-2 text-xs text-scroll-beige/90 border-t border-brass-accent/30 mt-1">
+                              {{ uploadMidiaMensagem() }}
+                            </p>
+                          }
                         </div>
                       </div>
                     }
@@ -770,8 +794,19 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
   mostrarDialogCancelar = signal<boolean>(false);
   menuConfiguracaoAberto = signal<boolean>(false);
   urlCopiada = signal<boolean>(false);
+  uploadMidiaLoading = signal<boolean>(false);
+  uploadMidiaMensagem = signal<string | null>(null);
 
   @ViewChild('menuConfiguracaoContainer') menuConfiguracaoContainer!: ElementRef;
+  @ViewChild('inputFotoLoja') inputFotoLoja!: ElementRef<HTMLInputElement>;
+  @ViewChild('inputHeaderLoja') inputHeaderLoja!: ElementRef<HTMLInputElement>;
+
+  private readonly IMAGEM_PADRAO = 'http://localhost:8080/cdn/default.png';
+
+  /** URL da imagem de perfil da loja (caminho do backend ou padrão). */
+  urlImagemPerfil = this.IMAGEM_PADRAO;
+  /** URL da imagem de header da loja (caminho do backend ou padrão). */
+  urlImagemHeader = this.IMAGEM_PADRAO;
 
   produtosFiltrados = computed(() => {
     let produtos = this.produtosArtesao();
@@ -973,11 +1008,6 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
       if (token) {
         this.artesaoService.verifyOwner(dominio).subscribe({
           next: (isOwner) => {
-            if (isOwner) {
-              console.log('dono da loja');
-            } else {
-              console.log('é visitante');
-            }
             this.isOwner.set(isOwner);
           },
         });
@@ -993,6 +1023,8 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
           dominio: lojaResponse.dominio,
           nome: lojaResponse.nome,
           biografia: lojaResponse.descricao, // descricao do backend vira biografia
+          caminhoImagemPerfil: lojaResponse.caminhoImagemPerfil,
+          caminhoImagemHeader: lojaResponse.caminhoImagemHeader,
         };
         this.artesao.set(artesao);
         this.carregarProdutosPorDominio(dominio);
@@ -1074,14 +1106,58 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
     return ['/'];
   }
 
-  mudarFotoLoja() {
-    // TODO: Implementar funcionalidade de mudar foto da loja
-    console.log('Mudar foto da loja');
+  mudarFotoLoja(): void {
+    this.uploadMidiaMensagem.set(null);
+    if (this.inputFotoLoja?.nativeElement) {
+      this.inputFotoLoja.nativeElement.value = '';
+      this.inputFotoLoja.nativeElement.click();
+    }
   }
 
-  mudarHeaderLoja() {
-    // TODO: Implementar funcionalidade de mudar header da loja
-    console.log('Mudar header da loja');
+  mudarHeaderLoja(): void {
+    this.uploadMidiaMensagem.set(null);
+    if (this.inputHeaderLoja?.nativeElement) {
+      this.inputHeaderLoja.nativeElement.value = '';
+      this.inputHeaderLoja.nativeElement.click();
+    }
+  }
+
+  onArquivoFotoSelecionado(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      this.fazerUploadMidia(file, 'PERFIL');
+    }
+    input.value = '';
+  }
+
+  onArquivoHeaderSelecionado(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      this.fazerUploadMidia(file, 'HEADER');
+    }
+    input.value = '';
+  }
+
+  private fazerUploadMidia(arquivo: File, tipoMidia: 'HEADER' | 'PERFIL'): void {
+    this.uploadMidiaLoading.set(true);
+    this.uploadMidiaMensagem.set(null);
+    this.artesaoService.uploadMidia(arquivo, tipoMidia).subscribe({
+      next: () => {
+        this.uploadMidiaLoading.set(false);
+        this.uploadMidiaMensagem.set('Upload concluído! Atualize a página para ver a alteração.');
+        setTimeout(() => {
+          this.uploadMidiaMensagem.set(null);
+          window.location.reload();
+        }, 1500);
+      },
+      error: (err) => {
+        this.uploadMidiaLoading.set(false);
+        this.uploadMidiaMensagem.set(err?.error?.mensagem || err?.error?.message || 'Erro ao enviar imagem. Tente novamente.');
+        setTimeout(() => this.uploadMidiaMensagem.set(null), 5000);
+      },
+    });
   }
 
   @HostListener('document:click', ['$event'])
