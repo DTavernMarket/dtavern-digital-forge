@@ -57,6 +57,8 @@ export class ArtesaoService {
       dominio: loja.dominio,
       nome: loja.nome,
       biografia: loja.descricao, // descricao do backend vira biografia
+      caminhoImagemPerfil: loja.caminhoImagemPerfil,
+      caminhoImagemHeader: loja.caminhoImagemHeader,
     };
   }
 

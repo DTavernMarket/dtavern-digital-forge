@@ -34,16 +34,16 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
           >
                          <!-- Avatar e Informações Básicas -->
              <div class="text-center mb-6 relative overflow-hidden rounded-lg h-32">
-               <!-- Background do Artesão -->
+               <!-- Background do Artesão (header da loja) -->
                <div
                  class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-70"
-                 [style.background-image]="'url(http://localhost:8080/cdn/default.png)'"
+                 [style.background-image]="'url(' + urlImagemHeader(artesao) + ')'"
                ></div>
 
                <div class="relative z-10 h-full flex items-center justify-center">
                  <div class="relative">
                    <img
-                     [src]="'http://localhost:8080/cdn/default.png'"
+                     [src]="urlImagemPerfil(artesao)"
                      [alt]="artesao.nome"
                      class="bg-scroll-beige w-24 h-24 rounded-lg object-cover mx-auto border-4 border-brass-accent/30"
                    />
@@ -144,6 +144,8 @@ export class SecaoArtesoesComponent implements OnInit {
           dominio: loja.dominio,
           nome: loja.nome,
           biografia: loja.descricao,
+          caminhoImagemPerfil: loja.caminhoImagemPerfil,
+          caminhoImagemHeader: loja.caminhoImagemHeader,
         }));
         this.artesoesEmDestaque.set(artesoes);
       },
@@ -156,5 +158,24 @@ export class SecaoArtesoesComponent implements OnInit {
 
   rastrearArtesao(index: number, artesao: Artesao) {
     return artesao.dominio;
+  }
+
+  private readonly CDN_BASE = 'http://localhost:8080';
+  private readonly IMAGEM_PADRAO = this.CDN_BASE + '/cdn/default.png';
+
+  /** Retorna a URL da imagem de perfil (resolvida ou padrão). */
+  urlImagemPerfil(artesao: Artesao): string {
+    return this.resolverUrlImagem(artesao.caminhoImagemPerfil);
+  }
+
+  /** Retorna a URL da imagem de header (resolvida ou padrão). */
+  urlImagemHeader(artesao: Artesao): string {
+    return this.resolverUrlImagem(artesao.caminhoImagemHeader);
+  }
+
+  private resolverUrlImagem(caminho: string | undefined): string {
+    if (!caminho?.trim()) return this.IMAGEM_PADRAO;
+    if (caminho.startsWith('http://') || caminho.startsWith('https://')) return caminho;
+    return caminho.startsWith('/') ? this.CDN_BASE + caminho : this.CDN_BASE + '/' + caminho;
   }
 }

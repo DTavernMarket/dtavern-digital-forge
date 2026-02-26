@@ -46,7 +46,7 @@ import { AuthService } from '../../services/auth.service';
         <!-- Imagem de Fundo (overflow-hidden só aqui para não cortar o dropdown do header) -->
         <div
           class="absolute inset-0 overflow-hidden bg-cover bg-center bg-no-repeat"
-          [style.background-image]="'url(' + artesao()?.caminhoImagemPerfil + ')'"
+          [style.background-image]="'url(' + urlImagemHeader() + ')'"
         >
           <div class="absolute inset-0 bg-black/50"></div>
         </div>
@@ -57,7 +57,7 @@ import { AuthService } from '../../services/auth.service';
             <!-- Avatar do Artesão -->
             <div class="relative">
               <img
-                [src]="artesao()?.caminhoImagemPerfil"
+                [src]="urlImagemPerfil()"
                 [alt]="artesao()?.nome"
                 class="w-32 h-32 rounded-full border-4 border-candlelight-gold shadow-xl object-cover"
               />
@@ -801,12 +801,23 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
   @ViewChild('inputFotoLoja') inputFotoLoja!: ElementRef<HTMLInputElement>;
   @ViewChild('inputHeaderLoja') inputHeaderLoja!: ElementRef<HTMLInputElement>;
 
-  private readonly IMAGEM_PADRAO = 'http://localhost:8080/cdn/default.png';
+  private readonly CDN_BASE = 'http://localhost:8080';
+  private readonly IMAGEM_PADRAO = this.CDN_BASE + '/cdn/default.png';
 
   /** URL da imagem de perfil da loja (caminho do backend ou padrão). */
-  urlImagemPerfil = this.IMAGEM_PADRAO;
+  urlImagemPerfil = computed(() =>
+    this.resolverUrlImagem(this.artesao()?.caminhoImagemPerfil)
+  );
   /** URL da imagem de header da loja (caminho do backend ou padrão). */
-  urlImagemHeader = this.IMAGEM_PADRAO;
+  urlImagemHeader = computed(() =>
+    this.resolverUrlImagem(this.artesao()?.caminhoImagemHeader)
+  );
+
+  private resolverUrlImagem(caminho: string | undefined): string {
+    if (!caminho?.trim()) return this.IMAGEM_PADRAO;
+    if (caminho.startsWith('http://') || caminho.startsWith('https://')) return caminho;
+    return caminho.startsWith('/') ? this.CDN_BASE + caminho : this.CDN_BASE + '/' + caminho;
+  }
 
   produtosFiltrados = computed(() => {
     let produtos = this.produtosArtesao();

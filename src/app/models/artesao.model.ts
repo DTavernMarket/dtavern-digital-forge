@@ -43,4 +43,6 @@ export interface LojaMaisVendas {
   idLoja: string;
   nomeLoja: string;
   qtdVendas: number;
+  /** Caminho da imagem de perfil da loja (opcional, quando retornado pelo backend) */
+  caminhoImagemPerfil?: string;
 }

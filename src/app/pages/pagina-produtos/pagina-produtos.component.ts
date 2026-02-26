@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 import { RodapeComponent } from '../../components/rodape/rodape.component';
 import { ArtesaoService } from '../../services/artesao.service';
-import { LojaMaisVendas } from '../../models/artesao.model';
+import { LojaResponse } from '../../models/artesao.model';
 
 @Component({
   selector: 'app-pagina-produtos',
@@ -100,38 +100,23 @@ import { LojaMaisVendas } from '../../models/artesao.model';
                <!-- Lista de Artesãos em Formato Horizontal -->
                <div class="space-y-4">
                  <div
-                   *ngFor="let artesao of artesoesFiltrados(); trackBy: rastrearArtesao"
+                   *ngFor="let loja of artesoesFiltrados(); trackBy: rastrearLoja"
                    class="bg-midnight-brown/50 backdrop-blur-sm border border-brass-accent/30 rounded-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                   [routerLink]="['/lojas', artesao.dominioLoja]"
+                   [routerLink]="['/lojas', loja.dominio]"
                  >
                   <div class="flex space-x-6">
-                    <!-- Ícone do Artesão -->
+                    <!-- Foto de perfil da Loja -->
                     <div class="flex-shrink-0">
                       <div class="relative w-32 h-32 bg-tavern-wood/20 rounded-lg overflow-hidden flex items-center justify-center">
-                        <svg
-                          class="w-16 h-16 text-scroll-beige/30"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                          />
-                        </svg>
-                        <div class="absolute top-2 right-2">
-                          <span
-                            class="bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold px-2 py-1 rounded-full"
-                          >
-                            {{ artesao.qtdVendas }} venda(s)
-                          </span>
-                        </div>
+                        <img
+                          [src]="urlImagemPerfil(loja)"
+                          [alt]="loja.nome"
+                          class="w-full h-full object-cover"
+                        />
                       </div>
                     </div>
 
-                    <!-- Informações do Artesão -->
+                    <!-- Informações da Loja -->
                     <div class="flex-1 min-w-0">
                       <div class="space-y-3">
                         <!-- Nome -->
@@ -139,32 +124,22 @@ import { LojaMaisVendas } from '../../models/artesao.model';
                           <h3
                             class="text-xl font-semibold text-scroll-beige hover:text-candlelight-gold transition-colors"
                           >
-                            {{ artesao.nomeLoja }}
+                            {{ loja.nome }}
                           </h3>
                         </div>
 
                         <!-- Descrição -->
                         <p class="text-sm text-scroll-beige/70 line-clamp-2">
-                          {{ artesao.descricaoLoja || 'Sem descrição disponível' }}
+                          {{ loja.descricao || 'Sem descrição disponível' }}
                         </p>
 
                         <!-- Domínio -->
                         <div class="pt-1">
                           <p class="text-sm text-scroll-beige/60">
-                            @{{ artesao.dominioLoja }}
+                            @{{ loja.dominio }}
                           </p>
                         </div>
 
-                      </div>
-                    </div>
-
-                    <!-- Informações de Vendas -->
-                    <div class="flex-shrink-0 flex flex-col items-end justify-center">
-                      <div class="text-right">
-                        <div class="text-sm text-scroll-beige/60 mb-1">Total de vendas</div>
-                        <div class="text-2xl font-bold text-candlelight-gold">
-                          {{ artesao.qtdVendas }}
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -216,62 +191,49 @@ import { LojaMaisVendas } from '../../models/artesao.model';
 })
 export class PaginaProdutosComponent implements OnInit {
   private artesaoService = inject(ArtesaoService);
-  private artesoes = signal<LojaMaisVendas[]>([]);
+  private lojas = signal<LojaResponse[]>([]);
   private resultadoPaginado = signal<any>(null);
 
-  // Computed para artesãos filtrados
+  // Computed para lojas filtradas
   artesoesFiltrados = computed(() => {
-    let artesoes = this.artesoes();
+    let lojas = this.lojas();
     const termo = this.termoBusca().toLowerCase().trim();
 
     // Filtrar por termo de busca
     if (termo) {
-      artesoes = artesoes.filter((a) =>
-        a.nomeLoja.toLowerCase().includes(termo) ||
-        a.descricaoLoja.toLowerCase().includes(termo) ||
-        a.dominioLoja.toLowerCase().includes(termo)
+      lojas = lojas.filter((l) =>
+        l.nome.toLowerCase().includes(termo) ||
+        (l.descricao && l.descricao.toLowerCase().includes(termo)) ||
+        l.dominio.toLowerCase().includes(termo)
       );
     }
 
     // Ordenar
     switch (this.ordenacaoSelecionada()) {
-      case 'vendas-maior':
-        artesoes = artesoes.sort((a, b) => b.qtdVendas - a.qtdVendas);
-        break;
-      case 'vendas-menor':
-        artesoes = artesoes.sort((a, b) => a.qtdVendas - b.qtdVendas);
+      case 'nome-desc':
+        lojas = lojas.sort((a, b) => b.nome.localeCompare(a.nome));
         break;
       case 'nome-asc':
-        artesoes = artesoes.sort((a, b) => a.nomeLoja.localeCompare(b.nomeLoja));
-        break;
-      case 'nome-desc':
-        artesoes = artesoes.sort((a, b) => b.nomeLoja.localeCompare(a.nomeLoja));
-        break;
-      case 'relevancia':
       default:
-        // Por padrão, manter a ordem do backend (mais vendas primeiro)
-        artesoes = artesoes.sort((a, b) => b.qtdVendas - a.qtdVendas);
+        lojas = lojas.sort((a, b) => a.nome.localeCompare(b.nome));
         break;
     }
 
-    return artesoes;
+    return lojas;
   });
 
-  rastrearArtesao(index: number, artesao: LojaMaisVendas) {
-    return artesao.idLoja || artesao.dominioLoja;
+  rastrearLoja(index: number, loja: LojaResponse) {
+    return loja.dominio;
   }
 
   // Estados reativos para filtros
   termoBusca = signal('');
-  ordenacaoSelecionada = signal('relevancia');
+  ordenacaoSelecionada = signal('nome-asc');
   paginaAtual = signal(1);
   dropdownOrdenacao = signal(false);
 
   // Opções de ordenação
   opcoesOrdenacao = [
-    { value: 'relevancia', label: 'Mais Relevantes' },
-    { value: 'vendas-maior', label: 'Mais Vendas' },
-    { value: 'vendas-menor', label: 'Menos Vendas' },
     { value: 'nome-asc', label: 'Nome (A-Z)' },
     { value: 'nome-desc', label: 'Nome (Z-A)' },
   ];
@@ -300,14 +262,14 @@ export class PaginaProdutosComponent implements OnInit {
   }
 
   private carregarArtesoes() {
-    this.artesaoService.buscarLojasMaisVendas().subscribe({
+    this.artesaoService.listarLojas(undefined, 0, 100).subscribe({
       next: (resultado) => {
         this.resultadoPaginado.set(resultado);
-        this.artesoes.set(resultado.content);
+        this.lojas.set(resultado.content);
       },
       error: (error) => {
-        console.error('Erro ao carregar artesãos:', error);
-        this.artesoes.set([]);
+        console.error('Erro ao carregar lojas:', error);
+        this.lojas.set([]);
       }
     });
   }
@@ -315,12 +277,23 @@ export class PaginaProdutosComponent implements OnInit {
   // Métodos para o dropdown de ordenação
   obterTextoOrdenacao(): string {
     const opcao = this.opcoesOrdenacao.find((o) => o.value === this.ordenacaoSelecionada());
-    return opcao ? opcao.label : 'Mais Relevantes';
+    return opcao ? opcao.label : 'Nome (A-Z)';
   }
 
   selecionarOrdenacao(valor: string) {
     this.ordenacaoSelecionada.set(valor);
     this.dropdownOrdenacao.set(false);
+  }
+
+  private readonly CDN_BASE = 'http://localhost:8080';
+  private readonly IMAGEM_PADRAO = this.CDN_BASE + '/cdn/default.png';
+
+  /** Retorna a URL da imagem de perfil da loja (resolvida ou padrão). */
+  urlImagemPerfil(loja: LojaResponse): string {
+    const caminho = loja.caminhoImagemPerfil;
+    if (!caminho?.trim()) return this.IMAGEM_PADRAO;
+    if (caminho.startsWith('http://') || caminho.startsWith('https://')) return caminho;
+    return caminho.startsWith('/') ? this.CDN_BASE + caminho : this.CDN_BASE + '/' + caminho;
   }
 
 }
