@@ -74,6 +74,27 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
           <div class="border border-brass-accent/30 rounded-xl max-w-4xl mx-auto bg-midnight-brown/40">
             <!-- Informações Básicas -->
             <div class="bg-tavern-wood/10 p-8">
+              <!-- Disponível para venda -->
+              <div class="flex items-center justify-start gap-4 mb-6 pb-6 border-b border-brass-accent/20">
+                <p class="text-scroll-beige text-sm font-medium">
+                  Disponível para venda
+                </p>
+                <button
+                  type="button"
+                  role="switch"
+                  [attr.aria-checked]="produto.aVenda"
+                  (click)="produto.aVenda = !produto.aVenda"
+                  class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"
+                  [class.bg-candlelight-gold]="produto.aVenda"
+                  [class.bg-tavern-wood]="!produto.aVenda"
+                >
+                  <span
+                    class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                    [class.translate-x-5]="produto.aVenda"
+                    [class.translate-x-1]="!produto.aVenda"
+                  ></span>
+                </button>
+              </div>
               <div class="grid md:grid-cols-3 gap-6">
                 <!-- Nome -->
                 <div class="md:col-span-3">
@@ -467,6 +488,7 @@ export class CadastroProdutoComponent implements OnInit {
     categoriaCodigo: '',
     descricao: '',
     gratuito: false,
+    aVenda: false,
     nome: '',
     nomeNormalizado: '',
     valorUnitario: 0,

@@ -10,25 +10,19 @@ import { MeResponseLoja, MeResponseCliente } from '../../models/auth.model';
 import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-meu-perfil',
-    standalone: true,
-    imports: [CommonModule, RouterModule, BarraNavegacaoComponent],
-    template: `
+  selector: 'app-meu-perfil',
+  standalone: true,
+  imports: [CommonModule, RouterModule, BarraNavegacaoComponent],
+  template: `
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
       <app-barra-navegacao [isFixed]="true" />
       <div class="pt-20">
         <div class="container mx-auto px-4 py-6">
           <!-- Cabeçalho -->
           <div class="mb-6 flex flex-col items-center">
-            @if(userRole() === 'LOJA'){
               <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige mb-1">
-                Minha Loja
+                Minha conta
               </h1>
-            } @else if(userRole() === 'COMPRADOR'){
-              <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige mb-1">
-                Meu Perfil
-              </h1>
-            }
             <p class="text-scroll-beige/70 text-xs md:text-sm">
               Visualize e gerencie as informações da sua conta
             </p>
@@ -51,7 +45,9 @@ import { Subscription } from 'rxjs';
                   <span class="ml-2 text-scroll-beige text-sm">Carregando...</span>
                 </div>
               } @else {
-                <div class="space-y-4">
+                <div class="flex flex-col md:flex-row gap-6 md:gap-8">
+                  <!-- Coluna esquerda: campos (metade da largura) -->
+                  <div class="flex-1 min-w-0 md:max-w-[50%] space-y-4">
                 @if (userRole() === 'LOJA' && lojaData()) {
                   <!-- Campos para Loja -->
                   <div>
@@ -154,7 +150,67 @@ import { Subscription } from 'rxjs';
                     </span>
                   </div>
                 </div>
-              </div>
+                  </div>
+
+                  <!-- Coluna direita: foto de perfil -->
+                  <div class="flex-shrink-0 flex flex-col items-center md:items-start">
+                    <p class="text-sm font-medium text-scroll-beige/80 mb-2">
+                      Foto de perfil
+                    </p>
+                    <div class="relative inline-block">
+                      <div class="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 bg-midnight-brown/90 rounded-lg border border-brass-accent/40 flex items-center justify-center overflow-hidden">
+                        @if (!fotoPerfilPreview() && !fotoPerfilUrl()) {
+                          <label class="cursor-pointer flex flex-col items-center justify-center w-full h-full p-4">
+                            <svg
+                              class="w-12 h-12 text-scroll-beige/50 mb-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                            <span class="px-6 py-2 bg-candlelight-gold hover:bg-candlelight-gold/90 text-tavern-wood font-semibold rounded-lg transition-colors">
+                              Escolher arquivo
+                            </span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              (change)="onFotoPerfilSelecionada($event)"
+                              class="hidden"
+                            />
+                          </label>
+                        } @else {
+                          <img
+                            [src]="fotoPerfilPreview() || fotoPerfilUrl()"
+                            alt="Foto de perfil"
+                            class="max-w-full max-h-full w-full h-full object-cover"
+                          />
+                        }
+                      </div>
+                      @if (fotoPerfilPreview() || fotoPerfilUrl()) {
+                        <button
+                          type="button"
+                          (click)="removerFotoPerfil()"
+                          class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+                        >
+                          ×
+                        </button>
+                      }
+                    </div>
+                    @if (fotoPerfilArquivo()) {
+                      <div class="mt-2 space-y-1">
+                        <div class="text-xs text-scroll-beige/70 break-words">
+                          {{ fotoPerfilArquivo()?.name }}
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
             }
             </div>
 
@@ -212,142 +268,168 @@ import { Subscription } from 'rxjs';
   `
 })
 export class MeuPerfilComponent implements OnInit, OnDestroy {
-    private authService = inject(AuthService);
-    private artesaoService = inject(ArtesaoService);
-    private clienteService = inject(ClienteService);
-    private router = inject(Router);
-    private authSubscription?: Subscription;
+  private authService = inject(AuthService);
+  private artesaoService = inject(ArtesaoService);
+  private clienteService = inject(ClienteService);
+  private router = inject(Router);
+  private authSubscription?: Subscription;
 
-    // Dados da loja
-    lojaData = signal<MeResponseLoja | null>(null);
-    
-    // Dados do cliente
-    clienteData = signal<MeResponseCliente | null>(null);
-    
-    userRole = signal<'LOJA' | 'COMPRADOR' | null>(null);
-    deletando = signal<boolean>(false);
-    errorMessage = signal<string | null>(null);
-    loading = signal<boolean>(false);
+  // Dados da loja
+  lojaData = signal<MeResponseLoja | null>(null);
 
-    ngOnInit() {
-        this.loading.set(true);
-        
-        // Carregar role do token primeiro
-        this.authService.getUserRole().subscribe({
-            next: (role) => {
-                this.userRole.set(role);
-                
-                if (role === 'LOJA') {
-                    // Carregar dados da loja
-                    this.artesaoService.getMeLoja().subscribe({
-                        next: (data) => {
-                            this.lojaData.set(data);
-                            this.loading.set(false);
-                        },
-                        error: (error) => {
-                            console.error('Erro ao carregar dados da loja:', error);
-                            this.errorMessage.set('Erro ao carregar dados da conta. Tente novamente.');
-                            this.loading.set(false);
-                        }
-                    });
-                } else if (role === 'COMPRADOR') {
-                    // Carregar dados do cliente
-                    this.clienteService.getMeCliente().subscribe({
-                        next: (data) => {
-                            this.clienteData.set(data);
-                            this.loading.set(false);
-                        },
-                        error: (error) => {
-                            console.error('Erro ao carregar dados do cliente:', error);
-                            this.errorMessage.set('Erro ao carregar dados da conta. Tente novamente.');
-                            this.loading.set(false);
-                        }
-                    });
-                } else {
-                    this.loading.set(false);
-                }
+  // Dados do cliente
+  clienteData = signal<MeResponseCliente | null>(null);
+
+  userRole = signal<'LOJA' | 'COMPRADOR' | null>(null);
+  deletando = signal<boolean>(false);
+  errorMessage = signal<string | null>(null);
+  loading = signal<boolean>(false);
+
+  /** URL da foto de perfil vinda do backend (se existir). */
+  fotoPerfilUrl = signal<string | null>(null);
+  /** Data URL do arquivo selecionado para preview. */
+  fotoPerfilPreview = signal<string | null>(null);
+  /** Arquivo de imagem selecionado. */
+  fotoPerfilArquivo = signal<File | null>(null);
+
+  ngOnInit() {
+    this.loading.set(true);
+
+    // Carregar role do token primeiro
+    this.authService.getUserRole().subscribe({
+      next: (role) => {
+        this.userRole.set(role);
+
+        if (role === 'LOJA') {
+          // Carregar dados da loja
+          this.artesaoService.getMeLoja().subscribe({
+            next: (data) => {
+              this.lojaData.set(data);
+              this.loading.set(false);
             },
             error: (error) => {
-                console.error('Erro ao obter role do token:', error);
-                this.userRole.set(null);
-                this.loading.set(false);
+              console.error('Erro ao carregar dados da loja:', error);
+              this.errorMessage.set('Erro ao carregar dados da conta. Tente novamente.');
+              this.loading.set(false);
             }
+          });
+        } else if (role === 'COMPRADOR') {
+          // Carregar dados do cliente
+          this.clienteService.getMeCliente().subscribe({
+            next: (data) => {
+              this.clienteData.set(data);
+              this.loading.set(false);
+            },
+            error: (error) => {
+              console.error('Erro ao carregar dados do cliente:', error);
+              this.errorMessage.set('Erro ao carregar dados da conta. Tente novamente.');
+              this.loading.set(false);
+            }
+          });
+        } else {
+          this.loading.set(false);
+        }
+      },
+      error: (error) => {
+        console.error('Erro ao obter role do token:', error);
+        this.userRole.set(null);
+        this.loading.set(false);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+    }
+  }
+
+  onFotoPerfilSelecionada(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    this.fotoPerfilArquivo.set(file);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.fotoPerfilPreview.set(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  removerFotoPerfil(): void {
+    this.fotoPerfilPreview.set(null);
+    this.fotoPerfilArquivo.set(null);
+    this.fotoPerfilUrl.set(null);
+  }
+
+  formatarData(data: string | undefined): string {
+    if (!data) return '';
+    try {
+      const date = new Date(data);
+      return date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch {
+      return data;
+    }
+  }
+
+  redefinirSenha() {
+    // TODO: Implementar funcionalidade de redefinir senha
+    console.log('Redefinir senha - funcionalidade a ser implementada');
+  }
+
+  deletarConta() {
+    // Confirmar antes de deletar
+    const confirmacao = confirm(
+      'Tem certeza que deseja deletar sua conta? Esta ação não pode ser desfeita.'
+    );
+
+    if (!confirmacao) {
+      return;
+    }
+
+    const role = this.userRole();
+
+    if (!role) {
+      this.errorMessage.set('Não foi possível identificar o tipo de conta. Tente fazer login novamente.');
+      return;
+    }
+
+    this.deletando.set(true);
+    this.errorMessage.set(null);
+
+    // Chamar a função apropriada baseada na role
+    const deleteObservable = role === 'LOJA'
+      ? this.artesaoService.deletarLoja()
+      : this.authService.deleteComprador();
+
+    deleteObservable.subscribe({
+      next: () => {
+        // Conta deletada com sucesso, fazer logout e redirecionar
+        this.authService.logout().subscribe({
+          next: () => {
+            this.router.navigate(['/']);
+          },
+          error: (error) => {
+            console.error('Erro ao fazer logout após deletar conta:', error);
+            // Mesmo com erro no logout, redirecionar
+            this.router.navigate(['/']);
+          }
         });
-    }
-
-    ngOnDestroy() {
-        if (this.authSubscription) {
-            this.authSubscription.unsubscribe();
-        }
-    }
-
-    formatarData(data: string | undefined): string {
-        if (!data) return '';
-        try {
-            const date = new Date(data);
-            return date.toLocaleDateString('pt-BR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-        } catch {
-            return data;
-        }
-    }
-
-    redefinirSenha() {
-        // TODO: Implementar funcionalidade de redefinir senha
-        console.log('Redefinir senha - funcionalidade a ser implementada');
-    }
-
-    deletarConta() {
-        // Confirmar antes de deletar
-        const confirmacao = confirm(
-            'Tem certeza que deseja deletar sua conta? Esta ação não pode ser desfeita.'
+      },
+      error: (error) => {
+        console.error('Erro ao deletar conta:', error);
+        this.errorMessage.set(
+          error.error?.message ||
+          'Erro ao deletar conta. Tente novamente mais tarde.'
         );
-
-        if (!confirmacao) {
-            return;
-        }
-
-        const role = this.userRole();
-        
-        if (!role) {
-            this.errorMessage.set('Não foi possível identificar o tipo de conta. Tente fazer login novamente.');
-            return;
-        }
-
-        this.deletando.set(true);
-        this.errorMessage.set(null);
-
-        // Chamar a função apropriada baseada na role
-        const deleteObservable = role === 'LOJA' 
-            ? this.artesaoService.deletarLoja()
-            : this.authService.deleteComprador();
-
-        deleteObservable.subscribe({
-            next: () => {
-                // Conta deletada com sucesso, fazer logout e redirecionar
-                this.authService.logout().subscribe({
-                    next: () => {
-                        this.router.navigate(['/']);
-                    },
-                    error: (error) => {
-                        console.error('Erro ao fazer logout após deletar conta:', error);
-                        // Mesmo com erro no logout, redirecionar
-                        this.router.navigate(['/']);
-                    }
-                });
-            },
-            error: (error) => {
-                console.error('Erro ao deletar conta:', error);
-                this.errorMessage.set(
-                    error.error?.message || 
-                    'Erro ao deletar conta. Tente novamente mais tarde.'
-                );
-                this.deletando.set(false);
-            }
-        });
-    }
+        this.deletando.set(false);
+      }
+    });
+  }
 }
 

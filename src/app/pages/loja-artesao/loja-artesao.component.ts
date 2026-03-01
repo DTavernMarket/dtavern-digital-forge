@@ -5,14 +5,16 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 import { DialogEditarLojaComponent } from '../../components/dialog-editar-loja/dialog-editar-loja.component';
 import { Artesao } from '../../models/artesao.model';
-import { Produto } from '../../models/produto.model';
+import { CategoriaProduto, Produto } from '../../models/produto.model';
 import { ArtesaoService } from '../../services/artesao.service';
 import { ProdutoService } from '../../services/produto.service';
 import { AuthService } from '../../services/auth.service';
+import { OpcaoSelect, SelectCustomizadoComponent } from "../../components/select-customizado/select-customizado.component";
+import { CategoriaProdutoService } from '../../services/categoria-produto.service';
 @Component({
   selector: 'app-loja-artesao',
   standalone: true,
-  imports: [CommonModule, FormsModule, BarraNavegacaoComponent, RouterModule, DialogEditarLojaComponent],
+  imports: [CommonModule, FormsModule, BarraNavegacaoComponent, RouterModule, DialogEditarLojaComponent, SelectCustomizadoComponent],
   template: `
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
       <app-barra-navegacao [isFixed]="true" />
@@ -181,14 +183,6 @@ import { AuthService } from '../../services/auth.service';
               </button>
             }
 
-            <!--  Ainda não implementado: Botão de Seguir -->
-            @if (isOwner() != true) {
-            <!-- Botão de Seguir -->
-              <!-- <button
-                class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors">
-                Seguir
-              </button> -->
-            }
             </div>
           </div>
         </div>
@@ -202,18 +196,14 @@ import { AuthService } from '../../services/auth.service';
           <!-- Filtros -->
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-4">
-              <select
-                [(ngModel)]="categoriaFiltro"
-                class="px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-              >
-                <option value="">Todas as categorias</option>
-                <option value="token">Token</option>
-                <option value="mapa">Mapa</option>
-                <option value="aventura">Aventura</option>
-                <option value="trilha-sonora">Trilha Sonora</option>
-                <option value="ferramenta">Ferramenta</option>
-                <option value="outro">Outro</option>
-              </select>
+            
+            <app-select-customizado
+              [label]="'Categoria'"
+              [opcoes]="opcoesCategoria()"
+              [valorSelecionado]="categoriaFiltro()"
+              (valorMudou)="categoriaFiltro.set($event)"
+            />
+
 
               <select
                 [(ngModel)]="ordenacao"
@@ -668,6 +658,8 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
   private artesaoService = inject(ArtesaoService);
   private produtoService = inject(ProdutoService);
   private authService = inject(AuthService);
+  private categoriaProdutoService = inject(CategoriaProdutoService);
+  opcoesCategoria = signal<OpcaoSelect[]>([]);
   artesao = signal<Artesao | undefined>(undefined);
   produtosArtesao = signal<Produto[]>([]);
   abaAtiva = signal('produtos');
@@ -757,7 +749,16 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
 
       if (aba === 'sobre' && dominio) {
         this.carregarSobre(dominio);
+        this.carregarCategorias();
       }
+    });
+  }
+
+  private carregarCategorias() {
+    this.categoriaProdutoService.buscarCategorias().subscribe({
+      next: (categorias) => {
+        this.opcoesCategoria.set(categorias.map(categoria => ({ value: categoria.codigo, label: categoria.nome })));
+      },
     });
   }
 
