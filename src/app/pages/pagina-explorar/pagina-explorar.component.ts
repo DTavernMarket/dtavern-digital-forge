@@ -35,7 +35,7 @@ import { LojaResponse } from '../../models/artesao.model';
                        [ngModel]="termoBusca()"
                        (ngModelChange)="atualizarBusca($event)"
                        placeholder="Buscar artesãos..."
-                       class="w-full px-4 py-3 pl-10 bg-stone-gray/20 backdrop-blur-sm border border-brass-accent/30 rounded-lg text-scroll-beige placeholder-scroll-beige/50 focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50"
+                       class="w-full px-4 py-3 pl-10 bg-stone-gray/20 backdrop-blur-sm border border-brass-accent/30 rounded-lg text-scroll-beige placeholder-scroll-beige/50"
                      />
                      <svg
                        class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-scroll-beige/50"
@@ -60,7 +60,7 @@ import { LojaResponse } from '../../models/artesao.model';
                      <div class="relative">
                        <button
                          (click)="dropdownOrdenacao.set(!dropdownOrdenacao())"
-                         class="w-full px-3 py-2 bg-stone-gray/20 backdrop-blur-sm border border-brass-accent/30 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50 text-sm flex items-center justify-between"
+                         class="w-full px-3 py-2 bg-stone-gray/20 backdrop-blur-sm border border-brass-accent/30 rounded-lg text-scroll-beige text-sm flex items-center justify-between"
                        >
                          <span>{{ obterTextoOrdenacao() }}</span>
                          <svg class="w-4 h-4 text-scroll-beige/60 transition-transform" [class.rotate-180]="dropdownOrdenacao()" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -107,7 +107,7 @@ export class InputCustomizadoComponent implements ControlValueAccessor {
   
   // Classes customizáveis
   @Input() labelClasses: string = 'text-scroll-beige/80 text-sm font-medium mb-2';
-  @Input() inputClasses: string = 'w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60 focus:outline-none focus:ring-2 focus:ring-candlelight-gold';
+  @Input() inputClasses: string = 'w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60';
   @Input() iconClasses: string = 'text-scroll-beige/60';
   @Input() helpTextClasses: string = 'text-scroll-beige/60';
   
@@ -186,7 +186,6 @@ export class InputCustomizadoComponent implements ControlValueAccessor {
     
     if (this.errorMessage) {
       classes = classes.replace('border-brass-accent/40', 'border-red-400');
-      classes = classes.replace('focus:ring-candlelight-gold', 'focus:ring-red-400');
     }
     
     return classes;

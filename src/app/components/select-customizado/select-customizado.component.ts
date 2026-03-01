@@ -64,7 +64,7 @@ export class SelectCustomizadoComponent implements ControlValueAccessor {
   
   // Classes customizáveis
   @Input() labelClasses: string = 'text-scroll-beige/80 text-sm font-medium mb-2';
-  @Input() buttonClasses: string = 'w-full px-4 py-2 backdrop-blur-sm bg-tavern-wood/20 border border-brass-accent/40 rounded-lg rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50 flex items-center justify-between';
+  @Input() buttonClasses: string = 'w-full px-4 py-2 backdrop-blur-sm bg-tavern-wood/20 border border-brass-accent/40 rounded-lg rounded-lg text-scroll-beige flex items-center justify-between';
   @Input() iconClasses: string = 'text-scroll-beige/60';
   @Input() dropdownClasses: string = 'absolute top-full left-0 right-0 mt-1 bg-midnight-brown border border-brass-accent/30 rounded-lg shadow-xl z-50';
   @Input() optionClasses: string = 'w-full text-left px-3 py-1.5 text-scroll-beige hover:bg-stone-gray/40 transition-colors text-sm';

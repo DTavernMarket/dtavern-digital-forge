@@ -56,9 +56,14 @@ import { Subscription } from 'rxjs';
                   (click)="menuPerfilAberto.set(!menuPerfilAberto())"
                   class="flex items-center space-x-2 px-3 py-2 text-scroll-beige hover:text-candlelight-gold transition-colors rounded-lg hover:bg-tavern-wood/10"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                  </svg>
+                  @if(photoURL()){
+                    <img [src]="photoURL()" alt="Foto de perfil" class="w-10 h-10 rounded-full object-cover">
+                  }
+                  @else {
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                  }
                   <span *ngIf="displayName()" class="font-medium text-sm">
                     {{ displayName() }}
                   </span>
@@ -126,14 +131,14 @@ import { Subscription } from 'rxjs';
                     
                     
                     <!-- Opções específicas para COMPRADOR -->
-                    <ng-container *ngIf="obterTipoUsuario() === 'COMPRADOR'">
+                     @if(obterTipoUsuario() === 'COMPRADOR'){
                       <button 
                         (click)="irParaBiblioteca()"
                         class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
                       >
                         Minha biblioteca
                       </button>
-                    </ng-container>
+                     }
                     
                     <div class="border-t border-brass-accent/30 my-1"></div>
                     <button 
@@ -219,6 +224,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   resultadosPesquisa = signal<Produto[]>([]);
   estaAutenticado = signal(false);
   displayName = signal<string | null>(null);
+  photoURL = signal<string | null>(null);
   userRole = signal<'LOJA' | 'COMPRADOR' | null>(null);
   userDominio = signal<string | null>(null);
 
@@ -239,7 +245,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
       if (user !== null) {
         // Pegar displayName diretamente do Firebase User
         this.displayName.set(user.displayName || user.email || null);
-
+        this.photoURL.set(user.photoURL || null);
         // Carregar role do token
         this.authService.getUserRole().subscribe({
           next: (role) => {
@@ -383,16 +389,18 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   }
 
   irParaMinhaLoja() {
-    const dominio = this.obterDominioLoja();
-    if (dominio) {
-      this.menuLojaAberto.set(false);
-      this.fecharMenuPerfil();
-      this.router.navigate(['/lojas', dominio]);
-    } else {
-      console.error('Domínio da loja não encontrado');
-      this.menuLojaAberto.set(false);
-      this.fecharMenuPerfil();
-    }
+    this.artesaoService.getMeLoja().subscribe({
+      next: (loja) => {
+        this.menuLojaAberto.set(false);
+        this.fecharMenuPerfil();
+        this.router.navigate(['/lojas', loja.dominio]);
+      },
+      error: (error) => {
+        console.error('Domínio da loja não encontrado');
+        this.menuLojaAberto.set(false);
+        this.fecharMenuPerfil();
+      }
+    });
   }
 
   irParaAdicionarProdutoLoja() {

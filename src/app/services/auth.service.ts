@@ -55,7 +55,8 @@ export class AuthService {
           const user: User = {
             uid: firebaseUser.uid,
             email: firebaseUser.email,
-            displayName: firebaseUser.displayName || null
+            displayName: firebaseUser.displayName || null,
+            photoURL: firebaseUser.photoURL || null
           };
 
           // Só atualizar o estado após o refresh bem-sucedido

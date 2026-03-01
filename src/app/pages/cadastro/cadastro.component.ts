@@ -143,7 +143,7 @@ import { ClienteService } from '../../services/cliente.service';
                 name="nomeLoja"
                 required
                 (blur)="validarNomeLoja()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
                 [class.border-red-500]="nomeLojaError"
                 placeholder="Nome da sua loja"
               />
@@ -160,7 +160,7 @@ import { ClienteService } from '../../services/cliente.service';
                 name="email"
                 required
                 (blur)="validarEmail()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
                 [class.border-red-500]="emailError"
                 placeholder="loja@email.com"
               />
@@ -177,7 +177,7 @@ import { ClienteService } from '../../services/cliente.service';
                 name="password"
                 required
                 (blur)="validarSenha()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
                 [class.border-red-500]="senhaError"
                 placeholder="••••••••"
               />
@@ -197,7 +197,7 @@ import { ClienteService } from '../../services/cliente.service';
                 name="confirmPassword"
                 required
                 (blur)="validarConfirmacaoSenha()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
                 [class.border-red-500]="confirmacaoSenhaError"
                 placeholder="••••••••"
               />
@@ -217,7 +217,7 @@ import { ClienteService } from '../../services/cliente.service';
                 name="nomeCompleto"
                 required
                 (blur)="validarNomeCompleto()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
                 [class.border-red-500]="nomeCompletoError"
                 placeholder="Seu nome completo"
               />
@@ -237,7 +237,7 @@ import { ClienteService } from '../../services/cliente.service';
                 name="apelido"
                 required
                 (blur)="validarApelido()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
                 [class.border-red-500]="apelidoError"
                 placeholder="Seu apelido"
               />
@@ -255,7 +255,7 @@ import { ClienteService } from '../../services/cliente.service';
                 name="email"
                 required
                 (blur)="validarEmail()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
                 [class.border-red-500]="emailError"
                 placeholder="seu@email.com"
               />
@@ -272,7 +272,7 @@ import { ClienteService } from '../../services/cliente.service';
                 name="dataNascimento"
                 required
                 (blur)="validarDataNascimento()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
                 [class.border-red-500]="dataNascimentoError"
               />
               <div *ngIf="dataNascimentoError" class="text-red-400 text-sm mt-1">
@@ -288,7 +288,7 @@ import { ClienteService } from '../../services/cliente.service';
                 name="password"
                 required
                 (blur)="validarSenha()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
                 [class.border-red-500]="senhaError"
                 placeholder="••••••••"
               />
@@ -308,7 +308,7 @@ import { ClienteService } from '../../services/cliente.service';
                 name="confirmPassword"
                 required
                 (blur)="validarConfirmacaoSenha()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
                 [class.border-red-500]="confirmacaoSenhaError"
                 placeholder="••••••••"
               />

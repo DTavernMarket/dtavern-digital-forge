@@ -35,7 +35,7 @@ import { firstValueFrom } from 'rxjs';
                   [(ngModel)]="termoBusca"
                   (keyup.enter)="buscarProdutos()"
                   placeholder="Buscar na biblioteca..."
-                  class="w-full px-4 py-3 pl-10 bg-tavern-wood/20 backdrop-blur-sm border border-brass-accent/30 rounded-lg text-scroll-beige placeholder-scroll-beige/50 focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50"
+                  class="w-full px-4 py-3 pl-10 bg-tavern-wood/20 backdrop-blur-sm border border-brass-accent/30 rounded-lg text-scroll-beige placeholder-scroll-beige/50"
                 />
                 <svg
                   class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-scroll-beige/50"

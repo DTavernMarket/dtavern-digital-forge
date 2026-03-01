@@ -16,31 +16,6 @@ import { AuthService } from '../../services/auth.service';
   template: `
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
       <app-barra-navegacao [isFixed]="true" />
-      <!-- Inputs ocultos para upload de foto e header da loja -->
-      <input
-        #inputFotoLoja
-        type="file"
-        accept="image/*"
-        class="hidden"
-        (change)="onArquivoFotoSelecionado($event)"
-      />
-      <input
-        #inputHeaderLoja
-        type="file"
-        accept="image/*"
-        class="hidden"
-        (change)="onArquivoHeaderSelecionado($event)"
-      />
-      <!-- Toast de mensagem do upload (sucesso ou erro) -->
-      @if (uploadMidiaMensagem()) {
-        <div
-          class="fixed top-24 left-1/2 -translate-x-1/2 z-[200] px-4 py-3 rounded-lg shadow-xl border border-brass-accent/40 max-w-sm text-center text-sm bg-midnight-brown/95"
-          [class.text-green-400]="uploadMidiaMensagem()?.startsWith('Upload concluído')"
-          [class.text-red-400]="uploadMidiaMensagem() && !uploadMidiaMensagem()?.startsWith('Upload concluído')"
-        >
-          {{ uploadMidiaMensagem() }}
-        </div>
-      }
 
       <!-- Header da Loja com Fundo do Artesão (z-20 para dropdown ficar acima da barra de abas; sem overflow-hidden para não cortar o dropdown) -->
       <div class="relative z-20 h-96">
@@ -73,7 +48,7 @@ import { AuthService } from '../../services/auth.service';
                     <button
                       type="button"
                       (click)="menuConfiguracaoAberto.set(!menuConfiguracaoAberto())"
-                      class="p-1.5 rounded-lg text-white/80 hover:text-candlelight-gold hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50"
+                      class="p-1.5 rounded-lg text-white/80 hover:text-candlelight-gold hover:bg-white/10 transition-colors"
                       title="Configurações da loja"
                     >
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -91,27 +66,7 @@ import { AuthService } from '../../services/auth.service';
                           >
                             Editar Loja
                           </button>
-                          <button
-                            type="button"
-                            (click)="mudarFotoLoja(); menuConfiguracaoAberto.set(false)"
-                            [disabled]="uploadMidiaLoading()"
-                            class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            {{ uploadMidiaLoading() ? 'Enviando...' : 'Mudar foto da loja' }}
-                          </button>
-                          <button
-                            type="button"
-                            (click)="mudarHeaderLoja(); menuConfiguracaoAberto.set(false)"
-                            [disabled]="uploadMidiaLoading()"
-                            class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            {{ uploadMidiaLoading() ? 'Enviando...' : 'Mudar header da loja' }}
-                          </button>
-                          @if (uploadMidiaMensagem()) {
-                            <p class="px-4 py-2 text-xs text-scroll-beige/90 border-t border-brass-accent/30 mt-1">
-                              {{ uploadMidiaMensagem() }}
-                            </p>
-                          }
+                          
                         </div>
                       </div>
                     }
@@ -121,7 +76,7 @@ import { AuthService } from '../../services/auth.service';
                   <button
                     type="button"
                     (click)="copiarUrlLoja()"
-                    class="p-1.5 rounded-lg text-white/80 hover:text-candlelight-gold hover:bg-white/10 transition-colors focus:outline-none focus:ring-2 focus:ring-candlelight-gold/50"
+                    class="p-1.5 rounded-lg text-white/80 hover:text-candlelight-gold hover:bg-white/10 transition-colors"
                     [title]="urlCopiada() ? 'URL copiada!' : 'Copiar link da loja'"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -249,7 +204,7 @@ import { AuthService } from '../../services/auth.service';
             <div class="flex items-center space-x-4">
               <select
                 [(ngModel)]="categoriaFiltro"
-                class="px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
               >
                 <option value="">Todas as categorias</option>
                 <option value="token">Token</option>
@@ -262,7 +217,7 @@ import { AuthService } from '../../services/auth.service';
 
               <select
                 [(ngModel)]="ordenacao"
-                class="px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                class="px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
               >
                 <option value="recentes">Nome (A-Z)</option>
                 <option value="preco-menor">Menor preço</option>
@@ -627,21 +582,21 @@ import { AuthService } from '../../services/auth.service';
                     <input
                       type="text"
                       placeholder="Seu nome"
-                      class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60 focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                      class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60"
                     />
                   </div>
                   <div>
                     <input
                       type="email"
                       placeholder="Seu email"
-                      class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60 focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+                      class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60"
                     />
                   </div>
                   <div>
                     <textarea
                       rows="4"
                       placeholder="Sua mensagem"
-                      class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60 focus:outline-none focus:ring-2 focus:ring-candlelight-gold resize-none"
+                      class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60 resize-none"
                     ></textarea>
                   </div>
                   <button
@@ -660,7 +615,7 @@ import { AuthService } from '../../services/auth.service';
 
       <!-- Dialog Editar Loja (visualização dos dados da loja) -->
       @if (mostrarDialogEditarLoja()) {
-        <app-dialog-editar-loja [artesao]="artesao()" (fechar)="fecharDialogEditarLoja()" />
+        <app-dialog-editar-loja [artesao]="artesao()" (fechar)="fecharDialogEditarLoja($event)" />
       }
 
       <!-- Dialog de Confirmação de Cancelamento -->
@@ -857,7 +812,11 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
     this.mostrarDialogEditarLoja.set(true);
   }
 
-  fecharDialogEditarLoja() {
+  fecharDialogEditarLoja(event: any) {
+    console.log('fecharDialogEditarLoja', event);
+    if (event.recarregar) {
+      window.location.reload();
+    }
     this.mostrarDialogEditarLoja.set(false);
   }
 
@@ -1043,60 +1002,6 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
       return ['/lojas', dominio, aba];
     }
     return ['/'];
-  }
-
-  mudarFotoLoja(): void {
-    this.uploadMidiaMensagem.set(null);
-    if (this.inputFotoLoja?.nativeElement) {
-      this.inputFotoLoja.nativeElement.value = '';
-      this.inputFotoLoja.nativeElement.click();
-    }
-  }
-
-  mudarHeaderLoja(): void {
-    this.uploadMidiaMensagem.set(null);
-    if (this.inputHeaderLoja?.nativeElement) {
-      this.inputHeaderLoja.nativeElement.value = '';
-      this.inputHeaderLoja.nativeElement.click();
-    }
-  }
-
-  onArquivoFotoSelecionado(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (file) {
-      this.fazerUploadMidia(file, 'PERFIL');
-    }
-    input.value = '';
-  }
-
-  onArquivoHeaderSelecionado(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (file) {
-      this.fazerUploadMidia(file, 'HEADER');
-    }
-    input.value = '';
-  }
-
-  private fazerUploadMidia(arquivo: File, tipoMidia: 'HEADER' | 'PERFIL'): void {
-    this.uploadMidiaLoading.set(true);
-    this.uploadMidiaMensagem.set(null);
-    this.artesaoService.uploadMidia(arquivo, tipoMidia).subscribe({
-      next: () => {
-        this.uploadMidiaLoading.set(false);
-        this.uploadMidiaMensagem.set('Upload concluído! Atualize a página para ver a alteração.');
-        setTimeout(() => {
-          this.uploadMidiaMensagem.set(null);
-          window.location.reload();
-        }, 1500);
-      },
-      error: (err) => {
-        this.uploadMidiaLoading.set(false);
-        this.uploadMidiaMensagem.set(err?.error?.mensagem || err?.error?.message || 'Erro ao enviar imagem. Tente novamente.');
-        setTimeout(() => this.uploadMidiaMensagem.set(null), 5000);
-      },
-    });
   }
 
   @HostListener('document:click', ['$event'])

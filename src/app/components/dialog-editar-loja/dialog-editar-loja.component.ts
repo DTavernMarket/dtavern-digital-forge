@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, ElementRef, inject, input, OnInit, OnDestroy, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, effect, ElementRef, HostListener, inject, input, OnDestroy, OnInit, output, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { EditarLojaRequest } from '../../models/auth.model';
+import { Router } from '@angular/router';
 import { Artesao } from '../../models/artesao.model';
+import { EditarLojaRequest } from '../../models/auth.model';
 import { ArtesaoService } from '../../services/artesao.service';
-import { CategoriaProdutoService, CategoriaProdutoResponse } from '../../services/categoria-produto.service';
+import { CategoriaProdutoResponse, CategoriaProdutoService } from '../../services/categoria-produto.service';
 import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirmacao.component';
 
 @Component({
@@ -35,7 +36,12 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
         {{ uploadMidiaMensagem() }}
       </div>
     }
-    <div class="fixed inset-0 bg-black/60 flex items-center justify-center z-[200] p-4" (click)="tentarFechar()">
+    <div
+      class="fixed inset-0 bg-black/60 flex items-center justify-center z-[200] p-4"
+      
+      (mousedown)="onOverlayMouseDown($event)"
+      (mouseup)="onOverlayMouseUp($event)"
+    >
       <div class="relative bg-midnight-brown border border-brass-accent/40 rounded-xl overflow-hidden shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col" (click)="$event.stopPropagation()">
         <!-- Botão fechar -->
         <button
@@ -92,7 +98,7 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
               type="text"
               [ngModel]="nomeEditado()"
               (ngModelChange)="nomeEditado.set($event)"
-              class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige text-sm placeholder-scroll-beige/50 focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+              class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige text-sm placeholder-scroll-beige/50"
               placeholder="Nome da loja"
             />
           </div>
@@ -103,7 +109,7 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
               (keydown)="bloquearCaracterEspecial($event)"
               [ngModel]="dominioEditado()"
               (ngModelChange)="atualizarDominio($event)"
-              class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige text-sm placeholder-scroll-beige/50 focus:outline-none focus:ring-2 focus:ring-candlelight-gold"
+              class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige text-sm placeholder-scroll-beige/50"
               placeholder="seu-dominio"
             />
             <p class="mt-2 text-xs text-scroll-beige/70">
@@ -133,7 +139,7 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
               }
             </div>
             <select
-              class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige focus:outline-none focus:ring-2 focus:ring-candlelight-gold text-sm"
+              class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige text-sm"
               [value]="''"
               (change)="adicionarEspecialidade($event)"
             >
@@ -149,7 +155,7 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
               [ngModel]="resumoEditado()"
               (ngModelChange)="resumoEditado.set($event)"
               rows="3"
-              class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige/90 text-sm placeholder-scroll-beige/50 focus:outline-none focus:ring-2 focus:ring-candlelight-gold resize-y min-h-[80px]"
+              class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige/90 text-sm placeholder-scroll-beige/50 resize-y min-h-[80px]"
               placeholder="Nenhuma resumo informado."
             ></textarea>
           </div>
@@ -159,7 +165,7 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
               [ngModel]="descricaoEditada()"
               (ngModelChange)="descricaoEditada.set($event)"
               rows="5"
-              class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige text-sm whitespace-pre-line placeholder-scroll-beige/50 focus:outline-none focus:ring-2 focus:ring-candlelight-gold resize-y min-h-[120px]"
+              class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige text-sm whitespace-pre-line placeholder-scroll-beige/50 resize-y min-h-[120px]"
               placeholder="Nenhuma descrição informada."
             ></textarea>
           </div>
@@ -206,7 +212,7 @@ export class DialogEditarLojaComponent implements OnInit, OnDestroy {
 
   private artesaoService = inject(ArtesaoService);
   private categoriaProdutoService = inject(CategoriaProdutoService);
-
+  private router = inject(Router);
   /** Dados do artesão/loja exibidos no formulário e nas imagens. */
   artesao = input<Artesao | undefined>(undefined);
 
@@ -221,6 +227,9 @@ export class DialogEditarLojaComponent implements OnInit, OnDestroy {
   private dadosInicializados = false;
 
   mostrarDialogConfirmarFechar = signal(false);
+
+  /** True se o mousedown ocorreu no overlay (fora do conteúdo do dialog). */
+  private mousedownFoiNoOverlay = false;
 
   /** Categorias que ainda não foram adicionadas às especialidades (para o dropdown). */
   categoriasParaSelecionar = computed(() => {
@@ -353,6 +362,24 @@ export class DialogEditarLojaComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  onOverlayMouseDown(event: MouseEvent): void {
+    if (event.target === event.currentTarget) {
+      this.mousedownFoiNoOverlay = true;
+    }
+  }
+
+  onOverlayMouseUp(event: MouseEvent): void {
+    if (this.mousedownFoiNoOverlay && event.target === event.currentTarget) {
+      this.tentarFechar();
+    }
+    this.mousedownFoiNoOverlay = false;
+  }
+
+  @HostListener('document:mouseup')
+  resetMousedownFlag(): void {
+    this.mousedownFoiNoOverlay = false;
+  }
+
   tentarFechar(): void {
     if (this.temAlteracoesNaoSalvas()) {
       this.mostrarDialogConfirmarFechar.set(true);
@@ -428,10 +455,12 @@ export class DialogEditarLojaComponent implements OnInit, OnDestroy {
           this.alterarFotos(perfil, header);
         } else {
           this.uploadMidiaLoading.set(false);
-          this.uploadMidiaMensagem.set('Alterações salvas! Atualize a página para ver.');
+          this.uploadMidiaMensagem.set('Alterações salvas!');
           setTimeout(() => {
             this.uploadMidiaMensagem.set(null);
-            window.location.reload();
+
+            this.redirecionarParaLoja();
+
           }, 1500);
         }
       },
@@ -454,10 +483,10 @@ export class DialogEditarLojaComponent implements OnInit, OnDestroy {
             return;
           }
           this.uploadMidiaLoading.set(false);
-          this.uploadMidiaMensagem.set('Upload concluído! Atualize a página para ver a alteração.');
+          this.uploadMidiaMensagem.set('Upload concluído!');
+          this.redirecionarParaLoja();
           setTimeout(() => {
             this.uploadMidiaMensagem.set(null);
-            window.location.reload();
           }, 1500);
         },
         error: (err) => {
@@ -473,5 +502,22 @@ export class DialogEditarLojaComponent implements OnInit, OnDestroy {
     } else if (header) {
       fazerUpload(header, 'HEADER');
     }
+  }
+
+  private redirecionarParaLoja(): void {
+
+    this.artesaoService.getMeLoja().subscribe({
+      next: (loja) => {
+        this.router.navigate(['/lojas', loja.dominio]);
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      },
+      error: (error) => {
+        console.error('Erro ao obter loja:', error);
+      }
+    });
+
   }
 }
