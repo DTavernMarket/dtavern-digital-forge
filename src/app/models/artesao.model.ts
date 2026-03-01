@@ -1,4 +1,4 @@
-import { PagedResult } from "./produto.model";
+import { CategoriaProduto } from "./produto.model";
 
 // Interface para a resposta do backend (LojaResponse)
 export interface LojaResponse {
@@ -6,8 +6,11 @@ export interface LojaResponse {
   nome: string;
   email: string;
   descricao: string;
+  resumo: string;
   caminhoImagemPerfil: string;
   caminhoImagemHeader: string;
+  especialidades: CategoriaProduto[];
+  quantidadeProdutos: number;
 }
 
 // Interface mantida para compatibilidade com código existente
@@ -15,11 +18,14 @@ export interface LojaResponse {
 export interface Artesao {
   dominio: string;
   nome: string;
-  biografia: string;
+  resumo: string;
+  descricao: string;
   /** Caminho da imagem de perfil da loja (retornado pelo backend) */
   caminhoImagemPerfil?: string;
   /** Caminho da imagem de header/capa da loja (retornado pelo backend) */
   caminhoImagemHeader?: string;
+  especialidades: CategoriaProduto[];
+  quantidadeProdutos: number;
 }
 
 export interface RedesSociais {
@@ -46,3 +52,4 @@ export interface LojaMaisVendas {
   /** Caminho da imagem de perfil da loja (opcional, quando retornado pelo backend) */
   caminhoImagemPerfil?: string;
 }
+

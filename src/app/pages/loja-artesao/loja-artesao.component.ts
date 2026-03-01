@@ -3,6 +3,7 @@ import { AfterViewInit, Component, computed, inject, OnDestroy, OnInit, signal, 
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
+import { DialogEditarLojaComponent } from '../../components/dialog-editar-loja/dialog-editar-loja.component';
 import { Artesao } from '../../models/artesao.model';
 import { Produto } from '../../models/produto.model';
 import { ArtesaoService } from '../../services/artesao.service';
@@ -11,7 +12,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-loja-artesao',
   standalone: true,
-  imports: [CommonModule, FormsModule, BarraNavegacaoComponent, RouterModule],
+  imports: [CommonModule, FormsModule, BarraNavegacaoComponent, RouterModule, DialogEditarLojaComponent],
   template: `
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
       <app-barra-navegacao [isFixed]="true" />
@@ -65,7 +66,7 @@ import { AuthService } from '../../services/auth.service';
 
             <!-- Informações do Artesão -->
             <div class="text-white">
-              <div class="flex items-center gap-3 mb-2">
+              <div class="flex items-center gap-3">
                 <h1 class="text-4xl font-medieval font-bold">{{ artesao()?.nome }}</h1>
                 @if (isOwner() === true) {
                   <div class="relative" #menuConfiguracaoContainer>
@@ -83,6 +84,13 @@ import { AuthService } from '../../services/auth.service';
                     @if (menuConfiguracaoAberto()) {
                       <div class="absolute left-0 mt-2 w-48 bg-midnight-brown/95 border border-brass-accent/40 rounded-lg shadow-xl z-[100]">
                         <div class="py-2">
+                          <button
+                            type="button"
+                            (click)="abrirDialogEditarLoja(); menuConfiguracaoAberto.set(false)"
+                            class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Editar Loja
+                          </button>
                           <button
                             type="button"
                             (click)="mudarFotoLoja(); menuConfiguracaoAberto.set(false)"
@@ -130,21 +138,15 @@ import { AuthService } from '../../services/auth.service';
                   }
                 </div>
               </div>
+              
+              <!-- Resumo -->
+              <div class="text-scroll-beige/70 mb-2">
+                {{ artesao()?.resumo }}
+              </div>
+
 
               <!-- Estatísticas -->
               <div class="flex items-center space-x-6 text-sm">
-                <div class="flex items-center space-x-2">
-                  <svg
-                    class="w-4 h-4 text-candlelight-gold"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                    />
-                  </svg>
-                  <span>{{ 0 }} ({{ 0 }} avaliações)</span>
-                </div>
                 <div class="flex items-center space-x-2">
                   <svg
                     class="w-4 h-4 text-candlelight-gold"
@@ -159,23 +161,7 @@ import { AuthService } from '../../services/auth.service';
                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                     />
                   </svg>
-                  <span>{{ 0 }} produtos</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                  <svg
-                    class="w-4 h-4 text-candlelight-gold"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                  <span>{{ 0 }} seguidores</span>
+                  <span>{{ artesao()?.quantidadeProdutos }} produtos</span>
                 </div>
               </div>
             </div>
@@ -465,24 +451,6 @@ import { AuthService } from '../../services/auth.service';
               Sobre
             </h2>
 
-            <!-- Botão Editar (apenas para dono da loja) -->
-            @if (isOwner() && !editandoSobre()) {
-              <button
-                (click)="iniciarEdicaoSobre()"
-                class="absolute top-6 right-6 w-8 h-8 bg-candlelight-gold/90 hover:bg-candlelight-gold text-tavern-wood rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors z-10"
-                title="Editar descrição"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
-                </svg>
-              </button>
-            }
-
             @if (carregandoSobre()) {
               <div class="flex items-center justify-center py-8">
                 <svg class="animate-spin w-6 h-6 text-candlelight-gold" fill="none" viewBox="0 0 24 24">
@@ -491,49 +459,10 @@ import { AuthService } from '../../services/auth.service';
                 </svg>
                 <span class="ml-2 text-scroll-beige text-sm">Carregando...</span>
               </div>
-            } @else if (editandoSobre()) {
-              <!-- Modo de Edição -->
-              <div class="space-y-4">
-                <textarea
-                  [value]="descricaoSobreEditada()"
-                  (input)="onTextareaInput($event)"
-                  maxlength="5000"
-                  rows="12"
-                  class="w-full px-4 py-3 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60 focus:outline-none focus:ring-2 focus:ring-candlelight-gold resize-none h-[400px] overflow-y-auto"
-                  placeholder="Escreva sobre sua loja..."
-                ></textarea>
-                <div class="flex justify-between items-center text-sm text-scroll-beige/70">
-                  <span>{{ descricaoSobreEditada().length }} / 5000 caracteres</span>
-                </div>
-                <div class="flex gap-3">
-                  <button
-                    (click)="cancelarEdicaoSobre()"
-                    [disabled]="salvandoSobre()"
-                    class="flex-1 px-4 py-2 bg-tavern-wood/30 border border-brass-accent/40 text-scroll-beige font-semibold rounded-lg hover:bg-tavern-wood/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    (click)="salvarSobre()"
-                    [disabled]="salvandoSobre()"
-                    class="flex-1 px-4 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                  >
-                    @if (salvandoSobre()) {
-                      <svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      <span>Salvando...</span>
-                    } @else {
-                      <span>Salvar</span>
-                    }
-                  </button>
-                </div>
-              </div>
             } @else {
               <div class="bg-tavern-wood/20 border border-brass-accent/40 rounded-lg p-4 h-[400px] overflow-y-auto">
                 <p class="text-scroll-beige/80 text-base leading-relaxed whitespace-pre-wrap">
-                  {{ descricaoSobre() || 'Nenhuma descrição disponível.' }}
+                  {{ artesao()?.descricao || 'Nenhuma descrição disponível.' }}
                 </p>
               </div>
             }
@@ -729,6 +658,11 @@ import { AuthService } from '../../services/auth.service';
         }
       </div>
 
+      <!-- Dialog Editar Loja (visualização dos dados da loja) -->
+      @if (mostrarDialogEditarLoja()) {
+        <app-dialog-editar-loja [artesao]="artesao()" (fechar)="fecharDialogEditarLoja()" />
+      }
+
       <!-- Dialog de Confirmação de Cancelamento -->
       @if (mostrarDialogCancelar()) {
         <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="negarCancelarEdicao()">
@@ -792,6 +726,7 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
   descricaoSobreEditada = signal<string>('');
   salvandoSobre = signal<boolean>(false);
   mostrarDialogCancelar = signal<boolean>(false);
+  mostrarDialogEditarLoja = signal<boolean>(false);
   menuConfiguracaoAberto = signal<boolean>(false);
   urlCopiada = signal<boolean>(false);
   uploadMidiaLoading = signal<boolean>(false);
@@ -918,22 +853,12 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
     this.mostrarDialogCancelar.set(false);
   }
 
-  salvarSobre() {
-    this.salvandoSobre.set(true);
-    this.artesaoService.editarLoja({ descricaoSobre: this.descricaoSobreEditada() }).subscribe({
-      next: () => {
-        this.descricaoSobre.set(this.descricaoSobreEditada());
-        this.editandoSobre.set(false);
-        this.salvandoSobre.set(false);
-        this.descricaoSobreEditada.set('');
-      },
-      error: (error) => {
-        console.error('Erro ao salvar descrição sobre:', error);
-        this.salvandoSobre.set(false);
-        // Aqui você pode adicionar uma mensagem de erro para o usuário
-        alert('Erro ao salvar descrição. Tente novamente.');
-      }
-    });
+  abrirDialogEditarLoja() {
+    this.mostrarDialogEditarLoja.set(true);
+  }
+
+  fecharDialogEditarLoja() {
+    this.mostrarDialogEditarLoja.set(false);
   }
 
   ngAfterViewInit() {
@@ -1033,9 +958,12 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
         const artesao: Artesao = {
           dominio: lojaResponse.dominio,
           nome: lojaResponse.nome,
-          biografia: lojaResponse.descricao, // descricao do backend vira biografia
+          resumo: lojaResponse.resumo,
+          descricao: lojaResponse.descricao,
           caminhoImagemPerfil: lojaResponse.caminhoImagemPerfil,
           caminhoImagemHeader: lojaResponse.caminhoImagemHeader,
+          especialidades: lojaResponse.especialidades,
+          quantidadeProdutos: lojaResponse.quantidadeProdutos,
         };
         this.artesao.set(artesao);
         this.carregarProdutosPorDominio(dominio);

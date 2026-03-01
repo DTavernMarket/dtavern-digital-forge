@@ -20,9 +20,15 @@ import { Subscription } from 'rxjs';
         <div class="container mx-auto px-4 py-6">
           <!-- Cabeçalho -->
           <div class="mb-6 flex flex-col items-center">
-            <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige mb-1">
-              Meu Perfil
-            </h1>
+            @if(userRole() === 'LOJA'){
+              <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige mb-1">
+                Minha Loja
+              </h1>
+            } @else if(userRole() === 'COMPRADOR'){
+              <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige mb-1">
+                Meu Perfil
+              </h1>
+            }
             <p class="text-scroll-beige/70 text-xs md:text-sm">
               Visualize e gerencie as informações da sua conta
             </p>

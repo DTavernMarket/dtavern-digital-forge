@@ -8,7 +8,8 @@ import { CommonModule } from '@angular/common';
   template: `
     @if (mostrar) {
       <div
-        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center"
+        [style.z-index]="zIndex"
         (click)="fechar()"
       >
         <div
@@ -51,6 +52,7 @@ export class DialogConfirmacaoComponent {
   @Input() mostrar: boolean = false;
   @Input() titulo: string = 'Confirmar';
   @Input() texto: string = 'Você tem certeza?';
+  @Input() zIndex: number = 50;
 
   @Output() resposta = new EventEmitter<boolean>();
   @Output() fecharDialog = new EventEmitter<void>();

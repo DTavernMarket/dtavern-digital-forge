@@ -36,7 +36,7 @@ import { RouterModule } from '@angular/router';
           <!-- Botões CTA -->
           <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button
-              routerLink="/produtos"
+              routerLink="/explorar"
               class="px-8 py-4 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-xl hover:scale-105 transition-all duration-300 text-lg"
             >
               Explorar Produtos

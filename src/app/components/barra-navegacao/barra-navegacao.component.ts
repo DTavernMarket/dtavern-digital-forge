@@ -37,7 +37,7 @@ import { Subscription } from 'rxjs';
               <a routerLink="/" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
                 Início
               </a>
-              <a routerLink="/produtos" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
+              <a routerLink="/explorar" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
                 Explorar
               </a>
               <a href="#sobre" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
@@ -81,7 +81,8 @@ import { Subscription } from 'rxjs';
                     </button>
                     
                     <!-- Opções específicas para LOJA -->
-                    <ng-container *ngIf="obterTipoUsuario() === 'LOJA'">
+                     @if(obterTipoUsuario() === 'LOJA'){
+                      <ng-container>
                       <div>
                         <button 
                           (click)="menuLojaAberto.set(!menuLojaAberto())"
@@ -100,8 +101,8 @@ import { Subscription } from 'rxjs';
                         </button>
                         
                         <!-- Submenu Dropdown da Loja -->
-                        <div 
-                          *ngIf="menuLojaAberto()"
+                        @if(menuLojaAberto()){
+                          <div 
                           class="pl-4"
                         >
                           <button 
@@ -116,15 +117,13 @@ import { Subscription } from 'rxjs';
                           >
                             Adicionar produto
                           </button>
-                          <button 
-                            (click)="gerenciarLoja()"
-                            class="w-full px-4 py-2 text-left text-scroll-beige/90 hover:bg-tavern-wood/20 transition-colors text-sm"
-                          >
-                            Gerenciar Loja
-                          </button>
                         </div>
+                        }
+                        
                       </div>
                     </ng-container>
+                     }
+                    
                     
                     <!-- Opções específicas para COMPRADOR -->
                     <ng-container *ngIf="obterTipoUsuario() === 'COMPRADOR'">
@@ -186,7 +185,7 @@ import { Subscription } from 'rxjs';
             <a routerLink="/" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
               Início
             </a>
-            <a routerLink="/produtos" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
+            <a routerLink="/explorar" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
               Explorar
             </a>
             <a href="#sobre" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
@@ -304,7 +303,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   realizarPesquisa() {
     if (this.termoPesquisa().trim()) {
-      this.router.navigate(['/produtos'], {
+      this.router.navigate(['/explorar'], {
         queryParams: {
           pesquisa: this.termoPesquisa().trim()
         }
@@ -314,7 +313,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   }
 
   selecionarProduto(produto: Produto) {
-    this.router.navigate(['/produtos'], {
+    this.router.navigate(['/explorar'], {
       queryParams: {
         produto: produto.nomeNormalizado
       }
@@ -398,12 +397,6 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   irParaAdicionarProdutoLoja() {
     this.router.navigate(['/novo-produto']);
-  }
-
-  gerenciarLoja() {
-    // Por enquanto não faz nada, mas o item existe no dropdown
-    this.menuLojaAberto.set(false);
-    // TODO: Implementar navegação para página de gerenciamento da loja
   }
 
   @ViewChild('menuPerfilContainer') menuPerfilContainer!: ElementRef;

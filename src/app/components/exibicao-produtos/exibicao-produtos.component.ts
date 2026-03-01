@@ -28,7 +28,7 @@ import { ProdutosMaisVendidosDTO } from '../../models/produto.model';
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           <a
             *ngFor="let produto of produtosEmDestaque; let i = index"
-            [routerLink]="['/produtos', produto.nomeProdutoNormalizado]"
+            [routerLink]="['/explorar', produto.nomeProdutoNormalizado]"
             class="group block bg-midnight-brown/50 backdrop-blur-sm border-brass-accent/30 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-lg cursor-pointer no-underline"
           >
             <!-- Imagem do Produto -->
@@ -142,7 +142,7 @@ import { ProdutosMaisVendidosDTO } from '../../models/produto.model';
         <!-- Botão Ver Todos -->
         <div class="text-center">
           <button
-            routerLink="/produtos"
+            routerLink="/explorar"
             class="px-8 py-3 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all"
           >
             Ver Todos os Produtos

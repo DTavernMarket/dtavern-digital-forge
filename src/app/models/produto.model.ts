@@ -64,3 +64,9 @@ export interface ProdutosMaisVendidosDTO {
   urlPreview: string;
   flagGratuito: boolean;
 }
+
+
+export interface CategoriaProduto {
+  codigo: string;
+  nome: string;
+}

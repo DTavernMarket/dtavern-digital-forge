@@ -37,5 +37,10 @@ export interface MeResponseCliente {
 }
 
 export interface EditarLojaRequest {
-  descricaoSobre: string;
+
+  nome: string;
+  dominio: string;
+  resumo: string;
+  descricao: string;
+  especialidades: string[];
 }

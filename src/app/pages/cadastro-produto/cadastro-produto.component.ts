@@ -641,7 +641,10 @@ export class CadastroProdutoComponent implements OnInit {
         this.artesaoAtual = {
           dominio: meResponseLoja.dominio,
           nome: meResponseLoja.nomeLoja,
-          biografia: '', // MeResponseLoja não tem descrição/biografia
+          resumo: '', // MeResponseLoja não tem descrição/biografia
+          descricao: '',
+          especialidades: [],
+          quantidadeProdutos: 0,
         };
       },
       error: (error) => {

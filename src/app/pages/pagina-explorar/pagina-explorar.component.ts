@@ -189,7 +189,7 @@ import { LojaResponse } from '../../models/artesao.model';
     `,
   ],
 })
-export class PaginaProdutosComponent implements OnInit {
+export class PaginaExplorarComponent implements OnInit {
   private artesaoService = inject(ArtesaoService);
   private lojas = signal<LojaResponse[]>([]);
   private resultadoPaginado = signal<any>(null);

@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <footer class="bg-stone-gray/80 backdrop-blur-sm border-t border-brass-accent/30">
+    <footer class="bg-midnight-brown/90 backdrop-blur-sm border-t border-brass-accent/30">
       <div class="container mx-auto px-4 py-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                      <!-- Logo e Descrição -->
@@ -53,8 +53,8 @@ import { RouterModule } from '@angular/router';
              <h3 class="text-base font-semibold text-scroll-beige">Links Rápidos</h3>
              <ul class="space-y-1">
               <li>
-                <a routerLink="/produtos" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
-                  Produtos
+                <a routerLink="/explorar" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
+                  Explorar
                 </a>
               </li>
               <li>
