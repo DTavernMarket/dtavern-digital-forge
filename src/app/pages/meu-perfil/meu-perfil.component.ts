@@ -45,7 +45,7 @@ import { Subscription } from 'rxjs';
                   <span class="ml-2 text-scroll-beige text-sm">Carregando...</span>
                 </div>
               } @else {
-                <div class="flex flex-col md:flex-row gap-6 md:gap-8">
+                <div class="flex flex-col md:flex-row gap-8 md:gap-8">
                   <!-- Coluna esquerda: campos (metade da largura) -->
                   <div class="flex-1 min-w-0 md:max-w-[50%] space-y-4">
                 @if (userRole() === 'LOJA' && lojaData()) {
@@ -133,33 +133,41 @@ import { Subscription } from 'rxjs';
                   </div>
                 }
 
-                <!-- Tipo da Conta -->
-                <div>
-                  <label class="block text-xs font-medium text-scroll-beige/80 mb-1">
-                    Tipo da Conta
-                  </label>
-                  <div class="px-3 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg">
-                    <span 
-                      class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                      [ngClass]="{
-                        'bg-candlelight-gold/20 text-candlelight-gold border border-candlelight-gold/30': userRole() === 'LOJA',
-                        'bg-blue-500/20 text-blue-400 border border-blue-500/30': userRole() === 'COMPRADOR'
-                      }"
-                    >
-                      {{ userRole() === 'LOJA' ? 'Loja' : userRole() === 'COMPRADOR' ? 'Comprador' : 'Não definido' }}
-                    </span>
+                  <!-- Tipo da Conta -->
+                  <div>
+                    <label class="block text-xs font-medium text-scroll-beige/80 mb-1">
+                      Tipo da Conta
+                    </label>
+                    <div class="px-3 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg">
+                      <span 
+                        class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                        [ngClass]="{
+                          'bg-candlelight-gold/20 text-candlelight-gold border border-candlelight-gold/30': userRole() === 'LOJA',
+                          'bg-blue-500/20 text-blue-400 border border-blue-500/30': userRole() === 'COMPRADOR'
+                        }"
+                      >
+                        {{ userRole() === 'LOJA' ? 'Loja' : userRole() === 'COMPRADOR' ? 'Comprador' : 'Não definido' }}
+                      </span>
+                    </div>
                   </div>
                 </div>
-                  </div>
 
-                  <!-- Coluna direita: foto de perfil -->
+                  <!-- Coluna direita: foto de perfil (upload só para comprador) -->
                   <div class="flex-shrink-0 flex flex-col items-center md:items-start">
                     <p class="text-sm font-medium text-scroll-beige/80 mb-2">
                       Foto de perfil
                     </p>
                     <div class="relative inline-block">
                       <div class="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 bg-midnight-brown/90 rounded-lg border border-brass-accent/40 flex items-center justify-center overflow-hidden">
-                        @if (!fotoPerfilPreview() && !fotoPerfilUrl()) {
+                        @if (uploadFotoPerfilLoading()) {
+                          <div class="flex flex-col items-center justify-center w-full h-full">
+                            <svg class="animate-spin h-8 w-8 text-candlelight-gold" fill="none" viewBox="0 0 24 24">
+                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span class="mt-2 text-scroll-beige/80 text-sm">Enviando...</span>
+                          </div>
+                        } @else if (!fotoPerfilPreview() && !fotoPerfilUrl()) {
                           <label class="cursor-pointer flex flex-col items-center justify-center w-full h-full p-4">
                             <svg
                               class="w-12 h-12 text-scroll-beige/50 mb-3"
@@ -192,7 +200,7 @@ import { Subscription } from 'rxjs';
                           />
                         }
                       </div>
-                      @if (fotoPerfilPreview() || fotoPerfilUrl()) {
+                      @if ((fotoPerfilPreview() || fotoPerfilUrl()) && !uploadFotoPerfilLoading()) {
                         <button
                           type="button"
                           (click)="removerFotoPerfil()"
@@ -203,11 +211,20 @@ import { Subscription } from 'rxjs';
                       }
                     </div>
                     @if (fotoPerfilArquivo()) {
-                      <div class="mt-2 space-y-1">
+                      <div class="mt-2">
                         <div class="text-xs text-scroll-beige/70 break-words">
                           {{ fotoPerfilArquivo()?.name }}
                         </div>
                       </div>
+                    }
+                    @if (fotoPerfilMensagem()) {
+                      <p
+                        class="mt-2 text-sm"
+                        [class.text-green-400]="fotoPerfilMensagem()?.startsWith('Foto salva')"
+                        [class.text-red-400]="fotoPerfilMensagem() && !fotoPerfilMensagem()?.startsWith('Foto salva')"
+                      >
+                        {{ fotoPerfilMensagem() }}
+                      </p>
                     }
                   </div>
                 </div>
@@ -291,9 +308,18 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
   fotoPerfilPreview = signal<string | null>(null);
   /** Arquivo de imagem selecionado. */
   fotoPerfilArquivo = signal<File | null>(null);
+  uploadFotoPerfilLoading = signal(false);
+  fotoPerfilMensagem = signal<string | null>(null);
 
   ngOnInit() {
     this.loading.set(true);
+
+    // Foto de perfil do comprador: usar photoURL do usuário (token/Firebase) quando ainda não temos da API
+    this.authSubscription = this.authService.currentUser$.subscribe((user) => {
+      if (this.userRole() === 'COMPRADOR' && user?.photoURL?.trim() && !this.fotoPerfilUrl()) {
+        this.fotoPerfilUrl.set(user.photoURL.trim());
+      }
+    });
 
     // Carregar role do token primeiro
     this.authService.getUserRole().subscribe({
@@ -318,6 +344,9 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
           this.clienteService.getMeCliente().subscribe({
             next: (data) => {
               this.clienteData.set(data);
+              const urlDaApi = data.fotoPerfilUrl?.trim() || null;
+              const urlDoToken = this.authService.getCurrentUser()?.photoURL?.trim() || null;
+              this.fotoPerfilUrl.set(urlDaApi || urlDoToken || null);
               this.loading.set(false);
             },
             error: (error) => {
@@ -355,12 +384,45 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
     };
     reader.readAsDataURL(file);
     input.value = '';
+
+    if (this.userRole() === 'COMPRADOR') {
+      this.salvarFotoPerfil();
+    }
   }
 
   removerFotoPerfil(): void {
     this.fotoPerfilPreview.set(null);
     this.fotoPerfilArquivo.set(null);
     this.fotoPerfilUrl.set(null);
+    this.fotoPerfilMensagem.set(null);
+  }
+
+  salvarFotoPerfil(): void {
+    const arquivo = this.fotoPerfilArquivo();
+    if (!arquivo || this.userRole() !== 'COMPRADOR') return;
+
+    this.uploadFotoPerfilLoading.set(true);
+    this.fotoPerfilMensagem.set(null);
+
+    this.clienteService.uploadMidia(arquivo).subscribe({
+      next: () => {
+        this.uploadFotoPerfilLoading.set(false);
+        this.fotoPerfilMensagem.set('Foto salva com sucesso! Atualize a página para ver a alteração.');
+        this.fotoPerfilPreview.set(null);
+        this.fotoPerfilArquivo.set(null);
+        setTimeout(() => {
+          this.fotoPerfilMensagem.set(null);
+          window.location.reload();
+        }, 1500);
+      },
+      error: (err) => {
+        this.uploadFotoPerfilLoading.set(false);
+        this.fotoPerfilMensagem.set(
+          err?.error?.mensagem || err?.error?.message || 'Erro ao enviar foto. Tente novamente.'
+        );
+        setTimeout(() => this.fotoPerfilMensagem.set(null), 5000);
+      },
+    });
   }
 
   formatarData(data: string | undefined): string {

@@ -32,6 +32,7 @@ export interface MeResponseCliente {
   nomeCompleto: string;
   apelido: string;
   email: string;
+  fotoPerfilUrl: string;
   dataNascimento: string;
   dataCriacaoConta: string;
 
