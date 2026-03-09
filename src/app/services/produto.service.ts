@@ -34,6 +34,26 @@ export class ProdutoService {
     );
   }
 
+  /**
+   * Verifica se o usuário autenticado é o dono de um produto específico,
+   * identificado pelo nome normalizado.
+   * @param nomeProdutoNormalizado Nome normalizado (slug) do produto
+   */
+  verifyOwnerProduto(nomeProdutoNormalizado: string): Observable<boolean> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.get<boolean>(
+          `http://localhost:8080/api/v1/produtos/verify-product/${nomeProdutoNormalizado}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+      })
+    );
+  }
+
   adicionarProduto(dtoProduto: any, dominioArtesao: string): Observable<any> {
     return this.http.post<any>(
       `http://localhost:8080/api/v1/produtos?dominio=${dominioArtesao}`,

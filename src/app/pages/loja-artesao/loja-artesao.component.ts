@@ -66,9 +66,15 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                             (click)="abrirDialogEditarLoja(); menuConfiguracaoAberto.set(false)"
                             class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
                           >
-                            Editar Loja
+                            Editar perfil da loja
                           </button>
-                          
+                          <a
+                            [routerLink]="getRotaGerenciarProdutos()"
+                            (click)="menuConfiguracaoAberto.set(false)"
+                            class="block w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Gerenciar produtos
+                          </a>
                         </div>
                       </div>
                     }
@@ -132,7 +138,8 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
           <div class="flex items-center justify-between py-4">
             <div class="flex items-center space-x-8">
               <a
-                [routerLink]="getRotaAba('produtos')"
+                [routerLink]="getRotaAba()"
+                [queryParams]="{ aba: 'produtos' }"
                 routerLinkActive="text-candlelight-gold border-b-2 border-candlelight-gold"
                 [routerLinkActiveOptions]="{ exact: false }"
                 [class]="
@@ -145,7 +152,8 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                 Produtos ({{ produtosArtesao().length }})
               </a>
               <a
-                [routerLink]="getRotaAba('sobre')"
+                [routerLink]="getRotaAba()"
+                [queryParams]="{ aba: 'sobre' }"
                 routerLinkActive="text-candlelight-gold border-b-2 border-candlelight-gold"
                 [routerLinkActiveOptions]="{ exact: false }"
                 [class]="
@@ -158,7 +166,8 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                 Sobre
               </a>
               <a
-                [routerLink]="getRotaAba('contato')"
+                [routerLink]="getRotaAba()"
+                [queryParams]="{ aba: 'contato' }"
                 routerLinkActive="text-candlelight-gold border-b-2 border-candlelight-gold"
                 [routerLinkActiveOptions]="{ exact: false }"
                 [class]="
@@ -172,18 +181,6 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
               </a>
             </div>
 
-            <!-- Botões de Ação -->
-            <div class="flex items-center space-x-4">
-            @if (isOwner() === true) {
-            <button
-                (click)="novoProduto()"
-                class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-brass-accent/90 transition-colors"
-              >
-                Novo produto
-              </button>
-            }
-
-            </div>
           </div>
         </div>
       </div>
@@ -290,24 +287,6 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                     -{{ produto.promocaoPorcentagem }}%
                   </span>
                 </div>
-
-                <!-- Ícone de Edição -->
-                @if (isOwner()) {
-                <button
-                  (click)="editarProduto(produto); $event.stopPropagation()"
-                  class="absolute top-3 right-3 w-8 h-8 bg-candlelight-gold/90 hover:bg-candlelight-gold text-tavern-wood rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors z-10"
-                  title="Editar produto"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                </button>
-                }
               </div>
 
               <!-- Informações do Produto -->
@@ -813,9 +792,9 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
     this.mostrarDialogEditarLoja.set(true);
   }
 
-  fecharDialogEditarLoja(event: any) {
-    console.log('fecharDialogEditarLoja', event);
-    if (event.recarregar) {
+  fecharDialogEditarLoja(event?: { recarregar?: boolean } | void) {
+    const payload = event as { recarregar?: boolean } | undefined;
+    if (payload?.recarregar) {
       window.location.reload();
     }
     this.mostrarDialogEditarLoja.set(false);
@@ -824,19 +803,17 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     // Função auxiliar para atualizar a aba baseada nos parâmetros da rota filha
     const atualizarAba = () => {
-      // Tentar pegar da rota filha usando snapshot
-      const aba = this.route.firstChild?.snapshot.params['aba'];
-
-      if (aba && ['produtos', 'sobre', 'contato'].includes(aba)) {
-        this.abaAtiva.set(aba);
+      // Se a URL atual for a de gerenciamento de produtos, priorizar essa aba especial
+      const urlAtual = this.router.url;
+      if (urlAtual.includes('/gerenciar-produtos')) {
+        this.abaAtiva.set('gerenciar-produtos');
         return;
       }
 
-      // Se não houver aba válida na rota filha, verificar a URL atual como fallback
-      const urlAtual = this.router.url;
-      const matchAba = urlAtual.match(/\/lojas\/[^\/]+\/([^\/]+)/);
-      if (matchAba && matchAba[1] && ['produtos', 'sobre', 'contato'].includes(matchAba[1])) {
-        this.abaAtiva.set(matchAba[1]);
+      // Caso contrário, usar o parâmetro de query "aba" (?aba=produtos|sobre|contato)
+      const abaParam = this.route.snapshot.queryParamMap.get('aba');
+      if (abaParam && ['produtos', 'sobre', 'contato'].includes(abaParam)) {
+        this.abaAtiva.set(abaParam as 'produtos' | 'sobre' | 'contato');
         return;
       }
 
@@ -869,15 +846,9 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
 
     const observarRotaFilha = () => {
       if (this.route.firstChild) {
-        // Observar mudanças nos parâmetros da rota filha
-        this.route.firstChild.params.subscribe((childParams) => {
-          const aba = childParams['aba'];
-
-          if (aba && ['produtos', 'sobre', 'contato'].includes(aba)) {
-            this.abaAtiva.set(aba);
-          } else {
-            this.abaAtiva.set('produtos');
-          }
+        // Observar mudanças na rota filha (ex.: entrar/sair de gerenciar-produtos)
+        this.route.firstChild.params.subscribe(() => {
+          atualizarAba();
         });
       } else if (tentativas < maxTentativas) {
         // Se a rota filha ainda não estiver disponível, tentar novamente após um pequeno delay
@@ -894,7 +865,12 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
     // Iniciar observação da rota filha
     observarRotaFilha();
 
-    // Verificar o snapshot inicial da rota filha (caso já esteja carregada)
+    // Reagir também a mudanças de query params (?aba=...)
+    this.route.queryParamMap.subscribe(() => {
+      atualizarAba();
+    });
+
+    // Verificar o estado inicial da rota/aba
     atualizarAba();
   }
 
@@ -995,12 +971,20 @@ export class LojaArtesaoComponent implements AfterViewInit, OnDestroy {
   }
 
   /**
-   * Retorna a rota para uma aba específica da loja
+   * Retorna a rota base da loja; a aba é controlada via query param (?aba=...).
    */
-  getRotaAba(aba: 'produtos' | 'sobre' | 'contato'): string[] {
+  getRotaAba(): string[] {
     const dominio = this.dominioAtual() || this.artesao()?.dominio || this.route.snapshot.params['dominio'];
     if (dominio) {
-      return ['/lojas', dominio, aba];
+      return ['/lojas', dominio];
+    }
+    return ['/'];
+  }
+
+  getRotaGerenciarProdutos(): string[] {
+    const dominio = this.dominioAtual() || this.artesao()?.dominio || this.route.snapshot.params['dominio'];
+    if (dominio) {
+      return ['/lojas', dominio, 'gerenciar-produtos'];
     }
     return ['/'];
   }

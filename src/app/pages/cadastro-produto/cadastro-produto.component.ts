@@ -572,7 +572,23 @@ export class CadastroProdutoComponent implements OnInit {
     // Verificar se está em modo de edição (síncrono usando snapshot)
     const nomeNormalizado = this.route.snapshot.queryParams['produto'];
     if (nomeNormalizado) {
-      await this.carregarProdutoParaEdicao(nomeNormalizado);
+      // Antes de carregar os dados, verificar se o produto pertence ao usuário atual
+      try {
+        const isOwner = await firstValueFrom(
+          this.produtoService.verifyOwnerProduto(nomeNormalizado)
+        );
+
+        if (!isOwner) {
+          console.error('Acesso negado: usuário não é dono do produto.');
+          this.router.navigate(['/404']);
+          return;
+        }
+
+        await this.carregarProdutoParaEdicao(nomeNormalizado);
+      } catch (error) {
+        console.error('Erro ao verificar dono do produto:', error);
+        this.router.navigate(['/404']);
+      }
     }
   }
 
@@ -671,18 +687,9 @@ export class CadastroProdutoComponent implements OnInit {
       },
       error: (error) => {
         console.warn('Erro ao buscar informações da loja logada:', error);
-        this.redirecionarParaInicio();
+        this.router.navigate(['/404']);
       },
     });
-  }
-
-  private redirecionarParaInicio() {
-    // Limpar dados locais
-    this.lojaDominio = null;
-    this.artesaoAtual = null;
-
-    // Redirecionar para página inicial
-    this.router.navigate(['/']);
   }
 
   formularioValido(): boolean {
@@ -730,7 +737,7 @@ export class CadastroProdutoComponent implements OnInit {
 
       alert(this.isModoEdicao() ? 'Produto atualizado com sucesso!' : 'Produto salvo com sucesso!');
       // Redirecionar para a loja específica
-      this.irParaLoja();
+      this.router.navigate(['/404']);
     } catch (error) {
       console.error('Erro ao salvar produto:', error);
       alert(
