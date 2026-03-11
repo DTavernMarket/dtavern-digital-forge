@@ -152,7 +152,6 @@ import { Subscription } from 'rxjs';
                   </div>
                 </div>
 
-                  <!-- Coluna direita: foto de perfil (upload só para comprador) -->
                   <div class="flex-shrink-0 flex flex-col items-center md:items-start">
                     <p class="text-sm font-medium text-scroll-beige/80 mb-2">
                       Foto de perfil
@@ -332,6 +331,15 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
             next: (data) => {
               this.lojaData.set(data);
               this.loading.set(false);
+              // Carregar foto de perfil da loja (buscar loja por domínio para obter caminho da imagem)
+              if (data.dominio) {
+                this.artesaoService.buscarLojaPorDominio(data.dominio).subscribe({
+                  next: (loja) => {
+                    const url = this.resolverUrlImagemLoja(loja.caminhoImagemPerfil);
+                    this.fotoPerfilUrl.set(url || null);
+                  }
+                });
+              }
             },
             error: (error) => {
               console.error('Erro ao carregar dados da loja:', error);
@@ -385,7 +393,7 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
     reader.readAsDataURL(file);
     input.value = '';
 
-    if (this.userRole() === 'COMPRADOR') {
+    if (this.userRole() === 'COMPRADOR' || this.userRole() === 'LOJA') {
       this.salvarFotoPerfil();
     }
   }
@@ -399,30 +407,49 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
 
   salvarFotoPerfil(): void {
     const arquivo = this.fotoPerfilArquivo();
-    if (!arquivo || this.userRole() !== 'COMPRADOR') return;
+    const role = this.userRole();
+    if (!arquivo || (role !== 'COMPRADOR' && role !== 'LOJA')) return;
 
     this.uploadFotoPerfilLoading.set(true);
     this.fotoPerfilMensagem.set(null);
 
-    this.clienteService.uploadMidia(arquivo).subscribe({
-      next: () => {
-        this.uploadFotoPerfilLoading.set(false);
-        this.fotoPerfilMensagem.set('Foto salva com sucesso! Atualize a página para ver a alteração.');
-        this.fotoPerfilPreview.set(null);
-        this.fotoPerfilArquivo.set(null);
-        setTimeout(() => {
-          this.fotoPerfilMensagem.set(null);
-          window.location.reload();
-        }, 1500);
-      },
-      error: (err) => {
-        this.uploadFotoPerfilLoading.set(false);
-        this.fotoPerfilMensagem.set(
-          err?.error?.mensagem || err?.error?.message || 'Erro ao enviar foto. Tente novamente.'
-        );
-        setTimeout(() => this.fotoPerfilMensagem.set(null), 5000);
-      },
-    });
+    const onSuccess = () => {
+      this.uploadFotoPerfilLoading.set(false);
+      this.fotoPerfilMensagem.set('Foto salva com sucesso! Atualize a página para ver a alteração.');
+      this.fotoPerfilPreview.set(null);
+      this.fotoPerfilArquivo.set(null);
+      setTimeout(() => {
+        this.fotoPerfilMensagem.set(null);
+        window.location.reload();
+      }, 1500);
+    };
+    const onError = (err: { error?: { mensagem?: string; message?: string } }) => {
+      this.uploadFotoPerfilLoading.set(false);
+      this.fotoPerfilMensagem.set(
+        err?.error?.mensagem || err?.error?.message || 'Erro ao enviar foto. Tente novamente.'
+      );
+      setTimeout(() => this.fotoPerfilMensagem.set(null), 5000);
+    };
+
+    if (role === 'LOJA') {
+      this.artesaoService.uploadMidia(arquivo, 'PERFIL').subscribe({
+        next: onSuccess,
+        error: onError,
+      });
+    } else {
+      this.clienteService.uploadMidia(arquivo).subscribe({
+        next: onSuccess,
+        error: onError,
+      });
+    }
+  }
+
+  private readonly CDN_BASE = 'http://localhost:8080';
+
+  private resolverUrlImagemLoja(caminho: string | undefined): string | null {
+    if (!caminho?.trim()) return null;
+    if (caminho.startsWith('http://') || caminho.startsWith('https://')) return caminho;
+    return caminho.startsWith('/') ? this.CDN_BASE + caminho : this.CDN_BASE + '/' + caminho;
   }
 
   formatarData(data: string | undefined): string {
