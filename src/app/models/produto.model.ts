@@ -38,7 +38,7 @@ export interface ProdutoCompleto {
   categoriaCodigo: string;
   descricao?: string;
   gratuito: boolean;
-  aVenda: boolean;
+  disponivel: boolean;
   nome: string;
   nomeNormalizado: string;
   valorUnitario: number;

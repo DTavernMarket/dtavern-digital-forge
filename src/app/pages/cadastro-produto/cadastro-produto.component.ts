@@ -82,16 +82,16 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                 <button
                   type="button"
                   role="switch"
-                  [attr.aria-checked]="produto.aVenda"
-                  (click)="produto.aVenda = !produto.aVenda"
+                  [attr.aria-checked]="produto.disponivel"
+                  (click)="produto.disponivel = !produto.disponivel"
                   class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"
-                  [class.bg-candlelight-gold]="produto.aVenda"
-                  [class.bg-tavern-wood]="!produto.aVenda"
+                  [class.bg-candlelight-gold]="produto.disponivel"
+                  [class.bg-tavern-wood]="!produto.disponivel"
                 >
                   <span
                     class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-                    [class.translate-x-5]="produto.aVenda"
-                    [class.translate-x-1]="!produto.aVenda"
+                    [class.translate-x-5]="produto.disponivel"
+                    [class.translate-x-1]="!produto.disponivel"
                   ></span>
                 </button>
               </div>
@@ -488,7 +488,7 @@ export class CadastroProdutoComponent implements OnInit {
     categoriaCodigo: '',
     descricao: '',
     gratuito: false,
-    aVenda: false,
+    disponivel: false,
     nome: '',
     nomeNormalizado: '',
     valorUnitario: 0,
@@ -717,6 +717,7 @@ export class CadastroProdutoComponent implements OnInit {
         valorUnitario: this.produto.gratuito ? 0 : this.produto.valorUnitario || 0,
         promocaoPorcentagem: this.produto.promocaoPorcentagem || 0,
         gratuito: this.produto.gratuito || false,
+        disponivel: this.produto.disponivel ?? true,
       };
 
       let nomeNormalizado: string;
@@ -736,8 +737,8 @@ export class CadastroProdutoComponent implements OnInit {
       }
 
       alert(this.isModoEdicao() ? 'Produto atualizado com sucesso!' : 'Produto salvo com sucesso!');
-      // Redirecionar para a loja específica
-      this.router.navigate(['/404']);
+      // Redirecionar para a tela de gerenciar produtos da própria loja
+      this.router.navigate(['/lojas', this.artesaoAtual.dominio, 'gerenciar-produtos']);
     } catch (error) {
       console.error('Erro ao salvar produto:', error);
       alert(
@@ -846,6 +847,7 @@ export class CadastroProdutoComponent implements OnInit {
           valorUnitario: this.produto.gratuito ? 0 : this.produto.valorUnitario || 0,
           promocaoPorcentagem: this.produto.promocaoPorcentagem || 0,
           gratuito: this.produto.gratuito || false,
+          disponivel: this.produto.disponivel ?? true,
         };
 
         const resposta = await firstValueFrom(
@@ -976,6 +978,7 @@ export class CadastroProdutoComponent implements OnInit {
           valorUnitario: this.produto.gratuito ? 0 : this.produto.valorUnitario || 0,
           promocaoPorcentagem: this.produto.promocaoPorcentagem || 0,
           gratuito: this.produto.gratuito || false,
+          disponivel: this.produto.disponivel ?? true,
         };
 
         const resposta = await firstValueFrom(
@@ -1145,12 +1148,10 @@ export class CadastroProdutoComponent implements OnInit {
   }
 
   irParaLoja() {
-    // Usar o domínio da loja atual armazenado na propriedade do componente
+    // Redirecionar para a tela de gerenciar produtos da própria loja
     if (this.lojaDominio) {
-      // Redirecionar para a loja específica
-      this.router.navigate(['/lojas', this.lojaDominio]);
+      this.router.navigate(['/lojas', this.lojaDominio, 'gerenciar-produtos']);
     } else {
-      // Se não houver domínio, ir para a página inicial
       this.router.navigate(['/']);
     }
   }

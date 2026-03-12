@@ -3,7 +3,7 @@ import { computed, Injectable, signal, inject } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Artesao, CadastroLojaRequest, LojaResponse, LojaMaisVendas } from '../models/artesao.model';
-import { PagedResult, Produto } from '../models/produto.model';
+import { PagedResult, ProdutoCompleto } from '../models/produto.model';
 import { AuthService } from './auth.service';
 import { EditarLojaRequest, MeResponseLoja } from '../models/auth.model';
 
@@ -199,10 +199,10 @@ export class ArtesaoService {
    * Requer autenticação e que o usuário seja o dono da loja.
    * @param dominio Domínio da loja
    */
-  listarTodosProdutosLoja(dominio: string): Observable<Produto[]> {
+  listarTodosProdutosLoja(dominio: string): Observable<ProdutoCompleto[]> {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {
-        return this.http.get<Produto[]>(
+        return this.http.get<ProdutoCompleto[]>(
           `http://localhost:8080/api/v1/lojas/${dominio}/todos-produtos`,
           {
             headers: {

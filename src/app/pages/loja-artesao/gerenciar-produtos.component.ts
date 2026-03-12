@@ -1,19 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, computed, inject, OnDestroy, OnInit, signal, effect, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { AfterViewInit, Component, computed, effect, ElementRef, HostListener, inject, OnDestroy, signal, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 import { DialogEditarLojaComponent } from '../../components/dialog-editar-loja/dialog-editar-loja.component';
+import { RodapeComponent } from '../../components/rodape/rodape.component';
+import { OpcaoSelect, SelectCustomizadoComponent } from "../../components/select-customizado/select-customizado.component";
 import { Artesao } from '../../models/artesao.model';
-import { Produto } from '../../models/produto.model';
+import { ProdutoCompleto } from '../../models/produto.model';
 import { ArtesaoService } from '../../services/artesao.service';
 import { AuthService } from '../../services/auth.service';
-import { OpcaoSelect, SelectCustomizadoComponent } from "../../components/select-customizado/select-customizado.component";
 import { CategoriaProdutoService } from '../../services/categoria-produto.service';
 @Component({
     selector: 'app-gerenciar-produtos',
     standalone: true,
-    imports: [CommonModule, FormsModule, BarraNavegacaoComponent, RouterModule, DialogEditarLojaComponent, SelectCustomizadoComponent],
+    imports: [CommonModule, FormsModule, BarraNavegacaoComponent, RouterModule, DialogEditarLojaComponent, SelectCustomizadoComponent, RodapeComponent],
     template: `
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
       <app-barra-navegacao [isFixed]="true" />
@@ -77,7 +78,7 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                       d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
                     />
                   </svg>
-                  <span>{{ artesao()?.quantidadeProdutos }} produtos</span>
+                  <span>{{ produtosArtesao().length }} produtos</span>
                 </div>
               </div>
             </div>
@@ -157,9 +158,9 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                 <!-- Imagem de Preview ou Placeholder -->
                 <div class="w-full h-full">
                   
-                @if (produto.midiaPreview?.url) {
+                @if (produto.midiaPreview.url) {
                 <img
-                    [src]="produto.midiaPreview?.url"
+                    [src]="produto.midiaPreview.url"
                     [alt]="produto.nome"
                     class="w-full h-full object-cover"
                   />
@@ -184,12 +185,14 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                   }
                 </div>
 
-                <!-- Badge de Categoria -->
+                <!-- Badge Disponível / Não disponível -->
                 <div class="absolute top-3 left-3">
                   <span
-                    class="px-3 py-1.5 bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
+                    class="px-3 py-1.5 text-white text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
+                    [class.bg-green-400]="produto.disponivel"
+                    [class.bg-red-400]="!produto.disponivel"
                   >
-                    {{ produto.categoriaCodigo }}
+                    {{ produto.disponivel ? 'Disponível' : 'Não disponível' }}
                   </span>
                 </div>
 
@@ -199,18 +202,6 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                     class="px-3 py-1.5 bg-green-500/90 text-white text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
                   >
                     Grátis
-                  </span>
-                </div>
-
-                <!-- Badge de Promoção -->
-                <div
-                  *ngIf="produto.promocaoPorcentagem && produto.promocaoPorcentagem > 0 && !produto.gratuito"
-                  class="absolute bottom-3 right-3"
-                >
-                  <span
-                    class="px-3 py-1.5 bg-red-500/90 text-white text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
-                  >
-                    -{{ produto.promocaoPorcentagem }}%
                   </span>
                 </div>
 
@@ -234,48 +225,54 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
               </div>
 
               <!-- Informações do Produto -->
-              <div class="p-5 space-y-3">
+              <div class="pl-5 pr-5 pb-5 pt-2 space-y-2">
                 <!-- Nome do Produto -->
                 <h3
-                  class="font-semibold text-scroll-beige text-lg group-hover:text-candlelight-gold transition-colors line-clamp-2 min-h-[3.5rem]"
+                  class="font-semibold text-scroll-beige text-lg group-hover:text-candlelight-gold transition-colors line-clamp-2"
                 >
                   {{ produto.nome }}
                 </h3>
 
+                <!-- Categoria -->
+                <p class="text-scroll-beige/70 text-sm font-medium">
+                  Categoria: {{ produto.categoriaCodigo }}
+                </p>
+
                 <!-- Resumo/Descrição -->
-                <p class="text-scroll-beige/70 text-sm line-clamp-3 min-h-[4rem]">
-                  {{ produto.descricao.substring(0, 100) }}...
+                <p class="text-scroll-beige/70 text-sm line-clamp-3">
+                  {{ produto.descricao ? (produto.descricao.length > 100 ? produto.descricao.substring(0, 100) + '...' : produto.descricao) : '—' }}
                 </p>
 
                 <!-- Preço e Botão -->
                 <div class="flex items-center justify-between pt-2 border-t border-brass-accent/20">
-                  <div class="flex flex-col">
+                  <div class="flex flex-col gap-0.5">
                     @if (produto.gratuito) {
                     <span class="text-candlelight-gold font-bold text-xl">
                       Grátis
                     </span>
-                    } @else {
-                    <div class="flex items-baseline gap-2">
+                    } @else if (produto.promocaoPorcentagem && produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
+                    <!-- Preço original: menor, apagado e riscado -->
+                    <span class="text-scroll-beige/50 text-sm line-through">
+                      R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                    </span>
+                    <!-- Valor atual + badge % OFF à direita -->
+                    <div class="flex items-baseline gap-2 flex-wrap">
                       <span class="text-candlelight-gold font-bold text-xl">
                         R$
-                        {{
-                          (produto.valorPromocional != null
-                            ? produto.valorPromocional
-                            : produto.valorUnitario
-                          )
-                            .toFixed(2)
-                            .replace('.', ',')
-                        }}
+                        {{ produto.valorPromocional.toFixed(2).replace('.', ',') }}
                       </span>
-                      @if (produto.promocaoPorcentagem && produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
                       <span
-                        class="text-scroll-beige/50 text-sm line-through"
+                        class="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-semibold rounded border border-green-300"
                       >
-                        R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                        {{ produto.promocaoPorcentagem }}% OFF
                       </span>
-                      }
                     </div>
-                      }
+                    } @else {
+                    <span class="text-candlelight-gold font-bold text-xl">
+                      R$
+                      {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                    </span>
+                    }
                   </div>
                   <button
                     (click)="$event.stopPropagation()"
@@ -341,6 +338,8 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
           </div>
         </div>
       }
+
+      <app-rodape class="mt-16" />
     </div>
     `,
     styles: [
@@ -367,7 +366,7 @@ export class GerenciarProdutosComponent implements AfterViewInit, OnDestroy {
     private categoriaProdutoService = inject(CategoriaProdutoService);
     opcoesCategoria = signal<OpcaoSelect[]>([]);
     artesao = signal<Artesao | undefined>(undefined);
-    produtosArtesao = signal<Produto[]>([]);
+    produtosArtesao = signal<ProdutoCompleto[]>([]);
     abaAtiva = signal('produtos');
     categoriaFiltro = signal('');
     ordenacao = signal('recentes');
@@ -580,7 +579,7 @@ export class GerenciarProdutosComponent implements AfterViewInit, OnDestroy {
         });
     }
 
-    editarProduto(produto: Produto) {
+    editarProduto(produto: ProdutoCompleto) {
         // Salvar o domínio da loja atual no sessionStorage
         const dominioAtual = this.artesao()?.dominio;
         if (dominioAtual) {
@@ -613,7 +612,7 @@ export class GerenciarProdutosComponent implements AfterViewInit, OnDestroy {
         }
     }
 
-    verProduto(produto: Produto) {
+    verProduto(produto: ProdutoCompleto) {
         // Navegar para página de detalhes do produto usando nomeNormalizado
         this.router.navigate(['/produtos', produto.nomeNormalizado]);
     }
