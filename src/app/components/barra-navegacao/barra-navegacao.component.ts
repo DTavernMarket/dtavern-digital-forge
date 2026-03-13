@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
     <nav [class]="isFixed ? 'fixed top-0 left-0 right-0 z-50 bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30' : 'relative bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30'">
       <div class="container mx-auto px-4">
         <!-- Container principal: duas colunas iguais (esquerda/direita) para centralizar o meio -->
-        <div class="flex items-center py-4">
+        <div class="flex items-center py-[0.7rem]">
           <!-- SEÇÃO ESQUERDA: Logo (ocupa espaço para equilibrar) -->
           <div class="flex-1 flex items-center justify-start min-w-0">
             <div class="cursor-pointer flex items-center justify-center" (click)="irParaInicio()">
@@ -156,14 +156,14 @@ import { Subscription } from 'rxjs';
             <ng-container *ngIf="!estaAutenticado()">
               <button 
                 (click)="irParaCadastro()"
-                class="px-4 py-2 text-scroll-beige hover:text-candlelight-gold transition-colors text-sm font-medium"
+                class="px-4 py-1 text-scroll-beige hover:text-candlelight-gold transition-colors text-sm font-medium"
               >
                 Criar minha conta
               </button>
               <span class="text-scroll-beige/60 text-sm">ou</span>
               <button 
                 (click)="irParaLogin()"
-                class="px-4 py-2 border-2 border-candlelight-gold text-candlelight-gold rounded-lg font-medium hover:bg-candlelight-gold hover:text-tavern-wood transition-all duration-300 text-sm"
+                class="px-4 py-1 border-2 border-candlelight-gold text-candlelight-gold rounded-lg font-medium hover:bg-candlelight-gold hover:text-tavern-wood transition-all duration-300 text-sm"
               >
                 Fazer login
               </button>

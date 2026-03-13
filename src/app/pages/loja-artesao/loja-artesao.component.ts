@@ -256,15 +256,6 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                   </div>
                   }
                 </div>
-
-                <!-- Badge Grátis -->
-                <div *ngIf="produto.gratuito" class="absolute top-3 right-3">
-                  <span
-                    class="px-3 py-1.5 bg-green-500/90 text-white text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
-                  >
-                    Grátis
-                  </span>
-                </div>
               </div>
 
               <!-- Informações do Produto -->
@@ -290,6 +281,9 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                 <div class="flex items-center justify-between pt-2 border-t border-brass-accent/20">
                   <div class="flex flex-col gap-0.5">
                     @if (produto.gratuito) {
+                    <span class="text-scroll-beige/50 text-sm line-through">
+                      R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                    </span>
                     <span class="text-candlelight-gold font-bold text-xl">
                       Grátis
                     </span>
@@ -316,10 +310,10 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                     }
                   </div>
                   <button
-                    (click)="$event.stopPropagation()"
+                    (click)="verProduto(produto); $event.stopPropagation()"
                     class="px-5 py-2.5 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 active:scale-95 transition-all text-sm shadow-md hover:shadow-lg"
                   >
-                    {{ produto.gratuito ? 'Baixar' : 'Comprar' }}
+                    {{ produto.gratuito ? 'Adicionar na biblioteca' : 'Ver Produto' }}
                   </button>
                 </div>
               </div>

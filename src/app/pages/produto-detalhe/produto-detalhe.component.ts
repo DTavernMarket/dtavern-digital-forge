@@ -142,7 +142,6 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
                             ?.replace('.', ',')
                         }}
                       </span>
-
                       @if (produto.promocaoPorcentagem && produto.promocaoPorcentagem > 0 && produto.valorPromocional != null) {
                         <span class="text-scroll-beige/60 line-through text-lg">
                           R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
@@ -169,6 +168,15 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
                     <p class="text-xs" [class.text-green-400]="compraSucesso()" [class.text-red-400]="!compraSucesso()">
                       {{ mensagemCompra() }}
                     </p>
+                    @if (compraSucesso() && produto.gratuito) {
+                      <button
+                        type="button"
+                        (click)="irParaBiblioteca()"
+                        class="mt-1 text-xs text-candlelight-gold hover:text-candlelight-gold/90 underline"
+                      >
+                        Ir para a minha biblioteca
+                      </button>
+                    }
                   }
                   <p class="text-xs text-scroll-beige/60">
                     * Integração com carrinho/pagamento será adicionada em breve.
@@ -263,6 +271,7 @@ export class ProdutoDetalheComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private authService = inject(AuthService);
   private produtoService = inject(ProdutoService);
+  // Reutiliza mesma rota de biblioteca da barra de navegação
 
   produto: Produto | null = null;
   carregando = signal<boolean>(true);
@@ -270,7 +279,7 @@ export class ProdutoDetalheComponent implements OnInit, OnDestroy {
   comprando = signal<boolean>(false);
   mensagemCompra = signal<string | null>(null);
   compraSucesso = signal<boolean>(false);
-  
+
   // Dialog PIX
   mostrarDialogPix = signal<boolean>(false);
   pagamentoPix = signal<PagamentoPixResponse | null>(null);
@@ -319,6 +328,33 @@ export class ProdutoDetalheComponent implements OnInit, OnDestroy {
     this.mensagemCompra.set(null);
     this.compraSucesso.set(false);
 
+    // Se o produto for gratuito, apenas adiciona à biblioteca e mostra mensagem
+    if (this.produto.gratuito) {
+      this.produtoService.comprarProduto(idProduto).subscribe({
+        next: () => {
+          this.compraSucesso.set(true);
+          this.mensagemCompra.set('Produto adicionado à sua biblioteca com sucesso! Clique em \"Ir para a minha biblioteca\" para acessá-la.');
+          this.comprando.set(false);
+        },
+        error: (error) => {
+          if (error?.error?.codigoErro === 'PRODUTO_JA_COMPRADO') {
+            // Considera como "sucesso" para poder exibir o link para a biblioteca
+            this.compraSucesso.set(true);
+            this.mensagemCompra.set(
+              error?.error?.mensagem || 'Este produto já foi comprado por você. Clique em \"Ir para a minha biblioteca\" para acessá-la.'
+            );
+          } else {
+            this.mensagemCompra.set(
+              error?.error?.mensagem || error?.error?.message || 'Erro ao processar a compra. Tente novamente.'
+            );
+          }
+          this.comprando.set(false);
+        },
+      });
+      return;
+    }
+
+    // Produto pago: fluxo normal com PIX
     this.produtoService.comprarProduto(idProduto).subscribe({
       next: (pagamentoPixResponse: PagamentoPixResponse) => {
         this.pagamentoPix.set(pagamentoPixResponse);
@@ -334,8 +370,10 @@ export class ProdutoDetalheComponent implements OnInit, OnDestroy {
 
         // Verificar se o produto já foi comprado
         if (error?.error?.codigoErro === 'PRODUTO_JA_COMPRADO') {
+          // Considera como "sucesso" para poder exibir o link para a biblioteca
+          this.compraSucesso.set(true);
           this.mensagemCompra.set(
-            error?.error?.mensagem || 'Este produto já foi comprado por você.'
+            error?.error?.mensagem || 'Este produto já foi comprado por você. Clique em \"Ir para a minha biblioteca\" para acessá-la.'
           );
         } else {
           this.mensagemCompra.set(
@@ -350,21 +388,21 @@ export class ProdutoDetalheComponent implements OnInit, OnDestroy {
 
   iniciarContadorRegressivo(expiresAt: string): void {
     const dataExpiracao = new Date(expiresAt).getTime();
-    
+
     const atualizarContador = () => {
       const agora = new Date().getTime();
       const diferenca = Math.max(0, dataExpiracao - agora);
       const segundos = Math.floor(diferenca / 1000);
-      
+
       this.tempoRestante.set(segundos);
-      
+
       // if (segundos <= 0) {
       //   this.pararContador();
       //   this.fecharDialogPix();
       //   alert('O tempo para pagamento expirou. Por favor, tente novamente.');
       // }
     };
-    
+
     atualizarContador();
     this.intervaloContador = setInterval(atualizarContador, 1000);
   }
@@ -404,6 +442,10 @@ export class ProdutoDetalheComponent implements OnInit, OnDestroy {
         alert('Erro ao copiar código. Tente selecionar e copiar manualmente.');
       });
     }
+  }
+
+  irParaBiblioteca(): void {
+    this.router.navigate(['/biblioteca']);
   }
 
   ngOnDestroy(): void {

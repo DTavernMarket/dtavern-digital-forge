@@ -148,8 +148,7 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <div
               *ngFor="let produto of produtosFiltrados()"
-              class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl overflow-hidden hover:border-candlelight-gold/50 hover:shadow-lg transition-all duration-300 group cursor-pointer"
-              (click)="verProduto(produto)"
+              class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl overflow-hidden hover:border-brass-accent/40 hover:shadow-lg transition-all duration-300 group"
             >
               <!-- Imagem do Produto -->
               <div
@@ -196,15 +195,6 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                   </span>
                 </div>
 
-                <!-- Badge Grátis -->
-                <div *ngIf="produto.gratuito" class="absolute top-3 right-3">
-                  <span
-                    class="px-3 py-1.5 bg-green-500/90 text-white text-xs font-semibold rounded-md shadow-lg backdrop-blur-sm"
-                  >
-                    Grátis
-                  </span>
-                </div>
-
                 <!-- Ícone de Edição -->
                 @if (isOwner()) {
                 <button
@@ -247,6 +237,9 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                 <div class="flex items-center justify-between pt-2 border-t border-brass-accent/20">
                   <div class="flex flex-col gap-0.5">
                     @if (produto.gratuito) {
+                    <span class="text-scroll-beige/50 text-sm line-through">
+                      R$ {{ produto.valorUnitario.toFixed(2).replace('.', ',') }}
+                    </span>
                     <span class="text-candlelight-gold font-bold text-xl">
                       Grátis
                     </span>
@@ -278,7 +271,7 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                     (click)="$event.stopPropagation()"
                     class="px-5 py-2.5 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 active:scale-95 transition-all text-sm shadow-md hover:shadow-lg"
                   >
-                    {{ produto.gratuito ? 'Baixar' : 'Comprar' }}
+                    {{ produto.gratuito ? 'Adicionar na biblioteca' : 'Comprar' }}
                   </button>
                 </div>
               </div>
