@@ -256,6 +256,15 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                   </div>
                   }
                 </div>
+
+                <!-- Badge de Categoria (canto superior direito da imagem) -->
+                <div class="absolute top-3 right-3">
+                  <span
+                    class="px-3 py-1 rounded-full bg-tavern-wood text-scroll-beige text-xs font-medium shadow-sm border border-stone-gray border-1"
+                  >
+                    {{ produto.categoriaCodigo || 'Outro' }}
+                  </span>
+                </div>
               </div>
 
               <!-- Informações do Produto -->
@@ -266,12 +275,6 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                 >
                   {{ produto.nome }}
                 </h3>
-
-                <!-- Categoria -->
-                <p class="text-scroll-beige/70 text-sm font-medium">
-                  Categoria: {{ produto.categoriaCodigo }}
-                </p>
-
                 <!-- Resumo/Descrição -->
                 <p class="text-scroll-beige/70 text-sm line-clamp-3">
                   {{ produto.descricao ? (produto.descricao.length > 100 ? produto.descricao.substring(0, 100) + '...' : produto.descricao) : '—' }}

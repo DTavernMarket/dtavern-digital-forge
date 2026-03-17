@@ -184,6 +184,15 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                   }
                 </div>
 
+                <!-- Badge de Categoria (canto superior direito da imagem) -->
+                <div class="absolute top-3 right-3">
+                  <span
+                    class="px-3 py-1 rounded-full bg-tavern-wood text-midnight-brown/80 text-xs font-medium shadow-sm border border-stone-gray border-1"
+                  >
+                    {{ produto.categoriaCodigo || 'Outro' }}
+                  </span>
+                </div>
+
                 <!-- Badge Disponível / Não disponível -->
                 <div class="absolute top-3 left-3">
                   <span
@@ -199,7 +208,7 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                 @if (isOwner()) {
                 <button
                   (click)="editarProduto(produto); $event.stopPropagation()"
-                  class="absolute top-3 right-3 w-8 h-8 bg-candlelight-gold/90 hover:bg-candlelight-gold text-tavern-wood rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors z-10"
+                  class="absolute bottom-3 right-3 w-8 h-8 bg-candlelight-gold/90 hover:bg-candlelight-gold text-tavern-wood rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors z-10"
                   title="Editar produto"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,11 +231,6 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                 >
                   {{ produto.nome }}
                 </h3>
-
-                <!-- Categoria -->
-                <p class="text-scroll-beige/70 text-sm font-medium">
-                  Categoria: {{ produto.categoriaCodigo }}
-                </p>
 
                 <!-- Resumo/Descrição -->
                 <p class="text-scroll-beige/70 text-sm line-clamp-3">

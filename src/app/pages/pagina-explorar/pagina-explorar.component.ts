@@ -51,45 +51,12 @@ import { LojaResponse } from '../../models/artesao.model';
                        />
                      </svg>
                    </div>
-
-                   <!-- Ordenação -->
-                   <div class="mb-4">
-                     <label class="block text-sm font-medium text-scroll-beige/80 mb-2">
-                       Ordenar por
-                     </label>
-                     <div class="relative">
-                       <button
-                         (click)="dropdownOrdenacao.set(!dropdownOrdenacao())"
-                         class="w-full px-3 py-2 bg-stone-gray/20 backdrop-blur-sm border border-brass-accent/30 rounded-lg text-scroll-beige text-sm flex items-center justify-between"
-                       >
-                         <span>{{ obterTextoOrdenacao() }}</span>
-                         <svg class="w-4 h-4 text-scroll-beige/60 transition-transform" [class.rotate-180]="dropdownOrdenacao()" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                         </svg>
-                       </button>
-                       
-                       <!-- Dropdown Customizado -->
-                       <div
-                         *ngIf="dropdownOrdenacao()"
-                         class="absolute top-full left-0 right-0 mt-1 bg-midnight-brown border border-brass-accent/30 rounded-lg shadow-xl z-50"
-                       >
-                         <div class="py-1">
-                           <button
-                             *ngFor="let opcao of opcoesOrdenacao"
-                             (click)="selecionarOrdenacao(opcao.value)"
-                             class="w-full text-left px-3 py-1.5 text-scroll-beige hover:bg-stone-gray/40 transition-colors text-sm">
-                             {{ opcao.label }}
-                           </button>
-                         </div>
-                       </div>
-                     </div>
-                   </div>
                  </div>
 
-                 <!-- Contador de Resultados -->
+                 <!-- Contador de Resultados (total do backend quando disponível) -->
                  <div class="pt-4 border-t border-brass-accent/20">
                    <p class="text-sm text-scroll-beige/70">
-                     {{ artesoesFiltrados().length }} artesãos encontrados
+                     {{ totalElementos() }} artesãos encontrados
                    </p>
                  </div>
                </div>
@@ -138,6 +105,16 @@ import { LojaResponse } from '../../models/artesao.model';
                           <p class="text-sm text-scroll-beige/60">
                             @{{ loja.dominio }}
                           </p>
+                        </div>
+
+                        <!-- Especialidades -->
+                        <div *ngIf="loja.especialidades && loja.especialidades.length" class="flex flex-wrap gap-2 pt-2">
+                          <span
+                            *ngFor="let esp of loja.especialidades; trackBy: rastrearEspecialidade"
+                            class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-brass-accent/20 text-candlelight-gold border border-brass-accent/40"
+                          >
+                            {{ esp.nome }}
+                          </span>
                         </div>
 
                       </div>
@@ -194,49 +171,21 @@ export class PaginaExplorarComponent implements OnInit {
   private lojas = signal<LojaResponse[]>([]);
   private resultadoPaginado = signal<any>(null);
 
-  // Computed para lojas filtradas
-  artesoesFiltrados = computed(() => {
-    let lojas = this.lojas();
-    const termo = this.termoBusca().toLowerCase().trim();
+  /** Lista de lojas exatamente como retornada pelo backend (sem filtro/ordenação no front). */
+  artesoesFiltrados = computed(() => this.lojas());
 
-    // Filtrar por termo de busca
-    if (termo) {
-      lojas = lojas.filter((l) =>
-        l.nome.toLowerCase().includes(termo) ||
-        (l.descricao && l.descricao.toLowerCase().includes(termo)) ||
-        l.dominio.toLowerCase().includes(termo)
-      );
-    }
-
-    // Ordenar
-    switch (this.ordenacaoSelecionada()) {
-      case 'nome-desc':
-        lojas = lojas.sort((a, b) => b.nome.localeCompare(a.nome));
-        break;
-      case 'nome-asc':
-      default:
-        lojas = lojas.sort((a, b) => a.nome.localeCompare(b.nome));
-        break;
-    }
-
-    return lojas;
-  });
-
-  rastrearLoja(index: number, loja: LojaResponse) {
+  rastrearLoja(_index: number, loja: LojaResponse) {
     return loja.dominio;
   }
 
-  // Estados reativos para filtros
-  termoBusca = signal('');
-  ordenacaoSelecionada = signal('nome-asc');
-  paginaAtual = signal(1);
-  dropdownOrdenacao = signal(false);
+  rastrearEspecialidade(_index: number, esp: { codigo: string; nome: string }) {
+    return esp.codigo;
+  }
 
-  // Opções de ordenação
-  opcoesOrdenacao = [
-    { value: 'nome-asc', label: 'Nome (A-Z)' },
-    { value: 'nome-desc', label: 'Nome (Z-A)' },
-  ];
+  termoBusca = signal('');
+  paginaAtual = signal(0);
+  private debounceCarregar: ReturnType<typeof setTimeout> | null = null;
+  private readonly PAGE_SIZE = 100;
 
 
   constructor(private route: ActivatedRoute, private router: Router) { }
@@ -251,18 +200,34 @@ export class PaginaExplorarComponent implements OnInit {
     this.carregarArtesoes();
   }
 
+  /** Total de elementos retornado pelo backend (para o contador). */
+  totalElementos = computed(() => {
+    const res = this.resultadoPaginado();
+    return res?.totalElements ?? this.lojas().length;
+  });
+
   atualizarBusca(termo: string) {
     this.termoBusca.set(termo);
-    // Atualizar a URL com o termo de busca
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { pesquisa: termo || null },
       queryParamsHandling: 'merge',
     });
+    this.carregarArtesoesComDebounce();
+  }
+
+  private carregarArtesoesComDebounce() {
+    if (this.debounceCarregar != null) clearTimeout(this.debounceCarregar);
+    this.debounceCarregar = setTimeout(() => {
+      this.debounceCarregar = null;
+      this.carregarArtesoes();
+    }, 400);
   }
 
   private carregarArtesoes() {
-    this.artesaoService.listarLojas(undefined, 0, 100).subscribe({
+    const filtro = this.termoBusca().trim() || undefined;
+    const page = this.paginaAtual();
+    this.artesaoService.listarLojas(filtro, page, this.PAGE_SIZE).subscribe({
       next: (resultado) => {
         this.resultadoPaginado.set(resultado);
         this.lojas.set(resultado.content);
@@ -272,17 +237,6 @@ export class PaginaExplorarComponent implements OnInit {
         this.lojas.set([]);
       }
     });
-  }
-
-  // Métodos para o dropdown de ordenação
-  obterTextoOrdenacao(): string {
-    const opcao = this.opcoesOrdenacao.find((o) => o.value === this.ordenacaoSelecionada());
-    return opcao ? opcao.label : 'Nome (A-Z)';
-  }
-
-  selecionarOrdenacao(valor: string) {
-    this.ordenacaoSelecionada.set(valor);
-    this.dropdownOrdenacao.set(false);
   }
 
   private readonly CDN_BASE = 'http://localhost:8080';
