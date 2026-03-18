@@ -6,11 +6,24 @@ import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-
 import { RodapeComponent } from '../../components/rodape/rodape.component';
 import { ArtesaoService } from '../../services/artesao.service';
 import { LojaResponse } from '../../models/artesao.model';
-
+import { DataView } from 'primeng/dataview';
+import { Tag } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+import { SelectButton } from 'primeng/selectbutton';
 @Component({
   selector: 'app-pagina-produtos',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, BarraNavegacaoComponent, RodapeComponent],
+  imports: [
+    CommonModule,
+    DataView,
+    Tag,
+    ButtonModule,
+    SelectButton,
+    FormsModule,
+    RouterModule,
+    BarraNavegacaoComponent,
+    RodapeComponent
+],
   template: `
     <div class="min-h-screen bg-tavern-wood font-body">
       <app-barra-navegacao [isFixed]="false" />
@@ -62,69 +75,142 @@ import { LojaResponse } from '../../models/artesao.model';
                </div>
              </div>
 
-             <!-- Área Principal dos Artesãos (Direita) -->
-             <div class="flex-1">
-               <!-- Lista de Artesãos em Formato Horizontal -->
-               <div class="space-y-4">
-                 <div
-                   *ngFor="let loja of artesoesFiltrados(); trackBy: rastrearLoja"
-                   class="bg-midnight-brown/50 backdrop-blur-sm border border-brass-accent/30 rounded-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
-                   [routerLink]="['/lojas', loja.dominio]"
-                 >
-                  <div class="flex space-x-6">
-                    <!-- Foto de perfil da Loja -->
-                    <div class="flex-shrink-0">
-                      <div class="relative w-32 h-32 bg-tavern-wood/20 rounded-lg overflow-hidden flex items-center justify-center">
-                        <img
-                          [src]="urlImagemPerfil(loja)"
-                          [alt]="loja.nome"
-                          class="w-full h-full object-cover"
-                        />
-                      </div>
+            <!-- Área Principal dos Artesãos (Direita) -->
+            <div class="flex-1 flex flex-col gap-4">
+              <!-- DataView de Lojas -->
+              <div class="bg-midnight-brown/40 border border-brass-accent/30 rounded-lg p-4">
+                <p-dataview [value]="artesoesFiltrados()" [layout]="layout">
+                  <ng-template pTemplate="header">
+                    <div class="flex justify-end">
+                      <p-selectButton
+                        [(ngModel)]="layout"
+                        [options]="layoutOptions"
+                        [allowEmpty]="false"
+                        class="bg-stone-gray/30 rounded-md"
+                      >
+                        <ng-template pTemplate="item" let-item>
+                          <i class="pi" [ngClass]="{ 'pi-bars': item === 'list', 'pi-table': item === 'grid' }"></i>
+                        </ng-template>
+                      </p-selectButton>
                     </div>
+                  </ng-template>
 
-                    <!-- Informações da Loja -->
-                    <div class="flex-1 min-w-0">
-                      <div class="space-y-3">
-                        <!-- Nome -->
-                        <div>
-                          <h3
-                            class="text-xl font-semibold text-scroll-beige hover:text-candlelight-gold transition-colors"
+                  <!-- Layout em lista (horizontal) -->
+                  <ng-template pTemplate="list" let-items>
+                    <div *ngFor="let loja of items" class="border-b border-brass-accent/20 last:border-b-0">
+                      <div
+                        class="flex flex-col md:flex-row md:items-center gap-4 p-4 cursor-pointer hover:bg-tavern-wood/40 transition-colors rounded-lg"
+                        [routerLink]="['/lojas', loja.dominio]"
+                      >
+                        <!-- Foto de perfil da Loja -->
+                        <div class="flex-shrink-0">
+                          <div
+                            class="relative w-28 h-28 md:w-32 md:h-32 bg-tavern-wood/20 rounded-lg overflow-hidden flex items-center justify-center"
                           >
-                            {{ loja.nome }}
-                          </h3>
+                            <img
+                              [src]="urlImagemPerfil(loja)"
+                              [alt]="loja.nome"
+                              class="w-full h-full object-cover"
+                            />
+                          </div>
                         </div>
 
-                        <!-- Descrição -->
-                        <p class="text-sm text-scroll-beige/70 line-clamp-2">
-                          {{ loja.descricao || 'Sem descrição disponível' }}
-                        </p>
+                        <!-- Informações da Loja -->
+                        <div class="flex-1 min-w-0 flex flex-col gap-2">
+                          <div class="flex items-center justify-between gap-3">
+                            <div>
+                              <h3
+                                class="text-lg md:text-xl font-semibold text-scroll-beige hover:text-candlelight-gold transition-colors"
+                              >
+                                {{ loja.nome }}
+                              </h3>
+                              <p class="text-sm text-scroll-beige/60">@{{ loja.dominio }}</p>
+                            </div>
+                            <div class="text-right text-xs text-scroll-beige/60 whitespace-nowrap">
+                              <span class="block">
+                                {{ loja.quantidadeProdutos || 0 }} produtos
+                              </span>
+                            </div>
+                          </div>
 
-                        <!-- Domínio -->
-                        <div class="pt-1">
-                          <p class="text-sm text-scroll-beige/60">
-                            @{{ loja.dominio }}
+                          <p class="text-sm text-scroll-beige/70 line-clamp-2">
+                            {{ loja.descricao || 'Sem descrição disponível' }}
                           </p>
-                        </div>
 
-                        <!-- Especialidades -->
-                        <div *ngIf="loja.especialidades && loja.especialidades.length" class="flex flex-wrap gap-2 pt-2">
-                          <span
-                            *ngFor="let esp of loja.especialidades; trackBy: rastrearEspecialidade"
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-brass-accent/20 text-candlelight-gold border border-brass-accent/40"
+                          <div
+                            *ngIf="loja.especialidades && loja.especialidades.length"
+                            class="flex flex-wrap gap-2 pt-1"
                           >
-                            {{ esp.nome }}
-                          </span>
+                            <p-tag
+                              *ngFor="let esp of loja.especialidades; trackBy: rastrearEspecialidade"
+                              [value]="esp.nome"
+                              severity="warn"
+                              class="!bg-brass-accent/20 !border-brass-accent/40 !text-candlelight-gold text-xs"
+                            ></p-tag>
+                          </div>
                         </div>
-
                       </div>
                     </div>
-                  </div>
-                </div>
+                  </ng-template>
+
+                  <!-- Layout em grid -->
+                  <ng-template pTemplate="grid" let-items>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                      <div
+                        *ngFor="let loja of items"
+                        class="bg-midnight-brown/60 border border-brass-accent/30 rounded-lg p-4 flex flex-col gap-3 hover:border-candlelight-gold/60 hover:shadow-lg transition-all cursor-pointer"
+                        [routerLink]="['/lojas', loja.dominio]"
+                      >
+                        <div class="flex justify-center">
+                          <div
+                            class="relative w-32 h-32 bg-tavern-wood/20 rounded-full overflow-hidden flex items-center justify-center"
+                          >
+                            <img
+                              [src]="urlImagemPerfil(loja)"
+                              [alt]="loja.nome"
+                              class="w-full h-full object-cover"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="flex flex-col gap-2 text-center">
+                          <div>
+                            <div
+                              class="text-lg font-semibold text-scroll-beige hover:text-candlelight-gold transition-colors"
+                            >
+                              {{ loja.nome }}
+                            </div>
+                            <div class="text-xs text-scroll-beige/60">@{{ loja.dominio }}</div>
+                          </div>
+
+                          <p class="text-sm text-scroll-beige/70 line-clamp-2">
+                            {{ loja.descricao || 'Sem descrição disponível' }}
+                          </p>
+
+                          <div
+                            *ngIf="loja.especialidades && loja.especialidades.length"
+                            class="flex flex-wrap gap-2 justify-center pt-1"
+                          >
+                            <p-tag
+                              *ngFor="let esp of loja.especialidades; trackBy: rastrearEspecialidade"
+                              [value]="esp.nome"
+                              severity="warn"
+                              class="!bg-brass-accent/20 !border-brass-accent/40 !text-candlelight-gold text-xs"
+                            ></p-tag>
+                          </div>
+
+                          <div class="mt-2 text-xs text-scroll-beige/60">
+                            {{ loja.quantidadeProdutos || 0 }} produtos disponíveis
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-template>
+                </p-dataview>
               </div>
 
-               <!-- Estado Vazio -->
-               <div *ngIf="artesoesFiltrados().length === 0" class="text-center py-12">
+              <!-- Estado Vazio -->
+              <div *ngIf="artesoesFiltrados().length === 0" class="text-center py-12">
                  <svg
                    class="w-16 h-16 text-scroll-beige/30 mx-auto mb-4"
                    fill="none"
@@ -181,6 +267,10 @@ export class PaginaExplorarComponent implements OnInit {
   rastrearEspecialidade(_index: number, esp: { codigo: string; nome: string }) {
     return esp.codigo;
   }
+
+  // Layout do DataView (lista ou grid)
+  layout: 'list' | 'grid' = 'list';
+  layoutOptions: ('list' | 'grid')[] = ['list', 'grid'];
 
   termoBusca = signal('');
   paginaAtual = signal(0);
