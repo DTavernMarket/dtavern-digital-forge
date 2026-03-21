@@ -11,6 +11,8 @@ module.exports = {
         'candlelight-gold': '#FFD36A',   // Luz de vela/brilho mágico - destaques, botões principais
         'brass-accent': '#C58B3D',       // Latão/Metais - ícones, bordas e detalhes decorativos
         'warm-amber': '#FFB347',         // Âmbar aconchegante - botões secundários, hovers
+        /** Fundo sólido para pills de especialidade (evita /opacity no Tailwind). */
+        'especialidade-tag': '#7a4f22',
         'stone-gray': '#8C7A6B',         // Pedra medieval - texto secundário, cards
         'scroll-beige': '#E9D7B8',       // Pergaminho envelhecido - fundos de texto, modais
         
