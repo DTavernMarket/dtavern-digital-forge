@@ -24,11 +24,10 @@ export class ArtesaoService {
   listarLojas(
     filtroGeral?: string,
     page: number = 0,
-    size: number = 10
   ): Observable<PagedResult<LojaResponse>> {
     let params = new HttpParams()
       .set('page', page.toString())
-      .set('size', size.toString());
+      .set('size', '9');
 
     if (filtroGeral && filtroGeral.trim()) {
       params = params.set('filtroGeral', filtroGeral.trim());

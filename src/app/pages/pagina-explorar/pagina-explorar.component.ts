@@ -65,7 +65,7 @@ import { TagModule } from 'primeng/tag';
                  <!-- Contador de Resultados (total do backend quando disponível) -->
                  <div class="pt-4 border-t border-brass-accent/20">
                    <p class="text-sm text-scroll-beige/70">
-                     {{ totalElementos() }} artesãos encontrados
+                     {{ totalElementos() }} lojas encontradas
                    </p>
                  </div>
                </div>
@@ -74,8 +74,21 @@ import { TagModule } from 'primeng/tag';
             <!-- Área Principal dos Artesãos (Direita) -->
             <div class="p-4 flex-1 flex flex-col gap-4 bg-midnight-brown backdrop-blur-sm border border-brass-accent/30 rounded-lg">
               <!-- DataView de Lojas -->
-              <p-dataview  #dv [layout]="'grid'" [value]="artesoesFiltrados()">
-
+              <p-dataview
+                #dv
+                [layout]="'grid'"
+                [value]="artesoesFiltrados()"
+                [rows]="itensPorPagina"
+                [first]="indicePrimeiroItem()"
+                [paginator]="totalElementos() > 0"
+                [paginatorPosition]="'bottom'"
+                [paginatorDropdownAppendTo]="'body'"
+                [totalRecords]="totalElementos()"
+                [pageLinks]="5"
+                [showCurrentPageReport]="true"
+                [currentPageReportTemplate]="textoRelatorioPaginacao"
+                (onPage)="aoMudarPaginaDataView($event)"
+              >
                 <ng-template #grid let-artesaos>
                     <div class="grid grid-cols-12 gap-4 items-stretch">
                         <div *ngFor="let artesao of artesaos" class="col-span-12 sm:col-span-6 md:col-span-4 xl:col-span-4 p-2 flex">
@@ -171,6 +184,107 @@ import { TagModule } from 'primeng/tag';
         border: none;
       }
 
+      /* Paginação: estilo “clean” — itens afastados, página ativa em círculo destacado */
+      :host ::ng-deep .p-dataview p-paginator.p-paginator,
+      :host ::ng-deep .p-dataview .p-dataview-paginator-bottom,
+      :host ::ng-deep .p-dataview .p-dataview-paginator-top {
+        border: none !important;
+        border-top: 1px solid rgba(197, 139, 61, 0.22) !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        outline: none !important;
+        display: flex !important;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem 1.25rem;
+        padding: 1.25rem 0.5rem 0.75rem !important;
+        margin-top: 0.5rem;
+      }
+
+      :host ::ng-deep .p-dataview .p-paginator-pages {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        margin: 0 0.35rem;
+      }
+
+      :host ::ng-deep .p-dataview .p-paginator-first,
+      :host ::ng-deep .p-dataview .p-paginator-prev,
+      :host ::ng-deep .p-dataview .p-paginator-next,
+      :host ::ng-deep .p-dataview .p-paginator-last {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        color: #a89888 !important;
+        padding: 0.45rem !important;
+        min-width: 2.75rem !important;
+        min-height: 2.75rem !important;
+        border-radius: 9999px;
+        transition: color 0.15s ease, background 0.15s ease;
+      }
+
+      :host ::ng-deep .p-dataview .p-paginator-first:not(:disabled):hover,
+      :host ::ng-deep .p-dataview .p-paginator-prev:not(:disabled):hover,
+      :host ::ng-deep .p-dataview .p-paginator-next:not(:disabled):hover,
+      :host ::ng-deep .p-dataview .p-paginator-last:not(:disabled):hover {
+        color: #e9d7b8 !important;
+        background: rgba(233, 215, 184, 0.08) !important;
+      }
+
+      :host ::ng-deep .p-dataview .p-paginator-first:disabled,
+      :host ::ng-deep .p-dataview .p-paginator-prev:disabled,
+      :host ::ng-deep .p-dataview .p-paginator-next:disabled,
+      :host ::ng-deep .p-dataview .p-paginator-last:disabled {
+        opacity: 0.35;
+      }
+
+      :host ::ng-deep .p-dataview .p-paginator svg {
+        color: currentColor;
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+
+      :host ::ng-deep .p-dataview .p-paginator-page {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        color: #a89888 !important;
+        font-weight: 500;
+        font-size: 0.9375rem;
+        line-height: 1;
+        min-width: 2.75rem !important;
+        min-height: 2.75rem !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 9999px;
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      :host ::ng-deep .p-dataview .p-paginator-page:not(.p-paginator-page-selected):hover {
+        color: #e9d7b8 !important;
+        background: rgba(233, 215, 184, 0.07) !important;
+      }
+
+      :host ::ng-deep .p-dataview .p-paginator-page.p-paginator-page-selected {
+        background: #1c0f0a !important;
+        color: #faf6ef !important;
+        font-weight: 600;
+        box-shadow: 0 0 0 1px rgba(197, 139, 61, 0.45);
+      }
+
+      :host ::ng-deep .p-dataview .p-paginator .p-paginator-current {
+        color: #e9d7b8 !important;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0 0.75rem;
+        white-space: nowrap;
+      }
+
       /* Tags de especialidade: bordas bem arredondadas (pill) */
       :host ::ng-deep p-tag.especialidade-tag,
       :host ::ng-deep p-tag.especialidade-tag .p-tag,
@@ -202,15 +316,29 @@ export class PaginaExplorarComponent implements OnInit {
   private artesaoService = inject(ArtesaoService);
   private lojas = signal<LojaResponse[]>([]);
   private resultadoPaginado = signal<any>(null);
-
+  
   /** Lista de lojas exatamente como retornada pelo backend (sem filtro/ordenação no front). */
   artesoesFiltrados = computed(() => this.lojas());
 
+  /** Deve ser igual a `[rows]` do p-dataview e ao `size` da API em `ArtesaoService.listarLojas`. */
+  readonly itensPorPagina = 9;
+
+  /** Índice inicial (0-based) para o DataView ficar alinhado a `paginaAtual`. */
+  indicePrimeiroItem = computed(() => this.paginaAtual() * this.itensPorPagina);
+
   termoBusca = signal('');
   paginaAtual = signal(0);
-  private debounceCarregar: ReturnType<typeof setTimeout> | null = null;
-  private readonly PAGE_SIZE = 100;
+  totalElementos = signal(0);
+  totalDePaginas = signal(0);
 
+  /**
+   * Texto do relatório no paginator (placeholders do PrimeNG).
+   * {currentPage} e {totalPages} são 1-based; {totalRecords} vem de totalElementos().
+   */
+  readonly textoRelatorioPaginacao =
+    'Página {currentPage} de {totalPages} · {totalRecords} lojas no total';
+
+  private debounceCarregar: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private route: ActivatedRoute, private router: Router) { }
 
@@ -224,14 +352,9 @@ export class PaginaExplorarComponent implements OnInit {
     this.carregarArtesoes();
   }
 
-  /** Total de elementos retornado pelo backend (para o contador). */
-  totalElementos = computed(() => {
-    const res = this.resultadoPaginado();
-    return res?.totalElements ?? this.lojas().length;
-  });
-
   atualizarBusca(termo: string) {
     this.termoBusca.set(termo);
+    this.paginaAtual.set(0);
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { pesquisa: termo || null },
@@ -248,14 +371,24 @@ export class PaginaExplorarComponent implements OnInit {
     }, 400);
   }
 
+  /** Mantém o signal `paginaAtual` alinhado ao paginator do DataView. */
+  aoMudarPaginaDataView(event: { first: number; rows: number }) {
+    const page = Math.floor(event.first / event.rows);
+    this.paginaAtual.set(page);
+  }
+
   private carregarArtesoes() {
     const filtro = this.termoBusca().trim() || undefined;
     const page = this.paginaAtual();
-    this.artesaoService.listarLojas(filtro, page, this.PAGE_SIZE).subscribe({
+    this.artesaoService.listarLojas(filtro, page).subscribe({
       next: (resultado) => {
         this.resultadoPaginado.set(resultado);
-        console.log(resultado);
         this.lojas.set(resultado.content);
+        this.totalElementos.set(resultado.totalElements);
+        this.totalDePaginas.set(resultado.totalPages);
+        if (typeof resultado.page === 'number') {
+          this.paginaAtual.set(resultado.page);
+        }
       },
       error: (error) => {
         console.error('Erro ao carregar lojas:', error);

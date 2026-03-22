@@ -128,7 +128,7 @@ export class SecaoArtesoesComponent implements OnInit {
 
   ngOnInit() {
     // Carregar artesões em destaque (primeira página, 3 resultados)
-    this.artesaoService.listarLojas(undefined, 0, 3).subscribe({
+    this.artesaoService.listarLojas(undefined, 0).subscribe({
       next: (resultado) => {
         const artesoes = resultado.content.map(loja => ({
           dominio: loja.dominio,
