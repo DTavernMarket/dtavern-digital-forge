@@ -6,6 +6,7 @@ import { Artesao, CadastroLojaRequest, LojaResponse, LojaMaisVendas } from '../m
 import { PagedResult, ProdutoCompleto } from '../models/produto.model';
 import { AuthService } from './auth.service';
 import { EditarLojaRequest, MeResponseLoja } from '../models/auth.model';
+import { environment } from '../../environment/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ export class ArtesaoService {
   private lojasCache = signal<LojaResponse[]>([]);
   private authService = inject(AuthService);
   private http = inject(HttpClient);
+  private readonly API_BASE = environment.apiBaseUrl;
 
   /**
    * Lista lojas paginadas do backend
@@ -33,7 +35,7 @@ export class ArtesaoService {
       params = params.set('filtroGeral', filtroGeral.trim());
     }
 
-    return this.http.get<PagedResult<LojaResponse>>('http://localhost:8080/api/v1/client/lojas', {
+    return this.http.get<PagedResult<LojaResponse>>(`${this.API_BASE}/client/lojas`, {
       params,
     });
   }
@@ -44,7 +46,7 @@ export class ArtesaoService {
    */
   buscarLojaPorDominio(dominio: string): Observable<LojaResponse> {
     return this.http.get<LojaResponse>(
-      `http://localhost:8080/api/v1/client/lojas/${dominio}`
+      `${this.API_BASE}/client/lojas/${dominio}`
     );
   }
 
@@ -112,14 +114,14 @@ export class ArtesaoService {
   }
 
   criarLoja(loja: CadastroLojaRequest): Observable<LojaResponse> {
-    return this.http.post<LojaResponse>('http://localhost:8080/api/v1/client/lojas/register', loja);
+    return this.http.post<LojaResponse>(`${this.API_BASE}/client/lojas/register`, loja);
   }
 
   verifyOwner(dominio: string): Observable<boolean> {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {
         return this.http.get<boolean>(
-          `http://localhost:8080/api/v1/client/lojas/verify-owner/${dominio}`,
+          `${this.API_BASE}/client/lojas/verify-owner/${dominio}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -133,7 +135,7 @@ export class ArtesaoService {
   getMeLoja(): Observable<MeResponseLoja> {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {
-        return this.http.get<MeResponseLoja>('http://localhost:8080/api/v1/lojas/me', {
+        return this.http.get<MeResponseLoja>(`${this.API_BASE}/lojas/me`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -145,7 +147,7 @@ export class ArtesaoService {
   deletarLoja(): Observable<void> {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {
-        return this.http.delete<void>('http://localhost:8080/api/v1/lojas/deletar-loja', {
+        return this.http.delete<void>(`${this.API_BASE}/lojas/deletar-loja`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -160,7 +162,7 @@ export class ArtesaoService {
    */
   buscarSobreLoja(dominio: string): Observable<{ descricaoSobre: string }> {
     return this.http.get<{ descricaoSobre: string }>(
-      `http://localhost:8080/api/v1/client/lojas/${dominio}/sobre`
+      `${this.API_BASE}/client/lojas/${dominio}/sobre`
     );
   }
 
@@ -172,7 +174,7 @@ export class ArtesaoService {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {
         return this.http.patch<void>(
-          'http://localhost:8080/api/v1/lojas/editar-loja',
+          `${this.API_BASE}/lojas/editar-loja`,
           editarLojaRequest,
           {
             headers: {
@@ -189,7 +191,7 @@ export class ArtesaoService {
    */
   buscarLojasMaisVendas(): Observable<PagedResult<LojaMaisVendas>> {
     return this.http.get<PagedResult<LojaMaisVendas>>(
-      'http://localhost:8080/api/v1/client/lojas/mais-vendas'
+      `${this.API_BASE}/client/lojas/mais-vendas`
     );
   }
 
@@ -202,7 +204,7 @@ export class ArtesaoService {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {
         return this.http.get<ProdutoCompleto[]>(
-          `http://localhost:8080/api/v1/lojas/${dominio}/todos-produtos`,
+          `${this.API_BASE}/lojas/${dominio}/todos-produtos`,
           {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -228,7 +230,7 @@ export class ArtesaoService {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {
         return this.http.post<unknown>(
-          'http://localhost:8080/api/v1/lojas/midia',
+          `${this.API_BASE}/lojas/midia`,
           formData,
           {
             params,

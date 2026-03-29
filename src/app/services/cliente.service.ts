@@ -7,6 +7,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { PagedResult, Produto } from '../models/produto.model';
 import { Venda } from '../models/venda.model';
+import { environment } from '../../environment/environment';
 
 @Injectable({
     providedIn: 'root'
@@ -14,9 +15,10 @@ import { Venda } from '../models/venda.model';
 export class ClienteService {
     private authService = inject(AuthService);
     private http = inject(HttpClient);
+    private readonly API_BASE = environment.apiBaseUrl;
 
     criarCliente(cliente: CadastroClienteRequest): Observable<void> {
-        return this.http.post<void>('http://localhost:8080/api/v1/client/clientes/register', cliente);
+        return this.http.post<void>(`${this.API_BASE}/client/clientes/register`, cliente);
     }
 
     getBibliotecaCliente(page: number = 0, size: number = 10, termoBusca?: string): Observable<PagedResult<Venda>> {
@@ -29,7 +31,7 @@ export class ClienteService {
 
         return this.authService.getCurrentToken().pipe(
             switchMap(token => {
-                return this.http.get<PagedResult<Venda>>('http://localhost:8080/api/v1/clientes/biblioteca', {
+                return this.http.get<PagedResult<Venda>>(`${this.API_BASE}/clientes/biblioteca`, {
                     params: params,
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -47,7 +49,7 @@ export class ClienteService {
     getMeCliente(): Observable<MeResponseCliente> {
         return this.authService.getCurrentToken().pipe(
             switchMap(token => {
-                return this.http.get<MeResponseCliente>('http://localhost:8080/api/v1/clientes/me', {
+                return this.http.get<MeResponseCliente>(`${this.API_BASE}/clientes/me`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -68,7 +70,7 @@ export class ClienteService {
         return this.authService.getCurrentToken().pipe(
             switchMap(token => {
                 return this.http.post<unknown>(
-                    'http://localhost:8080/api/v1/clientes/midia',
+                    `${this.API_BASE}/clientes/midia`,
                     formData,
                     {
                         headers: {
