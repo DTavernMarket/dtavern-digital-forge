@@ -32,12 +32,7 @@
             ],
             "styles": [
               "src/styles.css"
-            ],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            ]
           },
           "configurations": {
             "production": {
@@ -53,7 +48,24 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environment/environment.ts",
+                  "with": "src/environment/environment.prod.ts"
+                }
+              ]
+            },
+            "hml": {
+              "optimization": true,
+              "extractLicenses": true,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environment/environment.ts",
+                  "with": "src/environment/environment.hml.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
@@ -68,6 +80,9 @@
           "configurations": {
             "production": {
               "buildTarget": "dtavern-angular:build:production"
+            },
+            "hml": {
+              "buildTarget": "dtavern-angular:build:hml"
             },
             "development": {
               "buildTarget": "dtavern-angular:build:development"

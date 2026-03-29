@@ -13,13 +13,14 @@ import { auth } from '../config/firebase.config';
 import { AuthResponse, User } from '../models/auth.model';
 import { CadastroLojaRequest } from '../models/artesao.model';
 import { sendPasswordResetEmail } from "firebase/auth";
+import { environment } from '../../environment/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private readonly API_URL = 'http://localhost:8080/api/v1/auth';
+  private readonly API_URL = `${environment.apiBaseUrl}/auth`;
 
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
@@ -173,7 +174,7 @@ export class AuthService {
    */
   registerComprador(displayName: string, email: string, password: string): Observable<AuthResponse> {
     const request: CadastroLojaRequest = { nomeLoja: displayName, email, password };
-    return this.http.post<AuthResponse>(`http://localhost:8080/api/v1/client/compradores/register`, request);
+    return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/client/compradores/register`, request);
   }
 
   /**

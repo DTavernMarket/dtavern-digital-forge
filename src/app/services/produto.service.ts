@@ -4,6 +4,7 @@ import { catchError, Observable, switchMap } from 'rxjs';
 import { PagedResult, Produto, ProdutoCompleto, ProdutosMaisVendidosDTO } from '../models/produto.model';
 import { AuthService } from './auth.service';
 import { PagamentoPixResponse } from '../models/pagamento.model';
+import { environment } from '../../environment/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -11,12 +12,13 @@ import { PagamentoPixResponse } from '../models/pagamento.model';
 export class ProdutoService {
   private authService = inject(AuthService);
   private http = inject(HttpClient);
+  private readonly API_BASE = environment.apiBaseUrl;
 
   comprarProduto(idProduto: string): Observable<PagamentoPixResponse> {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {
         return this.http.post<PagamentoPixResponse>(
-          `http://localhost:8080/api/v1/produtos/${idProduto}/comprar`,
+          `${this.API_BASE}/produtos/${idProduto}/comprar`,
           {},
           {
             headers: {
@@ -43,7 +45,7 @@ export class ProdutoService {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {
         return this.http.get<boolean>(
-          `http://localhost:8080/api/v1/produtos/verify-product/${nomeProdutoNormalizado}`,
+          `${this.API_BASE}/produtos/verify-product/${nomeProdutoNormalizado}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`
@@ -56,21 +58,21 @@ export class ProdutoService {
 
   adicionarProduto(dtoProduto: any, dominioArtesao: string): Observable<any> {
     return this.http.post<any>(
-      `http://localhost:8080/api/v1/produtos?dominio=${dominioArtesao}`,
+      `${this.API_BASE}/produtos?dominio=${dominioArtesao}`,
       dtoProduto
     );
   }
 
   atualizarProduto(nomeProdutoNormalizado: string, dtoProduto: any): Observable<any> {
     return this.http.put<any>(
-      `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}`,
+      `${this.API_BASE}/produtos/${nomeProdutoNormalizado}`,
       dtoProduto
     );
   }
 
   buscarProdutosPorArtesao(dominioArtesao: string): Observable<Produto[]> {
     return this.http.get<Produto[]>(
-      `http://localhost:8080/api/v1/client/lojas/${dominioArtesao}/produtos`
+      `${this.API_BASE}/client/lojas/${dominioArtesao}/produtos`
     );
   }
 
@@ -87,7 +89,7 @@ export class ProdutoService {
       params = params.set('filtroGeral', termoBusca.trim());
     }
 
-    return this.http.get<PagedResult<Produto>>('http://localhost:8080/api/v1/produtos', {
+    return this.http.get<PagedResult<Produto>>(`${this.API_BASE}/produtos`, {
       params,
     });
   }
@@ -105,7 +107,7 @@ export class ProdutoService {
       .set('page', page.toString())
       .set('size', size.toString());
     return this.http.get<PagedResult<ProdutosMaisVendidosDTO>>(
-      'http://localhost:8080/api/v1/client/produtos/mais-vendidos',
+      `${this.API_BASE}/client/produtos/mais-vendidos`,
       { params }
     );
   }
@@ -116,7 +118,7 @@ export class ProdutoService {
    */
   buscarProdutoPorNomeNormalizado(nomeProdutoNormalizado: string): Observable<Produto> {
     return this.http.get<Produto>(
-      `http://localhost:8080/api/v1/client/produtos/${nomeProdutoNormalizado}`
+      `${this.API_BASE}/client/produtos/${nomeProdutoNormalizado}`
     );
   }
 
@@ -126,7 +128,7 @@ export class ProdutoService {
    */
   buscarProdutoPorNomeNormalizadoFormulario(nomeProdutoNormalizado: string): Observable<ProdutoCompleto> {
     return this.http.get<ProdutoCompleto>(
-      `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}/completo`
+      `${this.API_BASE}/produtos/${nomeProdutoNormalizado}/completo`
     );
   }
 
@@ -145,7 +147,7 @@ export class ProdutoService {
     const params = new HttpParams().set('tipo_arquivo', 'preview');
 
     return this.http.post<void>(
-      `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}/files`,
+      `${this.API_BASE}/produtos/${nomeProdutoNormalizado}/files`,
       formData,
       { params }
     );
@@ -166,7 +168,7 @@ export class ProdutoService {
     const params = new HttpParams().set('tipo_arquivo', 'conteudo');
 
     return this.http.post<void>(
-      `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}/files`,
+      `${this.API_BASE}/produtos/${nomeProdutoNormalizado}/files`,
       formData,
       { params }
     );
@@ -178,7 +180,7 @@ export class ProdutoService {
    */
   downloadMidiaConteudoProdutoDonoLoja(idProduto: string): Observable<Blob> {
     return this.http.get(
-      `http://localhost:8080/api/v1/produtos/${idProduto}/download-loja`,
+      `${this.API_BASE}/produtos/${idProduto}/download-loja`,
       {
         responseType: 'blob'
       }
@@ -191,7 +193,7 @@ export class ProdutoService {
    */
   downloadMidiaConteudoProdutoCliente(idProduto: string): Observable<Blob> {
     return this.http.get(
-      `http://localhost:8080/api/v1/produtos/${idProduto}/download-cliente`,
+      `${this.API_BASE}/produtos/${idProduto}/download-cliente`,
       {
         responseType: 'blob'
       }
@@ -204,7 +206,7 @@ export class ProdutoService {
    */
   deletarProduto(nomeProdutoNormalizado: string): Observable<void> {
     return this.http.delete<void>(
-      `http://localhost:8080/api/v1/produtos/${nomeProdutoNormalizado}`
+      `${this.API_BASE}/produtos/${nomeProdutoNormalizado}`
     );
   }
 
@@ -214,7 +216,7 @@ export class ProdutoService {
    */
   deleteMidiaProduto(idMidia: string): Observable<void> {
     return this.http.delete<void>(
-      `http://localhost:8080/api/v1/produtos/files/${idMidia}`
+      `${this.API_BASE}/produtos/files/${idMidia}`
     );
   }
 }
