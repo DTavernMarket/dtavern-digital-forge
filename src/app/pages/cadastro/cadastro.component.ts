@@ -355,6 +355,7 @@ import { ClienteService } from '../../services/cliente.service';
   `
 })
 export class CadastroComponent implements OnInit {
+  private static readonly REGISTER_ERROR_MESSAGE = 'Falha ao criar a conta. Tente novamente mais tarde';
   private authService = inject(AuthService);
   private artesaoService = inject(ArtesaoService);
   private clienteService = inject(ClienteService);
@@ -655,6 +656,7 @@ export class CadastroComponent implements OnInit {
         },
         error: (error) => {
           console.error('Erro ao criar loja:', error);
+          this.step = 2;
           this.tratarErroBackend(error);
           this.loading.set(false);
         },
@@ -677,6 +679,7 @@ export class CadastroComponent implements OnInit {
         },
         error: (error) => {
           console.error('Erro ao criar cliente:', error);
+          this.step = 2;
           this.tratarErroBackend(error);
           this.loading.set(false);
         },
@@ -694,7 +697,7 @@ export class CadastroComponent implements OnInit {
   tratarErroBackend(error: any): void {
     // Limpar erros anteriores
     this.emailError = '';
-    this.errorMessage = '';
+    this.errorMessage = CadastroComponent.REGISTER_ERROR_MESSAGE;
 
     // Verificar se o erro tem o formato esperado do backend
     if (error?.error) {
@@ -704,26 +707,9 @@ export class CadastroComponent implements OnInit {
       if (errorData.codigoErro === 'EMAIL_JA_EXISTE' && errorData.mensagem) {
         // Exibir erro no campo de email
         this.emailError = errorData.mensagem;
-        // Também exibir na mensagem geral
-        this.errorMessage = errorData.mensagem;
-        return;
-      }
-
-      // Outros erros do backend
-      if (errorData.mensagem) {
-        this.errorMessage = errorData.mensagem;
-        return;
-      }
-
-      // Fallback para mensagem padrão do backend
-      if (typeof errorData === 'string') {
-        this.errorMessage = errorData;
         return;
       }
     }
-
-    // Fallback para mensagem genérica
-    this.errorMessage = 'Erro ao criar conta. Tente novamente.';
   }
 }
 
