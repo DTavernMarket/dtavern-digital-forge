@@ -24,37 +24,33 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
               <h1 class="font-medieval text-3xl md:text-4xl font-bold text-midnight-brown mb-3 text-center">
                 Sobre o DTavern
               </h1>
+              <p class="text-center text-xs md:text-sm text-midnight-brown/65">
+                Saiba mais sobre a história da nossa taverna digital
+              </p>
             </header>
-
-            <section id="historia" class="scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
-                Nossa história
-              </h2>
-              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-              </p>
-              <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-                officia deserunt mollit anim id est laborum.
-              </p>
-            </section>
 
             <section id="origem" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
               <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
                 Como o DTavern foi criado
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et
-                commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris.
-                Integer in mauris eu nibh euismod gravida.
+                No início de 2023, o fundador do DTavern, 
+                <a class="underline" href="https://www.linkedin.com/in/marcos-daniel-7382521ab/" target="_blank">Marcos Daniel</a>,
+                 estava procurando uma missão inicial gratuita de Ordem Paranormal para mestrar para os seus amigos. Apesar de ter encontrado
+                 conteúdos muito bons principalmente em sites de Crowdfundings, todos que encontrou eram pagos. Então, ele pensou "Vou criar a minha própria missão
+                 e disponibilizar ela gratuitamente, para que as pessoas que passaram pelo mesmo problema que eu possam usar em suas mesas!".
               </p>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
-                curae; Morbi lacinia molestie dui. Praesent blandit dolor. Sed non quam. In vel mi sit
-                amet augue congue elementum.
+                A ideia inicial era criar uma conta no Twitter para disponibilizar conteúdos gratuitamente. Dessa forma,
+                as pessoas não teriam dúvidas quando tivessem que pesquisar sobre missões e conteúdos gratuitos de RPG. Elas
+                iriam procurar diretamente nessa conta do Twitter. O intuito era facilitar a busca desse tipo de conteúdo, ter um 
+                lugar só para isso.
+              </p>
+              <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
+                Porém, depois de pensar um pouco mais, ele percebeu que ao invés de criar uma conta em uma rede social, ele poderia 
+                fazer um site que concentrasse todos esses conteúdos de RPG em um único lugar. Nesse site, outras pessoas poderiam
+                compartilhar seus conteúdos da forma que quisessem, sejam eles gratuitos ou não. Então, no dia 31/05/2023 um grupo de whatsapp
+                com o nome "DTavern" foi criado, marcando o início oficial do projeto.
               </p>
             </section>
 
@@ -63,9 +59,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Objetivos e propósito
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Nunc feugiat mi a tellus consequat imperdiet. Vestibulum sapien. Proin quam. Etiam
-                ultrices. Suspendisse in justo eu magna luctus suscipit. Sed lectus. Integer euismod
-                lacus luctus magna.
+                O propósito do DTavern é "Ajudar a criar experiências memoráveis e inesquecíveis para os jogadores de RPG".
               </p>
               <ul
                 class="list-disc list-inside text-sm md:text-base leading-relaxed space-y-2 pl-1 text-midnight-brown/90 marker:text-midnight-brown/50"
@@ -141,4 +135,4 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
     `
   ]
 })
-export class PaginaSobreComponent {}
+export class PaginaSobreComponent { }
