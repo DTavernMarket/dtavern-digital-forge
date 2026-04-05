@@ -40,7 +40,7 @@ import { Subscription } from 'rxjs';
               <a routerLink="/explorar" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
                 Explorar
               </a>
-              <a href="#sobre" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
+              <a routerLink="/sobre" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
                 Sobre
               </a>
             </div>
@@ -193,7 +193,7 @@ import { Subscription } from 'rxjs';
             <a routerLink="/explorar" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
               Explorar
             </a>
-            <a href="#sobre" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
+            <a routerLink="/sobre" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
               Sobre
             </a>
           </div>

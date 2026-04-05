@@ -63,7 +63,7 @@ import { RouterModule } from '@angular/router';
                 </a>
               </li>
               <li>
-                <a href="#sobre" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
+                <a routerLink="/sobre" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
                   Sobre Nós
                 </a>
               </li>
@@ -135,10 +135,10 @@ import { RouterModule } from '@angular/router';
                © 2024 DTavern. Todos os direitos reservados.
              </div>
              <div class="flex space-x-6 text-xs">
-               <a href="#" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
+               <a routerLink="/termos-uso" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
                  Termos de Uso
                </a>
-               <a href="#" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
+               <a routerLink="/politica-privacidade" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
                  Política de Privacidade
                </a>
                <a href="#" class="text-scroll-beige/60 hover:text-candlelight-gold transition-colors">
