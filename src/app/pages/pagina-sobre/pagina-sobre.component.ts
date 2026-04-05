@@ -17,9 +17,9 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
           <article
             class="pergaminho space-y-8 bg-scroll-beige border-2 border-brass-accent/50 rounded-sm p-6 md:p-10 md:px-12 text-midnight-brown shadow-[0_8px_32px_rgba(28,15,10,0.35),inset_0_1px_0_rgba(255,255,255,0.25)]"
           >
-            <header class="pb-6 border-b border-midnight-brown/15">
+            <header>
               <p class="text-midnight-brown/85 text-sm md:text-base leading-relaxed mb-6 italic text-left">
-                À quem possa interessar...
+                A quem possa interessar...
               </p>
               <h1 class="font-medieval text-3xl md:text-4xl font-bold text-midnight-brown mb-3 text-center">
                 Sobre o DTavern
@@ -36,37 +36,40 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
                 No início de 2023, o fundador do DTavern, 
                 <a class="underline" href="https://www.linkedin.com/in/marcos-daniel-7382521ab/" target="_blank">Marcos Daniel</a>,
-                 estava procurando uma missão inicial gratuita de Ordem Paranormal para mestrar para os seus amigos. Apesar de ter encontrado
-                 conteúdos muito bons principalmente em sites de Crowdfundings, todos que encontrou eram pagos. Então, ele pensou "Vou criar a minha própria missão
-                 e disponibilizar ela gratuitamente, para que as pessoas que passaram pelo mesmo problema que eu possam usar em suas mesas!".
+                 estava procurando uma missão inicial gratuita de Ordem Paranormal para mestrar para os seus amigos. Depois de horas procurando, ele percebeu que haviam vários conteúdos em sites diferentes,
+                 principalmente em sites de Crowdfundings,  mas todos eram pagos. Foi então que surgiu um pensamento simples: "E se eu criar a minha própria missão... e disponibilizar ela de graça, 
+                 para que ninguém precise passar por isso de novo?" A ideia inicial era criar uma conta no Twitter para reunir conteúdos gratuitos em um só lugar.
+                  Mas, com o tempo, ficou claro que isso não era suficiente.
               </p>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                A ideia inicial era criar uma conta no Twitter para disponibilizar conteúdos gratuitamente. Dessa forma,
-                as pessoas não teriam dúvidas quando tivessem que pesquisar sobre missões e conteúdos gratuitos de RPG. Elas
-                iriam procurar diretamente nessa conta do Twitter. O intuito era facilitar a busca desse tipo de conteúdo, ter um 
-                lugar só para isso.
-              </p>
-              <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Porém, depois de pensar um pouco mais, ele percebeu que ao invés de criar uma conta em uma rede social, ele poderia 
-                fazer um site que concentrasse todos esses conteúdos de RPG em um único lugar. Nesse site, outras pessoas poderiam
-                compartilhar seus conteúdos da forma que quisessem, sejam eles gratuitos ou não. Então, no dia 31/05/2023 um grupo de whatsapp
-                com o nome "DTavern" foi criado, marcando o início oficial do projeto.
+              Ao invés de depender de uma rede social, por que não criar um espaço próprio? Um lugar onde qualquer pessoa pudesse compartilhar seus conteúdos de RPG — gratuitos ou pagos — de forma organizada,
+               acessível e centralizada. Foi assim que nasceu o DTavern. <p>
+                <p> E então, no dia 31/05/2023 um grupo de whatsapp foi criado com o nome "DTavern",
+                   marcando o início oficial do projeto.
               </p>
             </section>
 
             <section id="objetivos" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
               <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
-                Objetivos e propósito
+                Propósito e objetivos
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                O propósito do DTavern é "Ajudar a criar experiências memoráveis e inesquecíveis para os jogadores de RPG".
+                O propósito do DTavern é "Ajudar a criar experiências memoráveis e inesquecíveis para os jogadores de RPG e tornar o RPG de mesa mais acessível para todos".
               </p>
+              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">Nosso objetivo inicial é se tornar a maior plataforma de conteúdos não-oficiais e digitais de RPG do Brasil.</p>
+              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">Queremos criar um lugar onde:</p>
               <ul
                 class="list-disc list-inside text-sm md:text-base leading-relaxed space-y-2 pl-1 text-midnight-brown/90 marker:text-midnight-brown/50"
               >
-                <li>Quisque volutpat condimentum velit class aptent taciti sociosqu ad litora.</li>
-                <li>Fusce suscipit varius mi cum sociis natoque penatibus et magnis dis parturient.</li>
-                <li>Nulla quis sem at nibh elementum imperdiet duis sagittis ipsum praesent mauris.</li>
+                <li>Criadores possam publicar, vender e crescer com seus conteúdos
+                <ul class="list-[circle] pl-10 mt-1 space-y-1">
+                  <li>Novos criadores dão seus primeiros passos vendendo seus produtos</li>
+                  <li>Grandes criadores constroem suas próprias lojas virtuais</li>
+                </ul>
+                </li>
+                <li>Mestres encontrem tudo o que precisam em um só lugar</li>
+                <li>Jogadores tenham acesso a experiências cada vez mais ricas</li>
+                <li>A comunidade descobre, avalia e recomenda materiais</li>
               </ul>
             </section>
 
@@ -75,14 +78,29 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Comunidade e futuro
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Maecenas faucibus mollis interdum. Aenean lacinia bibendum nulla sed consectetur. Etiam
-                porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo,
-                tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+                
               </p>
-              <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non
-                mi porta gravida at eget metus. Cras mattis consectetur purus sit amet fermentum.
+              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
+              Nos próximos passos do projeto, queremos expandir o DTavern para oferecer muito mais do que compra e venda de produtos. 
+            </p>
+              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
+              Os criadores poderão ter suas próprias lojas dentro da plataforma, construindo sua identidade,
+               reunindo seus conteúdos e criando uma base fiel de seguidores. Além disso, <span class="font-bold"> sistemas de avaliação 
+               e comentários </span> permitirão que a comunidade descubra conteúdos de qualidade com base na experiência de outros jogadores.
+            </p>
+              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">Também planejamos implementar formas de apoiar criadores de maneira contínua, como <span class="font-bold"> assinaturas mensais </span>, onde jogadores 
+                poderão acompanhar e receber novos conteúdos diretamente de seus criadores favoritos.
               </p>
+              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
+              Queremos abrir espaço para que artistas e criadores possam oferecer <span class="font-bold"> serviços personalizados  sob demanda </span>, permitindo que mestres encomendem mapas, tokens,
+               trilhas sonoras e outros recursos personalizados para suas campanhas.
+              </p>
+              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
+                Hoje já é possível buscar por lojas de criadores de produtos, mas ainda não é possível <span class="font-bold">buscar por produtos</span> de forma geral.
+                Esta vai ser uma das primeira coisas que vamos planejamos implementar.
+              </p>
+
+              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">Se você cria, joga ou vive RPG de mesa de alguma forma, o DTavern foi feito para você.</p>
             </section>
 
             <footer class="assinatura-carta pt-10 mt-2 border-t border-midnight-brown/20 text-midnight-brown">
