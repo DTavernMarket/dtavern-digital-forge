@@ -35,7 +35,8 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
                 No início de 2023, o fundador do DTavern, 
-                <a class="underline" href="https://www.linkedin.com/in/marcos-daniel-7382521ab/" target="_blank">Marcos Daniel</a>,
+                
+                <a class="underline" href="https://www.linkedin.com/in/marcos-coelho-7382521ab" target="_blank">Marcos Daniel</a>,
                  estava procurando uma missão inicial gratuita de Ordem Paranormal para mestrar para os seus amigos. Depois de horas procurando, ele percebeu que haviam vários conteúdos em sites diferentes,
                  principalmente em sites de Crowdfundings,  mas todos eram pagos. Foi então que surgiu um pensamento simples: "E se eu criar a minha própria missão... e disponibilizar ela de graça, 
                  para que ninguém precise passar por isso de novo?" A ideia inicial era criar uma conta no Twitter para reunir conteúdos gratuitos em um só lugar.
