@@ -12,7 +12,7 @@ import { ClienteService } from '../../services/cliente.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-screen flex items-center justify-center bg-tavern-wood overflow-hidden">
+    <div class="min-h-screen flex items-center justify-center bg-tavern-wood overflow-hidden relative">
       <div class="w-full flex items-center justify-center p-4">
         <div class="bg-midnight-brown/90 border border-brass-accent/40 rounded-xl p-8 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
           <h2 class="text-2xl font-medieval font-bold text-scroll-beige mb-6 text-center">Criar Conta</h2>
@@ -339,6 +339,14 @@ import { ClienteService } from '../../services/cliente.service';
         </div>
         </div>
       </div>
+      <a
+        href="https://docs.google.com/forms/d/e/1FAIpQLSdwk87Zg9IGnvZcI73XsEk-9O3bJO3lDGoP_jejMzR4LDzgaA/viewform?usp=publish-editor"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="fixed bottom-4 left-4 z-10 text-sm text-scroll-beige/80 hover:text-candlelight-gold hover:underline transition-colors"
+      >
+        Procura-se artista para ilustrar essa tela.
+      </a>
     </div>
   `
 })
