@@ -3,25 +3,26 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ArtesaoService } from '../../services/artesao.service';
 import { Artesao } from '../../models/artesao.model';
-import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
-
 @Component({
   selector: 'app-secao-artesoes',
   standalone: true,
-  imports: [CommonModule, RouterModule, BotaoPadraoComponent],
+  imports: [CommonModule, RouterModule],
   template: `
     <section id="artesaos" class="py-20 bg-ash-smoke/30">
       <div class="container mx-auto px-4">
-        <!-- Cabeçalho da Seção -->
+        <!-- Cabecalho da secao -->
         <div class="text-center mb-6 space-y-4">
+          <p class="text-sm uppercase tracking-[0.2em] text-candlelight-gold/80 font-semibold">
+            Comunidade ativa
+          </p>
           <h2 class="text-3xl md:text-5xl font-medieval font-bold text-scroll-beige">
-            Conheça os
-            <span class="text-candlelight-gold"> Artesãos </span>
+            Criadores reais em
+            <span class="text-candlelight-gold"> destaque </span>
           </h2>
 
           <p class="text-lg text-scroll-beige/70 max-w-2xl mx-auto">
-            Artistas talentosos que se dedicam a criar experiências únicas para suas aventuras de
-            RPG.
+            Estas lojas mostram como a comunidade DTavern ja transforma criatividade em experiencias
+            para mesas de RPG.
           </p>
         </div>
 
@@ -61,8 +62,6 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
               {{ artesao.resumo }}
               </p>
               
-              <div class="flex items-center space-x-1 mt-2">
-              </div>
              <!-- Especialidades -->
              <div class="mb-6">
                <h4 class="text-sm font-semibold text-scroll-beige mb-3">Especialidades:</h4>
@@ -88,21 +87,6 @@ import { BotaoPadraoComponent } from '../botao-padrao/botao-padrao.component';
             </div>
           </a>
         </div>
-
-                 <!-- Botão Seja um Artesão -->
-         <div class="text-center">
-           <app-botao-padrao size="lg" [routerLink]="['/cadastro']" [queryParams]="{ cadastro: 'artesao' }">
-             Seja um Artesão
-             <svg class="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path
-                 stroke-linecap="round"
-                 stroke-linejoin="round"
-                 stroke-width="2"
-                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-               />
-             </svg>
-           </app-botao-padrao>
-         </div>
       </div>
     </section>
   `,

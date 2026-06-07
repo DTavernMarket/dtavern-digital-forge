@@ -78,9 +78,9 @@ import { RouterModule } from '@angular/router';
 
       <!-- Scroll Indicator -->
       <button
-        (click)="rolarParaArtesaos()"
+        (click)="rolarParaProximaSecao()"
         class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform duration-300 p-3 rounded-full hover:bg-scroll-beige/10"
-        aria-label="Rolar para seção de artesãos"
+        aria-label="Rolar para proxima secao"
       >
         <svg
           class="w-9 h-9 text-candlelight-gold transition-colors duration-300"
@@ -107,10 +107,10 @@ import { RouterModule } from '@angular/router';
   ],
 })
 export class SecaoHeroComponent {
-  rolarParaArtesaos(): void {
-    const elementoArtesaos = document.getElementById('artesaos');
-    if (elementoArtesaos) {
-      elementoArtesaos.scrollIntoView({
+  rolarParaProximaSecao(): void {
+    const elementoProximaSecao = document.getElementById('o-que-e-dtavern');
+    if (elementoProximaSecao) {
+      elementoProximaSecao.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
       });
