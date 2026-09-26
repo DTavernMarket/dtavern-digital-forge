@@ -416,7 +416,7 @@ export class PaginaExplorarComponent implements OnInit {
   urlImagemPerfil(loja: LojaResponse): string {
     const caminho = loja.caminhoImagemPerfil;
     if (!caminho?.trim()) {
-      return 'assets/images/DTavern-icone.png';
+      return 'assets/images/dtavern/ICONE/ICONE LARANJA.svg';
     }
     if (caminho.startsWith('http://') || caminho.startsWith('https://')) {
       return caminho;

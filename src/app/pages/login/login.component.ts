@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -139,7 +140,35 @@ export class LoginComponent {
         if (returnUrl && returnUrl.startsWith('/')) {
           this.router.navigateByUrl(returnUrl);
         } else {
-          this.router.navigate(['/']);
+          this.authService.getUserRole().pipe(take(1)).subscribe({
+            next: (role) => {
+              if (role === 'LOJA') {
+                this.authService.getUserDominio().pipe(take(1)).subscribe({
+                  next: (dominio) => {
+                    if (dominio) {
+                      this.router.navigate(['/lojas', dominio, 'gerenciar-produtos']);
+                      return;
+                    }
+                    this.router.navigate(['/novo-produto']);
+                  },
+                  error: () => {
+                    this.router.navigate(['/novo-produto']);
+                  }
+                });
+                return;
+              }
+
+              if (role === 'COMPRADOR') {
+                this.router.navigate(['/biblioteca']);
+                return;
+              }
+
+              this.router.navigate(['/']);
+            },
+            error: () => {
+              this.router.navigate(['/']);
+            }
+          });
         }
       },
       error: (error) => {

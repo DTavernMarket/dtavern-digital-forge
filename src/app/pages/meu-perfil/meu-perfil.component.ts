@@ -467,8 +467,9 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
   }
 
   redefinirSenha() {
-    // TODO: Implementar funcionalidade de redefinir senha
-    console.log('Redefinir senha - funcionalidade a ser implementada');
+    this.router.navigate(['/em-desenvolvimento'], {
+      queryParams: { origem: 'redefinir-senha' }
+    });
   }
 
   deletarConta() {

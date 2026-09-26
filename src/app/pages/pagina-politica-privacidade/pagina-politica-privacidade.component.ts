@@ -19,13 +19,13 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
           >
             <header class="pb-6 border-b border-midnight-brown/15">
               <p class="text-midnight-brown/85 text-sm md:text-base leading-relaxed mb-6 italic text-left">
-                À quem possa interessar...
+                Transparência no tratamento de dados.
               </p>
               <h1 class="font-medieval text-3xl md:text-4xl font-bold text-midnight-brown mb-3 text-center">
                 Política de privacidade
               </h1>
               <p class="text-center text-xs md:text-sm text-midnight-brown/65">
-                Texto genérico de exemplo — substitua por política alinhada à LGPD antes de publicar.
+                Última atualização: 26/09/2026
               </p>
             </header>
 
@@ -34,9 +34,8 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Introdução
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Esta política descreve, em
-                linhas gerais, como tratamos dados pessoais no contexto do DTavern. Sed do eiusmod
-                tempor incididunt ut labore et dolore magna aliqua.
+                Esta política explica como o DTavern coleta, utiliza, compartilha e protege dados pessoais
+                de compradores e criadores, em conformidade com a legislação aplicável, incluindo a LGPD.
               </p>
             </section>
 
@@ -45,16 +44,15 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Dados que podemos coletar
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-                ea commodo consequat. Exemplos ilustrativos incluem identificação de conta, dados de
-                contato e informações de uso da plataforma.
+                Coletamos somente os dados necessários para cadastro, autenticação, operação da loja,
+                processamento de pagamentos e suporte ao usuário.
               </p>
               <ul
                 class="list-disc list-inside text-sm md:text-base leading-relaxed space-y-2 pl-1 text-midnight-brown/90 marker:text-midnight-brown/50"
               >
-                <li>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.</li>
-                <li>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.</li>
-                <li>Integer in mauris eu nibh euismod gravida vestibulum sapien.</li>
+                <li>Dados de conta: nome, apelido, e-mail e informações de perfil.</li>
+                <li>Dados operacionais: histórico de compras, vendas e arquivos disponibilizados.</li>
+                <li>Dados técnicos: IP, tipo de dispositivo, navegador e registros de acesso.</li>
               </ul>
             </section>
 
@@ -63,9 +61,9 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Finalidades do tratamento
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Nunc feugiat mi a tellus consequat imperdiet. Proin quam. Etiam ultrices. Os dados podem
-                ser utilizados para prestação do serviço, melhorias, comunicações e cumprimento legal
-                — lorem ipsum para preenchimento.
+                Os dados são utilizados para criar contas, autenticar usuários, permitir compras e vendas,
+                disponibilizar downloads após pagamento confirmado, prevenir fraude e melhorar a experiência
+                de uso da plataforma.
               </p>
             </section>
 
@@ -74,9 +72,9 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Cookies e tecnologias similares
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Maecenas faucibus mollis interdum. Aenean lacinia bibendum nulla sed consectetur. Etiam
-                porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo,
-                tortor mauris condimentum nibh.
+                Podemos utilizar cookies e armazenamento local para manter sessão, lembrar preferências,
+                aprimorar desempenho e medir métricas essenciais de uso. Você pode controlar cookies no
+                navegador, ciente de que parte das funcionalidades pode ser afetada.
               </p>
             </section>
 
@@ -85,9 +83,9 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Compartilhamento de dados
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non
-                mi porta gravida at eget metus. Pode haver compartilhamento com prestadores,
-                autoridades ou parceiros quando necessário — texto placeholder.
+                Compartilhamos dados apenas quando necessário para operar o serviço, por exemplo com provedores
+                de autenticação, processamento de pagamento, hospedagem de arquivos e obrigações legais.
+                Não comercializamos dados pessoais.
               </p>
             </section>
 
@@ -96,9 +94,9 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Seus direitos
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Cras mattis consectetur purus sit amet fermentum. Dependendo da legislação aplicável,
-                você pode solicitar acesso, correção, exclusão ou outras medidas — consulte um
-                advogado para redação definitiva.
+                Você pode solicitar acesso, correção, atualização e, quando aplicável, exclusão de dados
+                pessoais, além de informações sobre tratamento e compartilhamento, conforme direitos previstos
+                na LGPD.
               </p>
             </section>
 
@@ -107,8 +105,8 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Alterações nesta política
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Suspendisse in justo eu magna luctus suscipit. Sed lectus. Podemos atualizar este
-                documento periodicamente; recomenda-se revisar esta página com regularidade.
+                Esta política pode ser atualizada periodicamente para refletir ajustes legais e evoluções
+                do produto. A versão vigente estará sempre publicada nesta página.
               </p>
             </section>
 
@@ -117,8 +115,8 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Contato sobre privacidade
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Para questões relacionadas a dados pessoais, utilize o canal oficial do DTavern (ex.:
-                suporte@dtavern.com) — substitua por processo real quando disponível.
+                Para solicitações relacionadas a dados pessoais e privacidade, entre em contato pelo
+                e-mail <strong>suporte@dtavern.com</strong>.
               </p>
             </section>
 

@@ -7,6 +7,7 @@ import { PagedResult, ProdutoCompleto } from '../models/produto.model';
 import { AuthService } from './auth.service';
 import { EditarLojaRequest, MeResponseLoja } from '../models/auth.model';
 import { environment } from '../../environment/environment';
+import { StatusPagamento, Venda } from '../models/venda.model';
 
 @Injectable({
   providedIn: 'root'
@@ -211,6 +212,34 @@ export class ArtesaoService {
             }
           }
         );
+      })
+    );
+  }
+
+  listarVendasDaLoja(
+    page: number = 0,
+    size: number = 10,
+    termoBusca?: string,
+    statusPagamento?: StatusPagamento | ''
+  ): Observable<PagedResult<Venda>> {
+    let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+
+    if (termoBusca && termoBusca.trim()) {
+      params = params.set('filtroGeral', termoBusca.trim());
+    }
+
+    if (statusPagamento) {
+      params = params.set('statusPagamento', statusPagamento);
+    }
+
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => {
+        return this.http.get<PagedResult<Venda>>(`${this.API_BASE}/lojas/vendas`, {
+          params,
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
       })
     );
   }

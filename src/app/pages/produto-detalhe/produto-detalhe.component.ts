@@ -177,9 +177,27 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
                         Ir para a minha biblioteca
                       </button>
                     }
+                    @if (compraSucesso() && !produto.gratuito) {
+                      <div class="mt-1 flex gap-3 text-xs">
+                        <button
+                          type="button"
+                          (click)="irParaPedidos()"
+                          class="text-candlelight-gold hover:text-candlelight-gold/90 underline"
+                        >
+                          Acompanhar em Meus pedidos
+                        </button>
+                        <button
+                          type="button"
+                          (click)="irParaBiblioteca()"
+                          class="text-candlelight-gold hover:text-candlelight-gold/90 underline"
+                        >
+                          Ver biblioteca
+                        </button>
+                      </div>
+                    }
                   }
                   <p class="text-xs text-scroll-beige/60">
-                    * Integração com carrinho/pagamento será adicionada em breve.
+                    Compras via PIX são liberadas automaticamente após a confirmação do pagamento.
                   </p>
                 </div>
               </div>
@@ -257,9 +275,32 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
               </div>
             }
 
-            <p class="text-xs text-center text-scroll-beige/60">
-              Escaneie o QR code ou copie o código PIX para realizar o pagamento
-            </p>
+            @if (tempoRestante() <= 0) {
+              <p class="text-xs text-center text-red-300">
+                O QR Code expirou. Feche esta janela e gere um novo pagamento.
+              </p>
+            } @else {
+              <p class="text-xs text-center text-scroll-beige/60">
+                Após pagar, acompanhe a confirmação na página de pedidos.
+              </p>
+            }
+
+            <div class="flex gap-2 pt-2">
+              <button
+                type="button"
+                (click)="irParaPedidos()"
+                class="flex-1 py-2 border border-candlelight-gold text-candlelight-gold rounded-lg hover:bg-candlelight-gold hover:text-tavern-wood transition-colors text-sm"
+              >
+                Acompanhar pedido
+              </button>
+              <button
+                type="button"
+                (click)="fecharDialogPix()"
+                class="flex-1 py-2 bg-candlelight-gold text-tavern-wood rounded-lg hover:bg-candlelight-gold/90 transition-colors text-sm"
+              >
+                Fechar
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -362,6 +403,9 @@ export class ProdutoDetalheComponent implements OnInit, OnDestroy {
 
         this.iniciarContadorRegressivo(pagamentoPixResponse.expiresAt);
         this.compraSucesso.set(true);
+        this.mensagemCompra.set(
+          'Pedido criado com sucesso. Finalize o PIX e acompanhe a confirmação em "Meus pedidos".'
+        );
         this.comprando.set(false);
       },
       error: (error) => {
@@ -446,6 +490,11 @@ export class ProdutoDetalheComponent implements OnInit, OnDestroy {
 
   irParaBiblioteca(): void {
     this.router.navigate(['/biblioteca']);
+  }
+
+  irParaPedidos(): void {
+    this.fecharDialogPix();
+    this.router.navigate(['/minha-conta/pedidos']);
   }
 
   ngOnDestroy(): void {

@@ -73,37 +73,6 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 <li>A comunidade descobre, avalia e recomenda materiais</li>
               </ul>
             </section>
-
-            <section id="comunidade" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
-                Comunidade e futuro
-              </h2>
-              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                
-              </p>
-              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-              Nos próximos passos do projeto, queremos expandir o DTavern para oferecer muito mais do que compra e venda de produtos. 
-            </p>
-              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-              Os criadores poderão ter suas próprias lojas dentro da plataforma, construindo sua identidade,
-               reunindo seus conteúdos e criando uma base fiel de seguidores. Além disso, <span class="font-bold"> sistemas de avaliação 
-               e comentários </span> permitirão que a comunidade descubra conteúdos de qualidade com base na experiência de outros jogadores.
-            </p>
-              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">Também planejamos implementar formas de apoiar criadores de maneira contínua, como <span class="font-bold"> assinaturas mensais </span>, onde jogadores 
-                poderão acompanhar e receber novos conteúdos diretamente de seus criadores favoritos.
-              </p>
-              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-              Queremos abrir espaço para que artistas e criadores possam oferecer <span class="font-bold"> serviços personalizados  sob demanda </span>, permitindo que mestres encomendem mapas, tokens,
-               trilhas sonoras e outros recursos personalizados para suas campanhas.
-              </p>
-              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Hoje já é possível buscar por lojas de criadores de produtos, mas ainda não é possível <span class="font-bold">buscar por produtos</span> de forma geral.
-                Esta vai ser uma das primeira coisas que vamos planejamos implementar.
-              </p>
-
-              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">Se você cria, joga ou vive RPG de mesa de alguma forma, o DTavern foi feito para você.</p>
-            </section>
-
             <footer class="assinatura-carta pt-10 mt-2 border-t border-midnight-brown/20 text-midnight-brown">
               <p class="text-sm md:text-base italic text-midnight-brown/75 mb-8">
                 Com votos de boas mesas e histórias memoráveis,

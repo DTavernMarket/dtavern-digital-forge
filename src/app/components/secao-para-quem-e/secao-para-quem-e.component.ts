@@ -30,15 +30,15 @@ import { RouterModule } from '@angular/router';
               Encontre conteúdo pronto para sua mesa
             </h3>
             <p class="text-scroll-beige/75 mb-6">
-              Cansado de gastar horas procurando material confiável? Na DTavern você descobre mapas,
-              tokens e aventuras em um único lugar e compra com poucos cliques.
+              Quer comprar material pronto para sua mesa? Acesse as lojas dos criadores, escolha os
+              produtos e receba seus arquivos na biblioteca digital.
             </p>
             <div class="mt-auto">
               <a
-                routerLink="/explorar"
+                routerLink="/login"
                 class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-candlelight-gold text-tavern-wood font-semibold hover:bg-warm-amber transition-colors duration-300"
               >
-                Explorar produtos
+                Entrar para comprar
               </a>
             </div>
           </article>
