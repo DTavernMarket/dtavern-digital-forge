@@ -19,13 +19,13 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
           >
             <header class="pb-6 border-b border-midnight-brown/15">
               <p class="text-midnight-brown/85 text-sm md:text-base leading-relaxed mb-6 italic text-left">
-                À quem possa interessar...
+                Bem-vindo(a) ao DTavern.
               </p>
               <h1 class="font-medieval text-3xl md:text-4xl font-bold text-midnight-brown mb-3 text-center">
                 Termos de uso
               </h1>
               <p class="text-center text-xs md:text-sm text-midnight-brown/65">
-                Texto genérico de exemplo — substitua por documento jurídico válido antes de publicar.
+                Última atualização: 26/09/2026
               </p>
             </header>
 
@@ -34,9 +34,8 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Aceitação dos termos
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ao acessar ou utilizar o
-                DTavern, você declara ter lido e concordado com estes termos. Integer euismod lacus
-                luctus magna quisque volutpat condimentum velit.
+                Ao criar uma conta, navegar ou comprar conteúdo no DTavern, você concorda com estes Termos
+                de Uso e com a Política de Privacidade. Se não concordar, não utilize a plataforma.
               </p>
             </section>
 
@@ -45,16 +44,15 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Uso da plataforma
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia
-                curae; Morbi lacinia molestie dui. Praesent blandit dolor. Sed non quam. In vel mi sit
-                amet augue congue elementum.
+                O DTavern conecta criadores e compradores de conteúdo digital de RPG. O usuário se compromete
+                a utilizar a plataforma de forma legal, ética e compatível com estes termos.
               </p>
               <ul
                 class="list-disc list-inside text-sm md:text-base leading-relaxed space-y-2 pl-1 text-midnight-brown/90 marker:text-midnight-brown/50"
               >
-                <li>Nulla quis sem at nibh elementum imperdiet duis sagittis ipsum praesent mauris.</li>
-                <li>Fusce suscipit varius mi cum sociis natoque penatibus et magnis dis parturient.</li>
-                <li>Quisque volutpat condimentum velit class aptent taciti sociosqu ad litora.</li>
+                <li>Não publique conteúdo ilícito, ofensivo, fraudulento ou que viole direitos de terceiros.</li>
+                <li>Não tente invadir, burlar ou comprometer a segurança da aplicação.</li>
+                <li>Não utilize robôs ou automações para sobrecarregar ou manipular a plataforma.</li>
               </ul>
             </section>
 
@@ -63,13 +61,12 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Contas e responsabilidades
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et
-                commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris.
+                Você é responsável pelas informações fornecidas no cadastro, pelo sigilo de suas credenciais
+                e por todas as ações realizadas na sua conta.
               </p>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-                officia deserunt mollit anim id est laborum.
+                O DTavern pode suspender ou encerrar contas que descumpram estes termos, pratiquem fraude
+                ou causem risco operacional, jurídico ou de segurança.
               </p>
             </section>
 
@@ -78,20 +75,24 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Conteúdo e propriedade intelectual
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Maecenas faucibus mollis interdum. Aenean lacinia bibendum nulla sed consectetur.
-                Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo,
-                tortor mauris condimentum nibh.
+                Cada criador é responsável pelo conteúdo que publica e declara possuir os direitos necessários
+                para comercialização. O comprador recebe uma licença de uso pessoal do material adquirido, sem
+                transferência de titularidade intelectual, salvo indicação expressa do criador.
               </p>
             </section>
 
             <section id="limitacao" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
               <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
-                Limitação de responsabilidade
+                Pagamentos, entrega digital e estornos
               </h2>
+              <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
+                Produtos pagos utilizam PIX como meio de pagamento. O acesso ao download é liberado após
+                confirmação do pagamento no sistema.
+              </p>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec id elit non
-                mi porta gravida at eget metus. Cras mattis consectetur purus sit amet fermentum.
-                Nunc feugiat mi a tellus consequat imperdiet.
+                Pedidos com pagamento recusado, expirado ou não confirmado não geram acesso ao conteúdo.
+                Solicitações de cancelamento e reembolso serão avaliadas conforme regras do produto, legislação
+                aplicável e análise antifraude.
               </p>
             </section>
 
@@ -100,8 +101,18 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Alterações destes termos
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
-                Suspendisse in justo eu magna luctus suscipit. Sed lectus. Reservamo-nos o direito de
-                atualizar este documento; lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                O DTavern pode atualizar estes termos para refletir mudanças de produto, operacionais ou legais.
+                A versão mais recente ficará sempre disponível nesta página.
+              </p>
+            </section>
+
+            <section id="contato-termos" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
+              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+                Contato
+              </h2>
+              <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
+                Para suporte, dúvidas ou solicitações sobre estes termos, entre em contato por
+                <strong> suporte@dtavern.com </strong> ou <strong> contato@dtavern.com </strong>.
               </p>
             </section>
 

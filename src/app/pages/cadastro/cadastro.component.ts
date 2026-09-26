@@ -648,7 +648,9 @@ export class CadastroComponent implements OnInit {
       }).subscribe({
         next: (response) => {
           console.log('Loja criada:', response);
-          this.router.navigate(['/login']); // Redirecionar após cadastro
+          this.router.navigate(['/login'], {
+            queryParams: { returnUrl: '/onboarding-artesao' }
+          });
         },
         error: (error) => {
           console.error('Erro ao criar loja:', error);

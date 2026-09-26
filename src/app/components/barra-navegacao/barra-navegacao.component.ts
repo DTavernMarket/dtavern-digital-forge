@@ -1,17 +1,14 @@
-import { Component, signal, computed, effect, inject, Input, HostListener, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, inject, Input, HostListener, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { ProdutoService } from '../../services/produto.service';
 import { ArtesaoService } from '../../services/artesao.service';
 import { AuthService } from '../../services/auth.service';
-import { Produto } from '../../models/produto.model';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-barra-navegacao',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule],
   template: `
     <nav [class]="isFixed ? 'fixed top-0 left-0 right-0 z-50 bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30' : 'relative bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30'">
       <div class="container mx-auto px-4">
@@ -20,10 +17,11 @@ import { Subscription } from 'rxjs';
           <!-- SEÇÃO ESQUERDA: Logo (ocupa espaço para equilibrar) -->
           <div class="flex-1 flex items-center justify-start min-w-0">
             <div class="cursor-pointer flex items-center justify-center" (click)="irParaInicio()">
-              <div class="w-8 h-8 rounded-lg flex items-center justify-center">
-                <img src="assets/images/DTavern-icone.png" alt="DTavern" class="w-8 h-8 object-contain" />
-              </div>
-              <span class="text-lg font-medieval font-bold text-scroll-beige ml-2">DTavern</span>
+              <img
+                src="assets/images/dtavern/IMAGEOTIPO HORIZONTAL/PRINCIPAL.svg"
+                alt="DTavern"
+                class="h-8 w-auto object-contain"
+              />
             </div>
           </div>
 
@@ -36,9 +34,6 @@ import { Subscription } from 'rxjs';
             <div class="flex items-center space-x-8">
               <a routerLink="/" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
                 Início
-              </a>
-              <a routerLink="/explorar" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
-                Explorar
               </a>
               <a routerLink="/sobre" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
                 Sobre
@@ -122,6 +117,18 @@ import { Subscription } from 'rxjs';
                           >
                             Adicionar produto
                           </button>
+                          <button
+                            (click)="irParaGerenciarProdutosLoja()"
+                            class="w-full px-4 py-2 text-left text-scroll-beige/90 hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Gerenciar produtos
+                          </button>
+                          <button
+                            (click)="irParaVendasLoja()"
+                            class="w-full px-4 py-2 text-left text-scroll-beige/90 hover:bg-tavern-wood/20 transition-colors text-sm"
+                          >
+                            Minhas vendas
+                          </button>
                         </div>
                         }
                         
@@ -137,6 +144,12 @@ import { Subscription } from 'rxjs';
                         class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
                       >
                         Minha biblioteca
+                      </button>
+                      <button
+                        (click)="irParaPedidos()"
+                        class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                      >
+                        Meus pedidos
                       </button>
                      }
                     
@@ -155,10 +168,10 @@ import { Subscription } from 'rxjs';
             <!-- Elementos para usuário não logado -->
             <ng-container *ngIf="!estaAutenticado()">
               <button 
-                (click)="irParaCadastro()"
+                (click)="irParaCadastroArtesao()"
                 class="px-4 py-1 text-scroll-beige hover:text-candlelight-gold transition-colors text-sm font-medium"
               >
-                Criar minha conta
+                Criar minha loja
               </button>
               <span class="text-scroll-beige/60 text-sm">ou</span>
               <button 
@@ -190,8 +203,8 @@ import { Subscription } from 'rxjs';
             <a routerLink="/" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
               Início
             </a>
-            <a routerLink="/explorar" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
-              Explorar
+            <a [routerLink]="['/cadastro']" [queryParams]="{ cadastro: 'artesao' }" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
+              Criar loja
             </a>
             <a routerLink="/sobre" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
               Sobre
@@ -210,7 +223,6 @@ import { Subscription } from 'rxjs';
 export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   @Input() isFixed: boolean = true;
 
-  private produtoService = inject(ProdutoService);
   private artesaoService = inject(ArtesaoService);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -219,23 +231,11 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   menuAberto = signal(false);
   menuPerfilAberto = signal(false);
   menuLojaAberto = signal(false);
-  termoPesquisa = signal('');
-  mostrarResultados = signal(false);
-  resultadosPesquisa = signal<Produto[]>([]);
   estaAutenticado = signal(false);
   displayName = signal<string | null>(null);
   photoURL = signal<string | null>(null);
   userRole = signal<'LOJA' | 'COMPRADOR' | null>(null);
   userDominio = signal<string | null>(null);
-
-  constructor() {
-    // Esconder resultados quando clicar fora
-    effect(() => {
-      if (this.termoPesquisa()) {
-        this.mostrarResultados.set(true);
-      }
-    });
-  }
 
   ngOnInit() {
     // Observar mudanças no estado de autenticação
@@ -287,57 +287,6 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
-  onPesquisaChange() {
-    const termo = this.termoPesquisa();
-    if (termo.length >= 2) {
-      this.mostrarResultados.set(true);
-      // Buscar produtos com paginação (primeira página, 5 resultados)
-      this.produtoService.buscarProdutos(termo, 0, 5).subscribe({
-        next: (resultado) => {
-          this.resultadosPesquisa.set(resultado.content);
-        },
-        error: (error) => {
-          console.error('Erro ao buscar produtos:', error);
-          this.resultadosPesquisa.set([]);
-        }
-      });
-    } else {
-      this.mostrarResultados.set(false);
-      this.resultadosPesquisa.set([]);
-    }
-  }
-
-  realizarPesquisa() {
-    if (this.termoPesquisa().trim()) {
-      this.router.navigate(['/explorar'], {
-        queryParams: {
-          pesquisa: this.termoPesquisa().trim()
-        }
-      });
-      this.mostrarResultados.set(false);
-    }
-  }
-
-  selecionarProduto(produto: Produto) {
-    this.router.navigate(['/explorar'], {
-      queryParams: {
-        produto: produto.nomeNormalizado
-      }
-    });
-    this.mostrarResultados.set(false);
-    this.termoPesquisa.set('');
-  }
-
-  limparPesquisa() {
-    this.termoPesquisa.set('');
-    this.mostrarResultados.set(false);
-  }
-
-  getArtesaoDominio(nomeArtesao: string): string {
-    const artesao = this.artesaoService.obterArtesoes()().find(a => a.nome === nomeArtesao);
-    return artesao?.dominio || '';
-  }
-
   fecharMenuPerfil() {
     this.menuPerfilAberto.set(false);
     this.menuLojaAberto.set(false);
@@ -346,6 +295,11 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   irParaBiblioteca() {
     this.fecharMenuPerfil();
     this.router.navigate(['/biblioteca']);
+  }
+
+  irParaPedidos() {
+    this.fecharMenuPerfil();
+    this.router.navigate(['/minha-conta/pedidos']);
   }
 
   realizarLogout() {
@@ -369,8 +323,10 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 
-  irParaCadastro() {
-    this.router.navigate(['/cadastro']);
+  irParaCadastroArtesao() {
+    this.router.navigate(['/cadastro'], {
+      queryParams: { cadastro: 'artesao' }
+    });
   }
 
   irParaMeuPerfil() {
@@ -405,6 +361,26 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   irParaAdicionarProdutoLoja() {
     this.router.navigate(['/novo-produto']);
+  }
+
+  irParaGerenciarProdutosLoja() {
+    this.artesaoService.getMeLoja().subscribe({
+      next: (loja) => {
+        this.menuLojaAberto.set(false);
+        this.fecharMenuPerfil();
+        this.router.navigate(['/lojas', loja.dominio, 'gerenciar-produtos']);
+      },
+      error: () => {
+        this.menuLojaAberto.set(false);
+        this.fecharMenuPerfil();
+      }
+    });
+  }
+
+  irParaVendasLoja() {
+    this.menuLojaAberto.set(false);
+    this.fecharMenuPerfil();
+    this.router.navigate(['/minha-loja/vendas']);
   }
 
   @ViewChild('menuPerfilContainer') menuPerfilContainer!: ElementRef;

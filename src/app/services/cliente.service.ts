@@ -6,7 +6,7 @@ import { MeResponseCliente } from '../models/auth.model';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 import { PagedResult, Produto } from '../models/produto.model';
-import { Venda } from '../models/venda.model';
+import { StatusPagamento, Venda } from '../models/venda.model';
 import { environment } from '../../environment/environment';
 
 @Injectable({
@@ -42,6 +42,39 @@ export class ClienteService {
                         throw error;
                     })
                 )
+            })
+        );
+    }
+
+    getPedidosCliente(
+        page: number = 0,
+        size: number = 10,
+        termoBusca?: string,
+        statusPagamento?: StatusPagamento | ''
+    ): Observable<PagedResult<Venda>> {
+        let params = new HttpParams().set('page', page.toString()).set('size', size.toString());
+
+        if (termoBusca && termoBusca.trim()) {
+            params = params.set('filtroGeral', termoBusca.trim());
+        }
+
+        if (statusPagamento) {
+            params = params.set('statusPagamento', statusPagamento);
+        }
+
+        return this.authService.getCurrentToken().pipe(
+            switchMap(token => {
+                return this.http.get<PagedResult<Venda>>(`${this.API_BASE}/clientes/pedidos`, {
+                    params,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }).pipe(
+                    catchError((error) => {
+                        console.error('Erro ao buscar pedidos do cliente:', error);
+                        throw error;
+                    })
+                );
             })
         );
     }
