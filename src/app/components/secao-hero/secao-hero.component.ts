@@ -1,32 +1,24 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { AmbientacaoHeroComponent } from '../ambientacao-hero/ambientacao-hero.component';
 
 @Component({
   selector: 'app-secao-hero',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, AmbientacaoHeroComponent],
   template: `
     <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <!-- Background com Imagem -->
-      <div class="absolute inset-0">
-        <img
-          src="images/tavern-hero.jpg"
-          alt="Taverna Medieval"
-          class="w-full h-full object-cover"
-        />
-        <!-- Overlay escuro para melhorar legibilidade do texto -->
-        <div class="absolute inset-0 bg-tavern-wood/70"></div>
-      </div>
+      <app-ambientacao-hero />
 
       <!-- Conteúdo Principal -->
       <div class="relative z-10 container mx-auto px-4 text-center">
         <div class="max-w-4xl mx-auto space-y-8">
           <!-- Título Principal -->
-            <img
-              src="assets/images/dtavern/IMAGEOTIPO HORIZONTAL/PRINCIPAL.svg"
+          <img
+           src="assets/images/dtavern/ESCRITA/CREME.svg" 
               alt="DTavern"
-              class="inline-block h-14 md:h-20 lg:h-24 w-auto align-middle ml-2"
+              class="inline-block h-9 md:h-[3.25rem] lg:h-[3.9rem] w-auto align-middle ml-2"
             />
           <h3 class="text-5xl md:text-7xl lg:text-7xl font-medieval font-bold leading-tight">
             <span class="block text-candlelight-gold text-[1.575rem] md:text-[2.625rem] lg:text-[2.625rem] mt-2">
@@ -63,6 +55,12 @@ import { RouterModule } from '@angular/router';
             </button>
           </div>
 
+          <div class="hero-divisor" aria-hidden="true">
+            <span class="hero-divisor__line"></span>
+            <span class="hero-divisor__mark"></span>
+            <span class="hero-divisor__line hero-divisor__line--invert"></span>
+          </div>
+
           <p class="text-base md:text-lg text-scroll-beige/75 font-medium">
             Uma taverna para quem cria RPG.
           </p>
@@ -72,7 +70,7 @@ import { RouterModule } from '@angular/router';
       <!-- Scroll Indicator -->
       <button
         (click)="rolarParaProximaSecao()"
-        class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform duration-300 p-3 rounded-full hover:bg-scroll-beige/10"
+        class="absolute bottom-8 left-1/2 z-10 transform -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform duration-300 p-3 rounded-full hover:bg-scroll-beige/10"
         aria-label="Rolar para proxima secao"
       >
         <svg
@@ -89,12 +87,46 @@ import { RouterModule } from '@angular/router';
           />
         </svg>
       </button>
+
+      <a
+        href="https://docs.google.com/forms/d/e/1FAIpQLSdwk87Zg9IGnvZcI73XsEk-9O3bJO3lDGoP_jejMzR4LDzgaA/viewform?usp=publish-editor"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="fixed bottom-4 left-4 z-10 text-sm text-scroll-beige/80 hover:text-candlelight-gold hover:underline transition-colors"
+      >
+        Procura-se artista para ilustrar essa tela.
+      </a>
     </section>
   `,
   styles: [
     `
       :host {
         display: block;
+      }
+
+      .hero-divisor {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.65rem;
+      }
+
+      .hero-divisor__line {
+        width: clamp(2.5rem, 12vw, 6rem);
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 211, 106, 0.35));
+      }
+
+      .hero-divisor__line--invert {
+        background: linear-gradient(90deg, rgba(255, 211, 106, 0.35), transparent);
+      }
+
+      .hero-divisor__mark {
+        width: 0.4rem;
+        height: 0.4rem;
+        transform: rotate(45deg);
+        background: rgba(255, 211, 106, 0.45);
+        border: 1px solid rgba(197, 139, 61, 0.6);
       }
     `,
   ],

@@ -1,0 +1,127 @@
+.ambientacao-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ambientacao-hero__fundo,
+.ambientacao-hero__vinheta,
+.ambientacao-hero__watermark,
+.ambientacao-hero__moldura,
+.ambientacao-hero__ornamento {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ambientacao-hero__fundo {
+  background:
+    radial-gradient(ellipse 72% 56% at 50% 39%, rgba(255, 179, 71, 0.1), transparent 70%),
+    linear-gradient(180deg, #3d2413 0%, #4b2e19 43%, #2b190e 100%);
+}
+
+.ambientacao-hero__vinheta {
+  background:
+    radial-gradient(ellipse 140% 120% at 50% 43%, transparent 47%, rgba(28, 15, 10, 0.52) 100%);
+}
+
+.ambientacao-hero__watermark {
+  top: 52%;
+  left: 50%;
+  width: clamp(16rem, 48vw, 34rem);
+  height: auto;
+  transform: translate(-50%, -50%);
+  opacity: 0.03;
+  user-select: none;
+}
+
+.ambientacao-hero__moldura {
+  inset: 5rem 1.75rem 1.75rem;
+  border: 1px solid rgba(255, 211, 106, 0.16);
+  border-radius: 4px;
+}
+
+.ambientacao-hero__moldura::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(197, 139, 61, 0.13);
+  border-radius: 3px;
+}
+
+.ambientacao-hero__sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+}
+
+.ambientacao-hero__ornamento {
+  inset: unset;
+  width: clamp(2.25rem, 5.5vw, 4.5rem);
+  height: clamp(2.25rem, 5.5vw, 4.5rem);
+  color: #ffd36a;
+  opacity: 0.18;
+}
+
+.ambientacao-hero__ornamento--tl {
+  top: calc(5rem + 0.45rem);
+  left: calc(1.75rem + 0.45rem);
+}
+
+.ambientacao-hero__ornamento--tr {
+  top: calc(5rem + 0.45rem);
+  right: calc(1.75rem + 0.45rem);
+  transform: scaleX(-1);
+}
+
+.ambientacao-hero__ornamento--bl {
+  bottom: calc(1.75rem + 0.45rem);
+  left: calc(1.75rem + 0.45rem);
+  transform: scaleY(-1);
+}
+
+.ambientacao-hero__ornamento--br {
+  bottom: calc(1.75rem + 0.45rem);
+  right: calc(1.75rem + 0.45rem);
+  transform: scale(-1);
+}
+
+@media (max-width: 640px) {
+  .ambientacao-hero__moldura {
+    inset: 4.75rem 0.75rem 3.5rem;
+  }
+
+  .ambientacao-hero__ornamento--tl {
+    top: calc(4.75rem + 0.3rem);
+    left: calc(0.75rem + 0.3rem);
+  }
+
+  .ambientacao-hero__ornamento--tr {
+    top: calc(4.75rem + 0.3rem);
+    right: calc(0.75rem + 0.3rem);
+  }
+
+  .ambientacao-hero__ornamento--bl {
+    bottom: calc(3.5rem + 0.3rem);
+    left: calc(0.75rem + 0.3rem);
+  }
+
+  .ambientacao-hero__ornamento--br {
+    bottom: calc(3.5rem + 0.3rem);
+    right: calc(0.75rem + 0.3rem);
+  }
+
+  .ambientacao-hero__watermark {
+    width: clamp(14rem, 68vw, 24rem);
+    opacity: 0.025;
+  }
+}
+
+@media (max-width: 380px) {
+  .ambientacao-hero__ornamento {
+    display: none;
+  }
+}
