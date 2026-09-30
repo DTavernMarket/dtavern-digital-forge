@@ -70,7 +70,7 @@ import { AmbientacaoHeroComponent } from '../ambientacao-hero/ambientacao-hero.c
       <!-- Scroll Indicator -->
       <button
         (click)="rolarParaProximaSecao()"
-        class="absolute bottom-8 left-1/2 z-10 transform -translate-x-1/2 animate-bounce cursor-pointer hover:scale-110 transition-transform duration-300 p-3 rounded-full hover:bg-scroll-beige/10"
+        class="absolute bottom-8 inset-x-0 mx-auto w-fit z-10 animate-bounce cursor-pointer hover:scale-110 transition-transform duration-300 p-3 rounded-full hover:bg-scroll-beige/10"
         aria-label="Rolar para proxima secao"
       >
         <svg
