@@ -36,9 +36,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
                 Ao criar uma conta, navegar, publicar ou comprar conteúdo no DTavern, você concorda com
                 estes Termos de Uso e com a
-                <a routerLink="/politica-privacidade" class="underline hover:text-midnight-brown">
-                  Política de Privacidade
-                </a>.
+                <a routerLink="/politica-privacidade" class="underline hover:text-midnight-brown">Política de Privacidade</a>.
                 Se não concordar, não utilize a plataforma.
               </p>
             </section>
@@ -48,9 +46,10 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Quem somos e papéis na plataforma
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                O DTavern é um marketplace digital de conteúdos independentes para RPG de mesa. A
-                plataforma conecta criadores e compradores para publicação, comercialização e entrega
-                de materiais digitais, como mapas, tokens, missões em PDF, trilhas e ilustrações.
+                O DTavern é uma plataforma digital voltada à criação de lojas e à comercialização de
+                conteúdos independentes para RPG de mesa. A plataforma conecta criadores e compradores
+                para publicação, comercialização e entrega de materiais digitais, como mapas, tokens,
+                missões em PDF, trilhas e ilustrações.
               </p>
               <ul
                 class="list-disc list-inside text-sm md:text-base leading-relaxed space-y-2 pl-1 text-midnight-brown/90 marker:text-midnight-brown/50"
@@ -60,20 +59,22 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                   plataforma após a confirmação da compra ou quando o produto for gratuito.
                 </li>
                 <li>
-                  <strong>Vendedor (loja/artesão):</strong> publica ofertas, declara ter direitos
-                  suficientes sobre o que comercializa e entrega o arquivo digital correspondente.
+                  <strong>Vendedor (loja/artesão):</strong> publica ofertas, declara possuir direitos
+                  suficientes sobre o conteúdo comercializado e disponibiliza o arquivo digital
+                  correspondente por meio da plataforma.
                 </li>
                 <li>
                   <strong>Plataforma:</strong> disponibiliza a vitrine, o cadastro, o fluxo de compra
-                  e a entrega digital. O DTavern não é o autor do conteúdo publicado por terceiros
-                  e não concede licença sobre universos, marcas ou sistemas de RPG de titulares
-                  externos.
+                  e a liberação do arquivo digital após a confirmação da compra. O DTavern não é o
+                  autor do conteúdo publicado por terceiros e não concede licença sobre universos,
+                  marcas ou sistemas de RPG de titulares externos.
                 </li>
               </ul>
               <p class="text-sm md:text-base leading-relaxed mt-3 text-midnight-brown/90">
-                O fluxo básico é: o vendedor publica o produto; o comprador conclui a compra
-                (PIX, quando o item for pago, ou acesso direto, quando for gratuito); o download
-                é liberado após a confirmação no sistema.
+                O fluxo básico é: o vendedor publica o produto; quando o item for pago, o
+                comprador conclui a compra pelo meio de pagamento disponível e, após a
+                confirmação no sistema, o download é liberado. Quando o produto for gratuito,
+                o acesso ocorre diretamente, conforme as regras da plataforma.
               </p>
             </section>
 
@@ -154,9 +155,11 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
                 O vendedor responde contratualmente pelas declarações que faz e pelo conteúdo
-                que fornece, inclusive capa, descrição e arquivos. O comprador recebe licença
-                de uso pessoal do material adquirido, sem transferência de titularidade
-                intelectual, salvo indicação expressa do criador.
+                que fornece, inclusive capa, descrição e arquivos. O comprador recebe direito
+                de uso do material adquirido nos limites definidos pelo vendedor e pela licença
+                aplicável ao produto. Na ausência de condições específicas, o uso será
+                considerado pessoal, sem transferência da titularidade dos direitos de
+                propriedade intelectual.
               </p>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
                 O DTavern pode cooperar com titulares de direitos e com autoridades nos limites
@@ -170,16 +173,19 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 Pedidos anteriores, reembolsos e evidências
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
-                Produtos pagos utilizam PIX. O acesso ao download é liberado após a confirmação
-                do pagamento. Pedidos recusados, expirados ou não confirmados não geram acesso
-                ao conteúdo.
+                Os produtos pagos utilizam os meios de pagamento disponibilizados pelo DTavern.
+                Nesta versão da plataforma, o método disponível é o PIX. O acesso ao download é
+                liberado após a confirmação do pagamento. Pedidos recusados, expirados ou não
+                confirmados não geram acesso ao conteúdo.
               </p>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
                 Efeitos sobre compras já concluídas, reembolsos, valores ainda não repassados
                 e preservação de evidências são tratados de forma separada da suspensão de
                 novas vendas. Qualquer retenção financeira observa as regras de pagamento
-                aplicáveis e análise caso a caso. O DTavern pode preservar registros necessários
-                à apuração, sem apagar o histórico de compras ou pagamentos.
+                aplicáveis e análise caso a caso. O DTavern poderá preservar registros relacionados
+                a compras, pagamentos, disputas e apurações pelo período necessário ao cumprimento
+                de obrigações legais ou financeiras, prevenção de fraude, resolução de disputas
+                e proteção de direitos.
               </p>
             </section>
 
