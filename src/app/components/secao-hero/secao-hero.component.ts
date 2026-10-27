@@ -69,33 +69,19 @@ import { AmbientacaoHeroComponent } from '../ambientacao-hero/ambientacao-hero.c
 
       <!-- Scroll Indicator -->
       <button
+        type="button"
         (click)="rolarParaProximaSecao()"
-        class="absolute bottom-8 inset-x-0 mx-auto w-fit z-10 animate-bounce cursor-pointer hover:scale-110 transition-transform duration-300 p-3 rounded-full hover:bg-scroll-beige/10"
-        aria-label="Rolar para proxima secao"
+        aria-label="Rolar para a seção Como funciona"
+        class="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-candlelight-gold/80 hover:text-candlelight-gold transition-colors"
       >
-        <svg
-          class="w-9 h-9 text-candlelight-gold transition-colors duration-300"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M19 14l-7 7m0 0l-7-7m7 7V3"
-          />
-        </svg>
+        <span class="text-xs uppercase tracking-[0.2em] text-scroll-beige/70">Role para ver mais</span>
+        <span class="w-10 h-10 flex items-center justify-center motion-safe:animate-bounce">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
       </button>
 
-      <a
-        href="https://docs.google.com/forms/d/e/1FAIpQLSdwk87Zg9IGnvZcI73XsEk-9O3bJO3lDGoP_jejMzR4LDzgaA/viewform?usp=publish-editor"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="fixed bottom-4 left-4 z-10 text-sm text-scroll-beige/80 hover:text-candlelight-gold hover:underline transition-colors"
-      >
-        Procura-se artista para ilustrar essa tela.
-      </a>
     </section>
   `,
   styles: [
@@ -137,7 +123,7 @@ export class SecaoHeroComponent {
     if (elementoProximaSecao) {
       elementoProximaSecao.scrollIntoView({
         behavior: 'smooth',
-        block: 'nearest',
+        block: 'start',
       });
     }
   }
