@@ -12,9 +12,9 @@ import { ClienteService } from '../../services/cliente.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-screen flex items-center justify-center bg-tavern-wood overflow-hidden relative">
+    <div class="min-h-dvh flex flex-col items-center justify-center bg-tavern-wood relative sm:overflow-hidden">
       <div class="w-full flex items-center justify-center p-4">
-        <div class="bg-midnight-brown/90 border border-brass-accent/40 rounded-xl p-8 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="bg-midnight-brown/90 border border-brass-accent/40 rounded-xl p-5 sm:p-8 max-w-md w-full sm:max-h-[90vh] sm:overflow-y-auto">
           <h2 class="text-2xl font-medieval font-bold text-scroll-beige mb-6 text-center">Criar Conta</h2>
         
         <!-- Indicador de Passos -->
@@ -53,7 +53,7 @@ import { ClienteService } from '../../services/cliente.service';
             <button
               type="button"
               (click)="selecionarTipoUsuario('artesao')"
-              class="p-6 border-2 rounded-lg transition-all duration-300 text-left"
+              class="p-4 sm:p-6 border-2 rounded-lg transition-all duration-300 text-left"
               [ngClass]="{
                 'border-candlelight-gold': tipoUsuario === 'artesao',
                 'bg-candlelight-gold/10': tipoUsuario === 'artesao',
@@ -61,14 +61,14 @@ import { ClienteService } from '../../services/cliente.service';
                 'hover:border-candlelight-gold': tipoUsuario !== 'artesao'
               }"
             >
-              <div class="flex items-center space-x-4">
+              <div class="flex items-center gap-3 sm:gap-4">
                 <div class="flex-shrink-0">
                   <svg class="w-8 h-8 text-candlelight-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                   </svg>
                 </div>
-                <div class="flex-1">
-                  <h3 class="text-scroll-beige font-semibold text-lg mb-1">Vender Produtos</h3>
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-scroll-beige font-semibold text-base sm:text-lg mb-1">Vender Produtos</h3>
                   <p class="text-scroll-beige/70 text-sm">Crie sua própria loja e venda seus produtos</p>
                 </div>
                 <div *ngIf="tipoUsuario === 'artesao'" class="flex-shrink-0">
@@ -82,7 +82,7 @@ import { ClienteService } from '../../services/cliente.service';
             <button
               type="button"
               (click)="selecionarTipoUsuario('cliente')"
-              class="p-6 border-2 rounded-lg transition-all duration-300 text-left"
+              class="p-4 sm:p-6 border-2 rounded-lg transition-all duration-300 text-left"
               [ngClass]="{
                 'border-candlelight-gold': tipoUsuario === 'cliente',
                 'bg-candlelight-gold/10': tipoUsuario === 'cliente',
@@ -90,14 +90,14 @@ import { ClienteService } from '../../services/cliente.service';
                 'hover:border-candlelight-gold': tipoUsuario !== 'cliente'
               }"
             >
-              <div class="flex items-center space-x-4">
+              <div class="flex items-center gap-3 sm:gap-4">
                 <div class="flex-shrink-0">
                   <svg class="w-8 h-8 text-candlelight-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                   </svg>
                 </div>
-                <div class="flex-1">
-                  <h3 class="text-scroll-beige font-semibold text-lg mb-1">Comprar Produtos</h3>
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-scroll-beige font-semibold text-base sm:text-lg mb-1">Comprar Produtos</h3>
                   <p class="text-scroll-beige/70 text-sm">Explore e compre produtos dos artesãos</p>
                 </div>
                 <div *ngIf="tipoUsuario === 'cliente'" class="flex-shrink-0">
@@ -260,7 +260,7 @@ import { ClienteService } from '../../services/cliente.service';
                 name="dataNascimento"
                 required
                 (blur)="validarDataNascimento()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
+                class="w-full min-h-[42px] appearance-none px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
                 [class.border-red-500]="dataNascimentoError"
               />
               <div *ngIf="dataNascimentoError" class="text-red-400 text-sm mt-1">
@@ -310,18 +310,18 @@ import { ClienteService } from '../../services/cliente.service';
             {{ errorMessage }}
           </div>
           
-          <div class="flex space-x-3">
+          <div class="flex flex-col-reverse sm:flex-row gap-3">
             <button
               type="button"
               (click)="voltarPasso()"
-              class="flex-1 px-6 py-3 border-2 border-brass-accent/40 text-scroll-beige font-semibold rounded-lg hover:border-candlelight-gold hover:text-candlelight-gold transition-colors"
+              class="flex-1 px-4 sm:px-6 py-3 border-2 border-brass-accent/40 text-scroll-beige font-semibold rounded-lg hover:border-candlelight-gold hover:text-candlelight-gold transition-colors"
             >
               Voltar
             </button>
             <button
               type="submit"
               [disabled]="loading() || !formularioValido()"
-              class="flex-1 px-6 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="flex-1 px-4 sm:px-6 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {{ loading() ? 'Criando conta...' : 'Criar conta' }}
             </button>
@@ -343,7 +343,7 @@ import { ClienteService } from '../../services/cliente.service';
         href="https://docs.google.com/forms/d/e/1FAIpQLSdwk87Zg9IGnvZcI73XsEk-9O3bJO3lDGoP_jejMzR4LDzgaA/viewform?usp=publish-editor"
         target="_blank"
         rel="noopener noreferrer"
-        class="fixed bottom-4 left-4 z-10 text-sm text-scroll-beige/80 hover:text-candlelight-gold hover:underline transition-colors"
+        class="mb-4 px-4 text-center sm:mb-0 sm:px-0 sm:text-left sm:fixed sm:bottom-4 sm:left-4 z-10 text-sm text-scroll-beige/80 hover:text-candlelight-gold hover:underline transition-colors"
       >
         Procura-se artista para ilustrar essa tela.
       </a>

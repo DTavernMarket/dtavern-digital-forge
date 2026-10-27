@@ -74,4 +74,19 @@ app.config.ts  providers globais (router, http, interceptor, zoneless)
 - `environment.prod.ts` nao define `firebaseConfig`.
 - `deleteComprador` (`auth.service.ts`) usa URL hardcoded em vez de `environment.apiBaseUrl`.
 - `carrinho.model.ts` parece legado (fluxo atual e compra direta, sem carrinho).
-- `ExibicaoProdutosComponent` linka `/explorar/:slug`, mas o detalhe de produto e `/produtos/:nomeNormalizado`.
+
+## Responsividade (mobile-first)
+
+- Escreva classes Tailwind **mobile-first**: base = celular (~375px), depois `sm:`/`md:`/`lg:`.
+  Paginas devem rodar sem scroll horizontal de 375px a 1280px+.
+- **Navbar** (`barra-navegacao`): abaixo de `lg` (1024px) mostra so logo + hamburguer, que abre
+  um drawer (`#menu-mobile`) com todos os links do usuario por role. Ao adicionar um link no
+  dropdown de perfil desktop, adicione tambem no drawer.
+- `styles.css` forca `font-size: 16px` em `input`/`select`/`textarea` abaixo de 640px (evita
+  zoom automatico no iOS) e aplica `overflow-x: clip` em `html, body`.
+- Nao ha regra global de tamanho para `.font-medieval`: cada titulo define seus tamanhos
+  responsivos (ex.: `text-2xl sm:text-3xl md:text-4xl`).
+- Efeitos de hover ficam em `@media (hover: hover)` (ou `md:hover:`) para nao "grudar" no toque.
+- Prefira `svh`/`dvh` a `vh` em alturas de tela cheia; modais usam `max-h-[90svh] overflow-y-auto`
+  e botoes empilhados (`flex-col-reverse sm:flex-row`) no mobile.
+- `botao-padrao` aceita `[fullWidth]="true"` para ocupar a largura toda.

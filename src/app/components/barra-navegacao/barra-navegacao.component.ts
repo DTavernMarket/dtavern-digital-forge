@@ -1,16 +1,19 @@
-import { Component, signal, inject, Input, HostListener, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { Component, signal, inject, Input, HostListener, ViewChild, ElementRef, OnInit, OnDestroy, effect } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { ArtesaoService } from '../../services/artesao.service';
 import { AuthService } from '../../services/auth.service';
-import { Subscription } from 'rxjs';
+import { Subscription, filter } from 'rxjs';
 
 @Component({
   selector: 'app-barra-navegacao',
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <nav [class]="isFixed ? 'fixed top-0 left-0 right-0 z-50 bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30' : 'relative bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30'">
+    @if (menuAberto()) {
+      <div class="lg:hidden fixed inset-0 z-40 bg-black/60" (click)="fecharMenuMobile()" aria-hidden="true"></div>
+    }
+    <nav [class]="isFixed ? 'fixed top-0 left-0 right-0 z-50 bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30' : 'relative z-50 bg-midnight-brown/90 backdrop-blur-sm border-b border-brass-accent/30'">
       <div class="container mx-auto px-4">
         <!-- Container principal: duas colunas iguais (esquerda/direita) para centralizar o meio -->
         <div class="flex items-center py-[0.7rem]">
@@ -25,11 +28,8 @@ import { Subscription } from 'rxjs';
             </div>
           </div>
 
-          <!-- SEÇÃO MEIO: Barra de Pesquisa e Menu (centralizado) -->
-          <div class="flex-none flex flex-col items-center justify-center space-y-2 w-full max-w-2xl px-4">
-            <!-- Barra de Pesquisa -->
-            
-
+          <!-- SEÇÃO MEIO: Menu (centralizado, só desktop) -->
+          <div class="hidden lg:flex flex-none flex-col items-center justify-center px-4">
             <!-- Menu de Navegação -->
             <div class="flex items-center space-x-8">
               <a routerLink="/" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors font-medium text-sm">
@@ -46,7 +46,7 @@ import { Subscription } from 'rxjs';
             <!-- Elementos para usuário logado -->
             <ng-container *ngIf="estaAutenticado()">
               <!-- Perfil -->
-              <div class="relative" #menuPerfilContainer>
+              <div class="relative hidden lg:block" #menuPerfilContainer>
                 <button 
                   (click)="menuPerfilAberto.set(!menuPerfilAberto())"
                   class="flex items-center space-x-2 px-3 py-2 text-scroll-beige hover:text-candlelight-gold transition-colors rounded-lg hover:bg-tavern-wood/10"
@@ -59,7 +59,7 @@ import { Subscription } from 'rxjs';
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                   }
-                  <span *ngIf="displayName()" class="font-medium text-sm">
+                  <span *ngIf="displayName()" class="font-medium text-sm max-w-[8rem] truncate">
                     {{ displayName() }}
                   </span>
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,51 +167,133 @@ import { Subscription } from 'rxjs';
 
             <!-- Elementos para usuário não logado -->
             <ng-container *ngIf="!estaAutenticado()">
-              <button 
-                (click)="irParaCadastroArtesao()"
-                class="px-4 py-1 text-scroll-beige hover:text-candlelight-gold transition-colors text-sm font-medium"
-              >
-                Criar minha loja
-              </button>
-              <span class="text-scroll-beige/60 text-sm">ou</span>
-              <button 
-                (click)="irParaLogin()"
-                class="px-4 py-1 border-2 border-candlelight-gold text-candlelight-gold rounded-lg font-medium hover:bg-candlelight-gold hover:text-tavern-wood transition-all duration-300 text-sm"
-              >
-                Fazer login
-              </button>
+              <div class="hidden lg:flex items-center space-x-4">
+                <button 
+                  (click)="irParaCadastroArtesao()"
+                  class="px-4 py-1 text-scroll-beige hover:text-candlelight-gold transition-colors text-sm font-medium"
+                >
+                  Criar minha loja
+                </button>
+                <span class="text-scroll-beige/60 text-sm">ou</span>
+                <button 
+                  (click)="irParaLogin()"
+                  class="px-4 py-1 border-2 border-candlelight-gold text-candlelight-gold rounded-lg font-medium hover:bg-candlelight-gold hover:text-tavern-wood transition-all duration-300 text-sm"
+                >
+                  Fazer login
+                </button>
+              </div>
             </ng-container>
 
-            <!-- Menu Mobile -->
+            <!-- Botão do menu mobile -->
             <button 
-              (click)="menuAberto.set(!menuAberto())"
-              class="md:hidden p-2 text-scroll-beige hover:text-candlelight-gold transition-colors"
+              type="button"
+              (click)="alternarMenuMobile()"
+              class="lg:hidden -mr-2 p-2.5 text-scroll-beige hover:text-candlelight-gold transition-colors"
+              [attr.aria-expanded]="menuAberto()"
+              aria-controls="menu-mobile"
+              [attr.aria-label]="menuAberto() ? 'Fechar menu' : 'Abrir menu'"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-              </svg>
+              @if (menuAberto()) {
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              } @else {
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+              }
             </button>
           </div>
         </div>
+      </div>
 
-        <!-- Menu Mobile -->
-        <div 
-          *ngIf="menuAberto()"
-          class="md:hidden py-4 border-t border-brass-accent/30"
+      <!-- Painel do menu mobile -->
+      @if (menuAberto()) {
+        <div
+          id="menu-mobile"
+          class="lg:hidden absolute left-0 right-0 top-full bg-midnight-brown border-b border-brass-accent/30 shadow-2xl max-h-[calc(100dvh-4rem)] overflow-y-auto"
         >
-          <div class="flex flex-col space-y-4">
-            <a routerLink="/" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
+          <div class="container mx-auto px-4 py-4 flex flex-col">
+            @if (estaAutenticado()) {
+              <div class="flex items-center gap-3 pb-4 mb-2 border-b border-brass-accent/20">
+                @if (photoURL()) {
+                  <img [src]="photoURL()" alt="Foto de perfil" class="w-10 h-10 rounded-full object-cover flex-shrink-0">
+                } @else {
+                  <div class="w-10 h-10 rounded-full bg-tavern-wood flex items-center justify-center flex-shrink-0 text-scroll-beige">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                  </div>
+                }
+                @if (displayName()) {
+                  <span class="text-scroll-beige font-medium truncate min-w-0">{{ displayName() }}</span>
+                }
+              </div>
+            }
+
+            <a routerLink="/" routerLinkActive="text-candlelight-gold" [routerLinkActiveOptions]="{ exact: true }" class="py-3 text-scroll-beige hover:text-candlelight-gold transition-colors font-medium">
               Início
             </a>
-            <a [routerLink]="['/cadastro']" [queryParams]="{ cadastro: 'artesao' }" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
-              Criar loja
-            </a>
-            <a routerLink="/sobre" routerLinkActive="text-candlelight-gold" class="text-scroll-beige hover:text-candlelight-gold transition-colors text-sm">
+            <a routerLink="/sobre" routerLinkActive="text-candlelight-gold" class="py-3 text-scroll-beige hover:text-candlelight-gold transition-colors font-medium">
               Sobre
             </a>
+
+            @if (estaAutenticado()) {
+              <div class="border-t border-brass-accent/20 my-2"></div>
+              <button type="button" (click)="irParaMeuPerfil()" class="py-3 text-left text-scroll-beige hover:text-candlelight-gold transition-colors">
+                Minha conta
+              </button>
+
+              @if (obterTipoUsuario() === 'LOJA') {
+                <p class="pt-3 pb-1 text-xs uppercase tracking-wider text-brass-accent">Loja</p>
+                <button type="button" (click)="irParaMinhaLoja()" class="py-3 pl-3 text-left text-scroll-beige/90 hover:text-candlelight-gold transition-colors">
+                  Ver loja
+                </button>
+                <button type="button" (click)="irParaAdicionarProdutoLoja()" class="py-3 pl-3 text-left text-scroll-beige/90 hover:text-candlelight-gold transition-colors">
+                  Adicionar produto
+                </button>
+                <button type="button" (click)="irParaGerenciarProdutosLoja()" class="py-3 pl-3 text-left text-scroll-beige/90 hover:text-candlelight-gold transition-colors">
+                  Gerenciar produtos
+                </button>
+                <button type="button" (click)="irParaVendasLoja()" class="py-3 pl-3 text-left text-scroll-beige/90 hover:text-candlelight-gold transition-colors">
+                  Minhas vendas
+                </button>
+              }
+
+              @if (obterTipoUsuario() === 'COMPRADOR') {
+                <button type="button" (click)="irParaBiblioteca()" class="py-3 text-left text-scroll-beige hover:text-candlelight-gold transition-colors">
+                  Minha biblioteca
+                </button>
+                <button type="button" (click)="irParaPedidos()" class="py-3 text-left text-scroll-beige hover:text-candlelight-gold transition-colors">
+                  Meus pedidos
+                </button>
+              }
+
+              <div class="border-t border-brass-accent/20 my-2"></div>
+              <button type="button" (click)="realizarLogout()" class="py-3 text-left text-scroll-beige hover:text-candlelight-gold transition-colors">
+                Sair
+              </button>
+            } @else {
+              <div class="flex flex-col gap-3 pt-4 mt-2 border-t border-brass-accent/20">
+                <button
+                  type="button"
+                  (click)="irParaLogin()"
+                  class="w-full py-3 border-2 border-candlelight-gold text-candlelight-gold rounded-lg font-medium hover:bg-candlelight-gold hover:text-tavern-wood transition-all duration-300"
+                >
+                  Fazer login
+                </button>
+                <button
+                  type="button"
+                  (click)="irParaCadastroArtesao()"
+                  class="w-full py-3 text-scroll-beige hover:text-candlelight-gold transition-colors font-medium"
+                >
+                  Criar minha loja
+                </button>
+              </div>
+            }
           </div>
         </div>
-      </div>
+      }
     </nav>
   `,
   styles: [`
@@ -226,7 +308,9 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   private artesaoService = inject(ArtesaoService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private document = inject(DOCUMENT);
   private authSubscription?: Subscription;
+  private routerSubscription?: Subscription;
 
   menuAberto = signal(false);
   menuPerfilAberto = signal(false);
@@ -237,7 +321,17 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   userRole = signal<'LOJA' | 'COMPRADOR' | null>(null);
   userDominio = signal<string | null>(null);
 
+  constructor() {
+    effect(() => {
+      this.document.body.style.overflow = this.menuAberto() ? 'hidden' : '';
+    });
+  }
+
   ngOnInit() {
+    this.routerSubscription = this.router.events
+      .pipe(filter(evento => evento instanceof NavigationEnd))
+      .subscribe(() => this.fecharMenuMobile());
+
     // Observar mudanças no estado de autenticação
     this.authSubscription = this.authService.currentUser$.subscribe(user => {
       this.estaAutenticado.set(user !== null);
@@ -281,6 +375,29 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
+    this.routerSubscription?.unsubscribe();
+    this.document.body.style.overflow = '';
+  }
+
+  alternarMenuMobile() {
+    this.menuAberto.set(!this.menuAberto());
+  }
+
+  fecharMenuMobile() {
+    this.menuAberto.set(false);
+  }
+
+  @HostListener('window:resize')
+  fecharMenuMobileEmTelaGrande() {
+    if (this.menuAberto() && window.innerWidth >= 1024) {
+      this.fecharMenuMobile();
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  fecharMenusComEsc() {
+    this.fecharMenuMobile();
+    this.fecharMenuPerfil();
   }
 
   irParaInicio() {

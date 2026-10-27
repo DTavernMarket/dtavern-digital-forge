@@ -38,10 +38,10 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
 
       <!-- Header -->
       <div class="bg-midnight-brown/80 border-b border-brass-accent/30">
-        <div class="container mx-auto px-4 py-8">
-          <div class="flex items-center justify-between">
-            <div>
-              <h1 class="text-3xl font-medieval font-bold text-scroll-beige mb-2">
+        <div class="container mx-auto px-4 py-6 sm:py-8">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="min-w-0">
+              <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige mb-2">
                 {{ isModoEdicao() ? 'Editar Produto' : 'Novo Produto' }}
               </h1>
               <p class="text-scroll-beige/70">
@@ -52,14 +52,14 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                 }}
               </p>
               <div *ngIf="artesaoAtual" class="mt-2">
-                <span class="text-candlelight-gold font-medium"
+                <span class="text-candlelight-gold font-medium break-words"
                   >Artesão: {{ artesaoAtual.nome }}</span
                 >
               </div>
             </div>
             <button
               (click)="irParaLoja()"
-              class="px-6 py-2 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
+              class="hidden sm:block flex-shrink-0 px-6 py-2 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
             >
               Voltar para loja
             </button>
@@ -68,12 +68,12 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
       </div>
 
       <!-- Formulário -->
-      <div class="container mx-auto px-4 py-8">
-        <form (ngSubmit)="salvarProduto()" class="space-y-8">
+      <div class="container mx-auto px-4 py-6 sm:py-8">
+        <form (ngSubmit)="salvarProduto()" class="space-y-6 sm:space-y-8">
           <!-- Divisor -->
           <div class="border border-brass-accent/30 rounded-xl max-w-4xl mx-auto bg-midnight-brown/40">
             <!-- Informações Básicas -->
-            <div class="bg-tavern-wood/10 p-8">
+            <div class="bg-tavern-wood/10 p-4 sm:p-8">
               <!-- Disponível para venda -->
               <div class="flex items-center justify-start gap-4 mb-6 pb-6 border-b border-brass-accent/20">
                 <p class="text-scroll-beige text-sm font-medium">
@@ -95,9 +95,9 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                   ></span>
                 </button>
               </div>
-              <div class="grid md:grid-cols-3 gap-6">
+              <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-2 sm:gap-6">
                 <!-- Nome -->
-                <div class="md:col-span-3">
+                <div class="sm:col-span-2 md:col-span-3">
                   <app-input-customizado
                     label="Nome"
                     placeholder="Digite o nome do produto"
@@ -163,7 +163,7 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
             </div>
 
             <!-- Descrição -->
-            <div class="bg-tavern-wood/10 rounded-xl pl-8 pr-8">
+            <div class="bg-tavern-wood/10 rounded-xl px-4 sm:px-8">
               <div class="space-y-6">
                 <div>
                   <app-input-customizado
@@ -183,8 +183,8 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
             </div>
 
             <!-- Imagem de Preview e Arquivo de Conteúdo -->
-            <div class="bg-tavern-wood/10 rounded-xl ml-8 mb-8 p-8">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-tavern-wood/10 rounded-xl mb-4 p-4 sm:ml-8 sm:mb-8 sm:p-8">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <!-- Imagem de apresentação -->
                 <div class="space-y-4">
                   <p class="text-sm font-medium text-scroll-beige/80 mb-2">
@@ -255,7 +255,8 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                       *ngIf="(imagemPreview || midiaPreviewInfo) && !uploadPreviewLoading && !deletePreviewLoading"
                       type="button"
                       (click)="removerImagem()"
-                      class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+                      aria-label="Remover imagem"
+                      class="absolute -top-3 -right-3 w-9 h-9 md:-top-2 md:-right-2 md:w-7 md:h-7 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
                     >
                       ×
                     </button>
@@ -277,9 +278,9 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                   <p class="text-sm font-medium text-scroll-beige/80 mb-2">
                     Arquivo de conteúdo
                   </p>
-                  <div class="relative inline-block">
+                  <div class="relative w-full max-w-[24rem]">
                     <div
-                      class="w-72 h-48 sm:w-[336px] sm:h-56 md:w-96 md:h-64 bg-midnight-brown/90 rounded-lg border border-brass-accent/40 flex items-center justify-center overflow-hidden"
+                      class="w-full h-48 sm:h-56 md:h-64 bg-midnight-brown/90 rounded-lg border border-brass-accent/40 flex items-center justify-center overflow-hidden"
                       [class.border-candlelight-gold]="isDragOverConteudo && !uploadConteudoLoading && !deleteConteudoLoading"
                       [class.border-2]="isDragOverConteudo && !uploadConteudoLoading && !deleteConteudoLoading"
                       (dragover)="onDragOverConteudo($event)"
@@ -377,7 +378,8 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
                       *ngIf="(arquivoConteudoSelecionado || midiaConteudoInfo) && !uploadConteudoLoading && !deleteConteudoLoading"
                       type="button"
                       (click)="removerArquivoConteudo()"
-                      class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+                      aria-label="Remover arquivo"
+                      class="absolute -top-3 -right-3 w-9 h-9 md:-top-2 md:-right-2 md:w-7 md:h-7 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
                     >
                       ×
                     </button>
@@ -409,29 +411,29 @@ import { Midia, ProdutoCompleto } from '../../models/produto.model';
           </div>
 
           <!-- Botões de Ação -->
-          <div class="flex items-center justify-between space-x-4 max-w-4xl mx-auto">
+          <div class="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 max-w-4xl mx-auto">
             <div>
               <button
                 type="button"
                 (click)="irParaLoja()"
-                class="px-6 py-3 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
+                class="w-full sm:w-auto px-6 py-3 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
               >
                 Voltar para loja
               </button>
             </div>
-            <div class="flex items-center space-x-4">
+            <div class="flex flex-col-reverse sm:flex-row sm:items-center gap-3 sm:gap-4">
               <button
                 *ngIf="isModoEdicao()"
                 type="button"
                 (click)="abrirDialogDeletar()"
-                class="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
+                class="w-full sm:w-auto px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
               >
                 Deletar
               </button>
               <button
                 type="submit"
                 [disabled]="!formularioValido()"
-                class="px-8 py-3 bg-candlelight-gold hover:bg-candlelight-gold/90 text-tavern-wood font-semibold rounded-lg  transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full sm:w-auto px-8 py-3 bg-candlelight-gold hover:bg-candlelight-gold/90 text-tavern-wood font-semibold rounded-lg  transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Salvar Produto
               </button>

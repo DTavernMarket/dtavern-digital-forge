@@ -15,13 +15,13 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
       <main class="py-10 md:py-14">
         <div class="container mx-auto px-4 max-w-3xl">
           <article
-            class="pergaminho space-y-8 bg-scroll-beige border-2 border-brass-accent/50 rounded-sm p-6 md:p-10 md:px-12 text-midnight-brown shadow-[0_8px_32px_rgba(28,15,10,0.35),inset_0_1px_0_rgba(255,255,255,0.25)]"
+            class="pergaminho space-y-8 bg-scroll-beige border-2 border-brass-accent/50 rounded-sm p-4 sm:p-6 md:p-10 md:px-12 text-midnight-brown shadow-[0_8px_32px_rgba(28,15,10,0.35),inset_0_1px_0_rgba(255,255,255,0.25)]"
           >
             <header>
               <p class="text-midnight-brown/85 text-sm md:text-base leading-relaxed mb-6 italic text-left">
                 A quem possa interessar...
               </p>
-              <h1 class="font-medieval text-3xl md:text-4xl font-bold text-midnight-brown mb-3 text-center">
+              <h1 class="font-medieval text-2xl sm:text-3xl md:text-4xl break-words font-bold text-midnight-brown mb-3 text-center">
                 Sobre o DTavern
               </h1>
               <p class="text-center text-xs md:text-sm text-midnight-brown/65">
@@ -30,7 +30,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </header>
 
             <section id="origem" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Como o DTavern foi criado
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -44,14 +44,16 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
               </p>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
               Ao invés de depender de uma rede social, por que não criar um espaço próprio? Um lugar onde qualquer pessoa pudesse compartilhar seus conteúdos de RPG — gratuitos ou pagos — de forma organizada,
-               acessível e centralizada. Foi assim que nasceu o DTavern. <p>
-                <p> E então, no dia 31/05/2023 um grupo de whatsapp foi criado com o nome "DTavern",
+               acessível e centralizada. Foi assim que nasceu o DTavern.
+              </p>
+              <p class="text-sm md:text-base leading-relaxed mt-3 text-midnight-brown/90">
+                E então, no dia 31/05/2023 um grupo de whatsapp foi criado com o nome "DTavern",
                    marcando o início oficial do projeto.
               </p>
             </section>
 
             <section id="objetivos" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Propósito e objetivos
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -60,10 +62,10 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">Nosso objetivo inicial é se tornar a maior plataforma de conteúdos não-oficiais e digitais de RPG do Brasil.</p>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">Queremos criar um lugar onde:</p>
               <ul
-                class="list-disc list-inside text-sm md:text-base leading-relaxed space-y-2 pl-1 text-midnight-brown/90 marker:text-midnight-brown/50"
+                class="list-disc list-outside text-sm md:text-base leading-relaxed space-y-2 pl-5 text-midnight-brown/90 marker:text-midnight-brown/50"
               >
                 <li>Criadores possam publicar, vender e crescer com seus conteúdos
-                <ul class="list-[circle] pl-10 mt-1 space-y-1">
+                <ul class="list-[circle] pl-5 sm:pl-10 mt-1 space-y-1">
                   <li>Novos criadores dão seus primeiros passos vendendo seus produtos</li>
                   <li>Grandes criadores constroem suas próprias lojas virtuais</li>
                 </ul>

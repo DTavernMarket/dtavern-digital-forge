@@ -8,26 +8,26 @@ import { AmbientacaoHeroComponent } from '../ambientacao-hero/ambientacao-hero.c
   standalone: true,
   imports: [CommonModule, RouterModule, AmbientacaoHeroComponent],
   template: `
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section class="relative min-h-svh flex items-center justify-center overflow-hidden pt-24 pb-28 md:pt-20 md:pb-24">
       <app-ambientacao-hero />
 
       <!-- Conteúdo Principal -->
-      <div class="relative z-10 container mx-auto px-4 text-center">
-        <div class="max-w-4xl mx-auto space-y-8">
+      <div class="relative z-10 container mx-auto px-6 sm:px-4 text-center">
+        <div class="max-w-4xl mx-auto space-y-6 md:space-y-8">
           <!-- Título Principal -->
           <img
            src="assets/images/dtavern/ESCRITA/CREME.svg" 
               alt="DTavern"
-              class="inline-block h-9 md:h-[3.25rem] lg:h-[3.9rem] w-auto align-middle ml-2"
+              class="inline-block h-9 md:h-[3.25rem] lg:h-[3.9rem] w-auto max-w-full align-middle"
             />
-          <h3 class="text-5xl md:text-7xl lg:text-7xl font-medieval font-bold leading-tight">
-            <span class="block text-candlelight-gold text-[1.575rem] md:text-[2.625rem] lg:text-[2.625rem] mt-2">
+          <h1 class="font-medieval font-bold leading-tight">
+            <span class="block text-candlelight-gold text-[1.4rem] sm:text-[1.75rem] md:text-[2.625rem] mt-2">
               Histórias incríveis começam aqui.
             </span>
-          </h3>
+          </h1>
 
           <!-- Subtítulo -->
-          <p class="text-xl md:text-2xl text-scroll-beige/80 max-w-3xl mx-auto leading-relaxed">
+          <p class="text-lg sm:text-xl md:text-2xl text-scroll-beige/80 max-w-3xl mx-auto leading-relaxed">
             Crie sua loja, publique seus materiais e venda diretamente para sua comunidade.
           </p>
 
@@ -36,7 +36,7 @@ import { AmbientacaoHeroComponent } from '../ambientacao-hero/ambientacao-hero.c
             <button
               [routerLink]="['/cadastro']"
               [queryParams]="{ cadastro: 'artesao' }"
-              class="px-8 py-4 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-xl hover:scale-105 transition-all duration-300 text-lg"
+              class="w-full sm:w-auto max-w-xs px-8 py-4 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-xl md:hover:scale-105 transition-all duration-300 text-lg"
             >
               Criar minha loja
               <svg
@@ -72,9 +72,9 @@ import { AmbientacaoHeroComponent } from '../ambientacao-hero/ambientacao-hero.c
         type="button"
         (click)="rolarParaProximaSecao()"
         aria-label="Rolar para a seção Como funciona"
-        class="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-candlelight-gold/80 hover:text-candlelight-gold transition-colors"
+        class="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-candlelight-gold/80 hover:text-candlelight-gold transition-colors [@media(max-height:600px)]:hidden"
       >
-        <span class="text-xs uppercase tracking-[0.2em] text-scroll-beige/70">Role para ver mais</span>
+        <span class="hidden sm:block text-xs uppercase tracking-[0.2em] text-scroll-beige/70">Role para ver mais</span>
         <span class="w-10 h-10 flex items-center justify-center motion-safe:animate-bounce">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />

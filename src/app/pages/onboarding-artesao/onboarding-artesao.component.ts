@@ -17,10 +17,10 @@ import { MeResponseLoja } from '../../models/auth.model';
       <section class="flex-1 py-10">
         <div class="container mx-auto px-4 max-w-4xl">
           <div class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-medieval font-bold text-scroll-beige mb-3">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-medieval font-bold text-scroll-beige mb-3 break-words">
               Sua loja foi criada com sucesso
             </h1>
-            <p class="text-scroll-beige/75 text-lg">
+            <p class="text-scroll-beige/75 text-base sm:text-lg">
               Agora faltam apenas 3 passos para começar a vender no DTavern.
             </p>
           </div>
@@ -43,47 +43,47 @@ import { MeResponseLoja } from '../../models/auth.model';
             </div>
           } @else {
             <div class="grid gap-5">
-              <article class="bg-midnight-brown/70 border border-brass-accent/30 rounded-xl p-6">
-                <div class="flex items-start justify-between gap-4">
-                  <div>
+              <article class="bg-midnight-brown/70 border border-brass-accent/30 rounded-xl p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div class="min-w-0">
                     <p class="text-candlelight-gold font-semibold text-sm uppercase tracking-wide mb-1">Passo 1</p>
-                    <h2 class="text-xl font-semibold text-scroll-beige mb-2">Configure o perfil da sua loja</h2>
+                    <h2 class="text-lg sm:text-xl font-semibold text-scroll-beige mb-2">Configure o perfil da sua loja</h2>
                     <p class="text-scroll-beige/75">
                       Atualize resumo, descrição, foto e capa para deixar sua página profissional.
                     </p>
                   </div>
                   <button
                     (click)="irParaMinhaLoja()"
-                    class="px-4 py-2 rounded-lg border border-candlelight-gold text-candlelight-gold hover:bg-candlelight-gold hover:text-tavern-wood transition-colors whitespace-nowrap"
+                    class="px-4 py-2 rounded-lg border border-candlelight-gold text-candlelight-gold hover:bg-candlelight-gold hover:text-tavern-wood transition-colors w-full sm:w-auto py-2.5 sm:py-2 sm:whitespace-nowrap flex-shrink-0"
                   >
                     Abrir minha loja
                   </button>
                 </div>
               </article>
 
-              <article class="bg-midnight-brown/70 border border-brass-accent/30 rounded-xl p-6">
-                <div class="flex items-start justify-between gap-4">
-                  <div>
+              <article class="bg-midnight-brown/70 border border-brass-accent/30 rounded-xl p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div class="min-w-0">
                     <p class="text-candlelight-gold font-semibold text-sm uppercase tracking-wide mb-1">Passo 2</p>
-                    <h2 class="text-xl font-semibold text-scroll-beige mb-2">Publique seu primeiro produto</h2>
+                    <h2 class="text-lg sm:text-xl font-semibold text-scroll-beige mb-2">Publique seu primeiro produto</h2>
                     <p class="text-scroll-beige/75">
                       Cadastre nome, preço, capa e arquivo de conteúdo para disponibilizar o produto.
                     </p>
                   </div>
                   <button
                     (click)="irParaNovoProduto()"
-                    class="px-4 py-2 rounded-lg bg-candlelight-gold text-tavern-wood font-semibold hover:bg-warm-amber transition-colors whitespace-nowrap"
+                    class="px-4 py-2 rounded-lg bg-candlelight-gold text-tavern-wood font-semibold hover:bg-warm-amber transition-colors w-full sm:w-auto py-2.5 sm:py-2 sm:whitespace-nowrap flex-shrink-0"
                   >
                     Novo produto
                   </button>
                 </div>
               </article>
 
-              <article class="bg-midnight-brown/70 border border-brass-accent/30 rounded-xl p-6">
-                <div class="flex items-start justify-between gap-4">
-                  <div>
+              <article class="bg-midnight-brown/70 border border-brass-accent/30 rounded-xl p-4 sm:p-6">
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div class="min-w-0">
                     <p class="text-candlelight-gold font-semibold text-sm uppercase tracking-wide mb-1">Passo 3</p>
-                    <h2 class="text-xl font-semibold text-scroll-beige mb-2">Copie e compartilhe seu link público</h2>
+                    <h2 class="text-lg sm:text-xl font-semibold text-scroll-beige mb-2">Copie e compartilhe seu link público</h2>
                     <p class="text-scroll-beige/75 mb-3">
                       Envie sua loja no Instagram, YouTube, Discord e onde sua comunidade estiver.
                     </p>
@@ -91,7 +91,7 @@ import { MeResponseLoja } from '../../models/auth.model';
                   </div>
                   <button
                     (click)="copiarUrlLoja()"
-                    class="px-4 py-2 rounded-lg border border-candlelight-gold text-candlelight-gold hover:bg-candlelight-gold hover:text-tavern-wood transition-colors whitespace-nowrap"
+                    class="px-4 py-2 rounded-lg border border-candlelight-gold text-candlelight-gold hover:bg-candlelight-gold hover:text-tavern-wood transition-colors w-full sm:w-auto py-2.5 sm:py-2 sm:whitespace-nowrap flex-shrink-0"
                   >
                     {{ copiado() ? 'Copiado!' : 'Copiar link' }}
                   </button>

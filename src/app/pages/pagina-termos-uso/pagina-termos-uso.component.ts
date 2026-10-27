@@ -15,13 +15,13 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
       <main class="py-10 md:py-14">
         <div class="container mx-auto px-4 max-w-3xl">
           <article
-            class="pergaminho space-y-8 bg-scroll-beige border-2 border-brass-accent/50 rounded-sm p-6 md:p-10 md:px-12 text-midnight-brown shadow-[0_8px_32px_rgba(28,15,10,0.35),inset_0_1px_0_rgba(255,255,255,0.25)]"
+            class="pergaminho space-y-8 bg-scroll-beige border-2 border-brass-accent/50 rounded-sm p-4 sm:p-6 md:p-10 md:px-12 text-midnight-brown shadow-[0_8px_32px_rgba(28,15,10,0.35),inset_0_1px_0_rgba(255,255,255,0.25)]"
           >
             <header class="pb-6 border-b border-midnight-brown/15">
               <p class="text-midnight-brown/85 text-sm md:text-base leading-relaxed mb-6 italic text-left">
                 Bem-vindo(a) ao DTavern.
               </p>
-              <h1 class="font-medieval text-3xl md:text-4xl font-bold text-midnight-brown mb-3 text-center">
+              <h1 class="font-medieval text-2xl sm:text-3xl md:text-4xl break-words font-bold text-midnight-brown mb-3 text-center">
                 Termos de uso
               </h1>
               <p class="text-center text-xs md:text-sm text-midnight-brown/65">
@@ -30,7 +30,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </header>
 
             <section id="aceitacao" class="scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Aceitação dos termos
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -42,7 +42,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="quem-somos" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Quem somos e papéis na plataforma
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -52,7 +52,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 missões em PDF, trilhas e ilustrações.
               </p>
               <ul
-                class="list-disc list-inside text-sm md:text-base leading-relaxed space-y-2 pl-1 text-midnight-brown/90 marker:text-midnight-brown/50"
+                class="list-disc list-outside text-sm md:text-base leading-relaxed space-y-2 pl-5 text-midnight-brown/90 marker:text-midnight-brown/50"
               >
                 <li>
                   <strong>Comprador:</strong> navega, adquire conteúdo e acessa o material pela
@@ -79,7 +79,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="obrigacoes-vendedor" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Obrigações do vendedor
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -97,7 +97,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="condutas-proibidas" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Condutas proibidas
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -114,7 +114,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="sistemas-compativeis" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Sistemas compatíveis
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -132,7 +132,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="medidas-plataforma" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Medidas da plataforma
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -150,7 +150,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="responsabilidade-vendedor" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Responsabilidade do vendedor
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -169,7 +169,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="pedidos-reembolsos" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Pedidos anteriores, reembolsos e evidências
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -190,7 +190,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="alteracoes-termos" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Alterações destes termos
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
@@ -201,7 +201,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="contato-termos" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Contato
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">

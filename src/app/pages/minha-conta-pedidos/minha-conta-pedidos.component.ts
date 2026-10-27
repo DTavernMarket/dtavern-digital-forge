@@ -20,7 +20,7 @@ import { ClienteService } from '../../services/cliente.service';
       <section class="py-8 flex-1">
         <div class="container mx-auto px-4">
           <div class="mb-8">
-            <h1 class="text-3xl font-medieval font-bold text-scroll-beige mb-2">Meus Pedidos</h1>
+            <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige mb-2">Meus Pedidos</h1>
             <p class="text-scroll-beige/70">Acompanhe o status de todos os seus pagamentos.</p>
           </div>
 
@@ -66,10 +66,10 @@ import { ClienteService } from '../../services/cliente.service';
           } @else {
             <div class="space-y-3">
               @for (pedido of pedidos(); track pedido.dataCompra.toString() + pedido.produto.nomeNormalizado) {
-                <article class="bg-midnight-brown/50 border border-brass-accent/30 rounded-lg p-5">
+                <article class="bg-midnight-brown/50 border border-brass-accent/30 rounded-lg p-4 sm:p-5">
                   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                    <div>
-                      <p class="text-scroll-beige font-semibold text-lg">{{ pedido.produto.nome }}</p>
+                    <div class="min-w-0">
+                      <p class="text-scroll-beige font-semibold text-base sm:text-lg break-words">{{ pedido.produto.nome }}</p>
                       <p class="text-scroll-beige/70 text-sm">
                         Loja:
                         <a
@@ -81,7 +81,7 @@ import { ClienteService } from '../../services/cliente.service';
                       </p>
                       <p class="text-scroll-beige/60 text-xs mt-1">{{ formatarData(pedido.dataCompra) }}</p>
                     </div>
-                    <div class="flex items-center gap-4">
+                    <div class="flex flex-wrap items-center justify-between md:justify-end gap-2 sm:gap-4 flex-shrink-0">
                       <span class="text-candlelight-gold font-semibold">R$ {{ pedido.valorVenda | number:'1.2-2' }}</span>
                       <span
                         class="px-3 py-1 rounded-full text-xs font-semibold border"
@@ -96,7 +96,7 @@ import { ClienteService } from '../../services/cliente.service';
             </div>
 
             @if (totalPages() > 1) {
-              <div class="mt-8 flex justify-center items-center gap-4">
+              <div class="mt-8 flex flex-wrap justify-center items-center gap-2 sm:gap-4">
                 <button
                   (click)="irParaPagina(paginaAtual() - 1)"
                   [disabled]="paginaAtual() === 0"
@@ -104,7 +104,7 @@ import { ClienteService } from '../../services/cliente.service';
                 >
                   Anterior
                 </button>
-                <span class="text-scroll-beige/70">Página {{ paginaAtual() + 1 }} de {{ totalPages() }}</span>
+                <span class="text-sm sm:text-base text-scroll-beige/70">Página {{ paginaAtual() + 1 }} de {{ totalPages() }}</span>
                 <button
                   (click)="irParaPagina(paginaAtual() + 1)"
                   [disabled]="paginaAtual() >= totalPages() - 1"

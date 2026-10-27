@@ -16,7 +16,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
     RodapeComponent
   ],
   template: `
-    <div class="min-h-screen bg-tavern-wood font-body">
+    <div class="min-h-svh bg-tavern-wood font-body">
       <app-barra-navegacao [isFixed]="true" />
       <div>
         <app-secao-hero />

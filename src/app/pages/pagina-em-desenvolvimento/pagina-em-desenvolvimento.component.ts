@@ -12,9 +12,9 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
     <div class="min-h-screen bg-tavern-wood font-body">
       <app-barra-navegacao [isFixed]="false" />
 
-      <section class="flex items-center justify-center min-h-[70vh] py-16">
+      <section class="flex items-center justify-center min-h-[70svh] py-10 sm:py-16">
         <div class="container mx-auto px-4">
-          <div class="max-w-2xl mx-auto text-center bg-midnight-brown/70 border border-brass-accent/40 rounded-xl p-8 md:p-10">
+          <div class="max-w-2xl mx-auto text-center bg-midnight-brown/70 border border-brass-accent/40 rounded-xl p-5 sm:p-8 md:p-10">
             <div class="w-16 h-16 mx-auto mb-5 rounded-full bg-candlelight-gold/20 text-candlelight-gold flex items-center justify-center">
               <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -26,7 +26,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
               </svg>
             </div>
 
-            <h1 class="text-3xl md:text-4xl font-medieval font-bold text-scroll-beige mb-3">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-medieval font-bold text-scroll-beige mb-3 break-words">
               Estamos trabalhando nisso
             </h1>
             <p class="text-scroll-beige/80 text-base md:text-lg leading-relaxed mb-8">

@@ -31,7 +31,7 @@ import { Subscription } from 'rxjs';
           <!-- Cards empilhados verticalmente -->
           <div class="flex flex-col gap-6 items-center">
             <!-- Card de Informações -->
-            <div class="bg-midnight-brown/90 border border-brass-accent/40 rounded-xl p-4 md:p-6 h-fit w-[60%]">
+            <div class="bg-midnight-brown/90 border border-brass-accent/40 rounded-xl p-4 md:p-6 h-fit w-full max-w-4xl lg:w-[60%]">
               <h2 class="text-lg md:text-xl font-medieval font-semibold text-scroll-beige mb-4">
                 Informações da Conta
               </h2>
@@ -55,7 +55,7 @@ import { Subscription } from 'rxjs';
                       Nome da Loja
                     </label>
                     <div class="px-3 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
-                      <span class="text-scroll-beige/80 text-sm">{{ lojaData()?.nomeLoja || 'Não informado' }}</span>
+                      <span class="text-scroll-beige/80 text-sm break-words [overflow-wrap:anywhere]">{{ lojaData()?.nomeLoja || 'Não informado' }}</span>
                     </div>
                   </div>
 
@@ -64,7 +64,7 @@ import { Subscription } from 'rxjs';
                       Email
                     </label>
                     <div class="px-3 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
-                      <span class="text-scroll-beige/80 text-sm">{{ lojaData()?.email || 'Não informado' }}</span>
+                      <span class="text-scroll-beige/80 text-sm break-words [overflow-wrap:anywhere]">{{ lojaData()?.email || 'Não informado' }}</span>
                     </div>
                   </div>
 
@@ -73,7 +73,7 @@ import { Subscription } from 'rxjs';
                       Domínio
                     </label>
                     <div class="px-3 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
-                      <span class="text-scroll-beige/80 text-sm">{{ lojaData()?.dominio || 'Não informado' }}</span>
+                      <span class="text-scroll-beige/80 text-sm break-words [overflow-wrap:anywhere]">{{ lojaData()?.dominio || 'Não informado' }}</span>
                     </div>
                   </div>
 
@@ -82,7 +82,7 @@ import { Subscription } from 'rxjs';
                       Data de Criação da Conta
                     </label>
                     <div class="px-3 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
-                      <span class="text-scroll-beige/80 text-sm">{{ formatarData(lojaData()?.dataCriacaoConta) || 'Não informado' }}</span>
+                      <span class="text-scroll-beige/80 text-sm break-words [overflow-wrap:anywhere]">{{ formatarData(lojaData()?.dataCriacaoConta) || 'Não informado' }}</span>
                     </div>
                   </div>
                 } @else if (userRole() === 'COMPRADOR' && clienteData()) {
@@ -92,7 +92,7 @@ import { Subscription } from 'rxjs';
                       Nome Completo
                     </label>
                     <div class="px-3 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
-                      <span class="text-scroll-beige/80 text-sm">{{ clienteData()?.nomeCompleto || 'Não informado' }}</span>
+                      <span class="text-scroll-beige/80 text-sm break-words [overflow-wrap:anywhere]">{{ clienteData()?.nomeCompleto || 'Não informado' }}</span>
                     </div>
                   </div>
 
@@ -101,7 +101,7 @@ import { Subscription } from 'rxjs';
                       Apelido
                     </label>
                     <div class="px-3 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
-                      <span class="text-scroll-beige/80 text-sm">{{ clienteData()?.apelido || 'Não informado' }}</span>
+                      <span class="text-scroll-beige/80 text-sm break-words [overflow-wrap:anywhere]">{{ clienteData()?.apelido || 'Não informado' }}</span>
                     </div>
                   </div>
 
@@ -110,7 +110,7 @@ import { Subscription } from 'rxjs';
                       Email
                     </label>
                     <div class="px-3 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
-                      <span class="text-scroll-beige/80 text-sm">{{ clienteData()?.email || 'Não informado' }}</span>
+                      <span class="text-scroll-beige/80 text-sm break-words [overflow-wrap:anywhere]">{{ clienteData()?.email || 'Não informado' }}</span>
                     </div>
                   </div>
 
@@ -119,7 +119,7 @@ import { Subscription } from 'rxjs';
                       Data de Nascimento
                     </label>
                     <div class="px-3 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
-                      <span class="text-scroll-beige/80 text-sm">{{ formatarData(clienteData()?.dataNascimento) || 'Não informado' }}</span>
+                      <span class="text-scroll-beige/80 text-sm break-words [overflow-wrap:anywhere]">{{ formatarData(clienteData()?.dataNascimento) || 'Não informado' }}</span>
                     </div>
                   </div>
 
@@ -128,7 +128,7 @@ import { Subscription } from 'rxjs';
                       Data de Criação da Conta
                     </label>
                     <div class="px-3 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige">
-                      <span class="text-scroll-beige/80 text-sm">{{ formatarData(clienteData()?.dataCriacaoConta) || 'Não informado' }}</span>
+                      <span class="text-scroll-beige/80 text-sm break-words [overflow-wrap:anywhere]">{{ formatarData(clienteData()?.dataCriacaoConta) || 'Não informado' }}</span>
                     </div>
                   </div>
                 }
@@ -203,7 +203,8 @@ import { Subscription } from 'rxjs';
                         <button
                           type="button"
                           (click)="removerFotoPerfil()"
-                          class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+                          aria-label="Remover foto de perfil"
+                          class="absolute -top-3 -right-3 w-9 h-9 md:-top-2 md:-right-2 md:w-7 md:h-7 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
                         >
                           ×
                         </button>
@@ -231,7 +232,7 @@ import { Subscription } from 'rxjs';
             </div>
 
             <!-- Card de Ações -->
-            <div class="bg-midnight-brown/90 border border-brass-accent/40 rounded-xl p-4 md:p-6 h-fit w-[60%]">
+            <div class="bg-midnight-brown/90 border border-brass-accent/40 rounded-xl p-4 md:p-6 h-fit w-full max-w-4xl lg:w-[60%]">
               <h2 class="text-lg md:text-xl font-medieval font-semibold text-scroll-beige mb-4">
                 Ações da Conta
               </h2>
@@ -243,12 +244,12 @@ import { Subscription } from 'rxjs';
                 </div>
               }
 
-              <div class="flex flex-row justify-around items-center gap-3">
+              <div class="flex flex-col sm:flex-row sm:justify-around items-stretch sm:items-center gap-3">
                 <!-- Botão Deletar Conta (esquerda) -->
                 <button
                   (click)="deletarConta()"
                   [disabled]="deletando()"
-                  class="w-2/5 px-3 py-2.5 bg-red-600/20 border-2 border-red-600/50 text-red-400 font-semibold rounded-lg hover:bg-red-600/30 hover:border-red-600 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  class="w-full sm:w-2/5 px-3 py-2.5 bg-red-600/20 border-2 border-red-600/50 text-red-400 font-semibold rounded-lg hover:bg-red-600/30 hover:border-red-600 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   @if (deletando()) {
                     <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
@@ -268,7 +269,7 @@ import { Subscription } from 'rxjs';
                 <button
                   (click)="redefinirSenha()"
                   [disabled]="deletando()"
-                  class="w-2/5 px-3 py-2.5 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  class="w-full sm:w-2/5 px-3 py-2.5 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>

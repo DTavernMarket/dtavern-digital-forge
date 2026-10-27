@@ -8,30 +8,30 @@ import { CommonModule } from '@angular/common';
   template: `
     @if (mostrar) {
       <div
-        class="fixed inset-0 bg-black/50 flex items-center justify-center"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center p-4"
         [style.z-index]="zIndex"
         (click)="fechar()"
       >
         <div
-          class="bg-midnight-brown border border-brass-accent/40 rounded-xl p-6 max-w-md w-full mx-4"
+          class="bg-midnight-brown border border-brass-accent/40 rounded-xl p-5 sm:p-6 max-w-md w-full max-h-[90svh] overflow-y-auto"
           (click)="$event.stopPropagation()"
         >
-          <h3 class="text-xl font-semibold text-scroll-beige mb-4">{{ titulo }}</h3>
-          <p class="text-scroll-beige/80 mb-6">
+          <h3 class="text-lg sm:text-xl font-semibold text-scroll-beige mb-4 break-words">{{ titulo }}</h3>
+          <p class="text-scroll-beige/80 mb-6 break-words">
             {{ texto }}
           </p>
-          <div class="flex justify-end space-x-4">
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4">
             <button
               type="button"
               (click)="cancelar()"
-              class="px-6 py-2 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
+              class="w-full sm:w-auto px-6 py-2.5 sm:py-2 bg-tavern-wood/20 border border-brass-accent/40 text-scroll-beige rounded-lg hover:bg-tavern-wood/30 transition-colors"
             >
               Não
             </button>
             <button
               type="button"
               (click)="confirmar()"
-              class="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
+              class="w-full sm:w-auto px-6 py-2.5 sm:py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
             >
               Sim
             </button>

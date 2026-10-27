@@ -16,7 +16,7 @@ import { RouterModule } from '@angular/router';
       </div>
 
       <div class="container relative z-10 mx-auto px-4">
-        <div class="text-center max-w-3xl mx-auto mb-10 md:mb-12 space-y-4 md:space-y-5">
+        <div class="text-center max-w-3xl mx-auto mb-8 md:mb-12 space-y-4 md:space-y-5">
           <p class="secao-o-que-e__eyebrow">COMO FUNCIONA</p>
 
           <h2 class="secao-o-que-e__titulo">
@@ -34,8 +34,8 @@ import { RouterModule } from '@angular/router';
           </div>
         </div>
 
-        <div class="etapas-grid">
-          <div class="etapa-wrap">
+        <ol class="etapas-grid">
+          <li class="etapa-wrap">
             <article class="etapa-card">
               <span class="etapa-card__numero" aria-hidden="true">01</span>
 
@@ -67,9 +67,9 @@ import { RouterModule } from '@angular/router';
               <span class="card-connector__dot"></span>
               <span class="card-connector__line"></span>
             </div>
-          </div>
+          </li>
 
-          <div class="etapa-wrap">
+          <li class="etapa-wrap">
             <article class="etapa-card">
               <span class="etapa-card__numero" aria-hidden="true">02</span>
 
@@ -95,9 +95,9 @@ import { RouterModule } from '@angular/router';
               <span class="card-connector__dot"></span>
               <span class="card-connector__line"></span>
             </div>
-          </div>
+          </li>
 
-          <div class="etapa-wrap">
+          <li class="etapa-wrap">
             <article class="etapa-card">
               <span class="etapa-card__numero" aria-hidden="true">03</span>
 
@@ -117,14 +117,14 @@ import { RouterModule } from '@angular/router';
                 Divulgue suas criações para sua comunidade e venda seus produtos diretamente pelo DTavern.
               </p>
             </article>
-          </div>
-        </div>
+          </li>
+        </ol>
 
-        <div class="mt-12 md:mt-14 flex justify-center">
+        <div class="mt-8 md:mt-14 flex justify-center">
           <button
             [routerLink]="['/cadastro']"
             [queryParams]="{ cadastro: 'artesao' }"
-            class="px-8 py-4 bg-tavern-wood text-candlelight-gold rounded-lg font-medium hover:bg-midnight-brown hover:shadow-xl hover:scale-105 transition-all duration-300 text-lg"
+            class="w-full sm:w-auto max-w-xs px-8 py-4 bg-tavern-wood text-candlelight-gold rounded-lg font-medium hover:bg-midnight-brown hover:shadow-xl md:hover:scale-105 transition-all duration-300 text-lg"
           >
             Criar minha loja
             <svg
@@ -268,6 +268,11 @@ import { RouterModule } from '@angular/router';
         display: grid;
         grid-template-columns: 1fr;
         gap: 1.1rem;
+        max-width: 36rem;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0;
+        list-style: none;
       }
 
       .etapa-wrap {
@@ -296,11 +301,19 @@ import { RouterModule } from '@angular/router';
         pointer-events: none;
       }
 
-      .etapa-card:hover {
-        transform: translateY(-3px);
-        border-color: rgba(197, 139, 61, 0.8);
-        background: linear-gradient(180deg, #f8f1e5, #f1e6d2);
-        box-shadow: 0 10px 22px rgba(75, 46, 25, 0.16);
+      @media (hover: hover) and (min-width: 768px) {
+        .etapa-card:hover {
+          transform: translateY(-3px);
+          border-color: rgba(197, 139, 61, 0.8);
+          background: linear-gradient(180deg, #f8f1e5, #f1e6d2);
+          box-shadow: 0 10px 22px rgba(75, 46, 25, 0.16);
+        }
+
+        .etapa-card:hover .etapa-card__medalhao {
+          border-color: rgba(197, 139, 61, 0.95);
+          box-shadow: 0 0 0 3px rgba(197, 139, 61, 0.18);
+          transform: translateY(-1px);
+        }
       }
 
       .etapa-card__numero {
@@ -337,12 +350,6 @@ import { RouterModule } from '@angular/router';
         inset: 0.22rem;
         border-radius: inherit;
         border: 1px solid rgba(255, 211, 106, 0.2);
-      }
-
-      .etapa-card:hover .etapa-card__medalhao {
-        border-color: rgba(197, 139, 61, 0.95);
-        box-shadow: 0 0 0 3px rgba(197, 139, 61, 0.18);
-        transform: translateY(-1px);
       }
 
       .etapa-card__titulo {
@@ -383,15 +390,11 @@ import { RouterModule } from '@angular/router';
         background: #c58b3d;
       }
 
-      @media (min-width: 768px) {
+      @media (min-width: 1024px) {
         .etapas-grid {
           grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 0.95rem;
-        }
-
-        .etapa-card {
-          padding: 1.45rem 1.05rem 1.3rem;
-          min-height: 100%;
+          gap: 1.25rem;
+          max-width: none;
         }
 
         .card-connector {
@@ -401,26 +404,25 @@ import { RouterModule } from '@angular/router';
         .etapa-wrap:last-child .card-connector {
           display: none;
         }
-      }
-
-      @media (min-width: 1024px) {
-        .etapas-grid {
-          gap: 1.25rem;
-        }
 
         .etapa-card {
           padding: 1.55rem 1.2rem 1.4rem;
+          min-height: 100%;
         }
       }
 
       @media (max-width: 767px) {
         .secao-o-que-e {
-          padding-top: 5.5rem;
-          padding-bottom: 4.8rem;
+          padding-top: 4rem;
+          padding-bottom: 3.5rem;
         }
 
         .secao-o-que-e__top-divider {
           top: 0.15rem;
+        }
+
+        .secao-o-que-e__subtitulo {
+          font-size: 0.95rem;
         }
 
         .secao-o-que-e__divider-line {
@@ -428,11 +430,71 @@ import { RouterModule } from '@angular/router';
         }
 
         .secao-o-que-e__bottom-divider {
-          margin-top: 2.7rem;
+          margin-top: 2rem;
+        }
+
+        .etapas-grid {
+          gap: 0;
+          max-width: 30rem;
+        }
+
+        .etapa-wrap::before {
+          content: '';
+          position: absolute;
+          left: 1.25rem;
+          top: 2.5rem;
+          bottom: 0;
+          width: 1px;
+          background: linear-gradient(180deg, rgba(197, 139, 61, 0.6), rgba(197, 139, 61, 0.25));
+        }
+
+        .etapa-wrap:last-child::before {
+          display: none;
+        }
+
+        .etapa-card {
+          display: grid;
+          grid-template-columns: 2.5rem minmax(0, 1fr);
+          column-gap: 0.9rem;
+          align-items: start;
+          text-align: left;
+          padding: 0 0 1.25rem;
+          border: 0;
+          border-radius: 0;
+          background: none;
+          box-shadow: none;
+          overflow: visible;
+        }
+
+        .etapa-wrap:last-child .etapa-card {
+          padding-bottom: 0;
+        }
+
+        .etapa-card::after,
+        .etapa-card__numero {
+          display: none;
+        }
+
+        .etapa-card__medalhao {
+          grid-column: 1;
+          grid-row: span 2;
+          width: 2.5rem;
+          height: 2.5rem;
+          margin: 0;
+          z-index: 1;
+        }
+
+        .etapa-card__titulo {
+          grid-column: 2;
+          margin-bottom: 0.2rem;
+          padding-top: 0.45rem;
+          font-size: 1.05rem;
         }
 
         .etapa-card__descricao {
-          font-size: 0.93rem;
+          grid-column: 2;
+          font-size: 0.9rem;
+          line-height: 1.5;
         }
       }
     `,

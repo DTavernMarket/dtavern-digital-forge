@@ -7,10 +7,10 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section id="para-quem-e" class="py-20 bg-ash-smoke/20">
+    <section id="para-quem-e" class="py-14 md:py-20 bg-ash-smoke/20">
       <div class="container mx-auto px-4">
         <div class="text-center max-w-3xl mx-auto mb-12 space-y-4">
-          <h2 class="text-3xl md:text-5xl font-medieval font-bold text-scroll-beige">
+          <h2 class="text-2xl sm:text-3xl md:text-5xl break-words font-medieval font-bold text-scroll-beige">
             Para quem é o <span class="text-candlelight-gold">DTavern</span>
           </h2>
           <p class="text-lg text-scroll-beige/80 leading-relaxed">

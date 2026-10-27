@@ -91,7 +91,7 @@
 
 @media (max-width: 640px) {
   .ambientacao-hero__moldura {
-    inset: 4.75rem 0.75rem 3.5rem;
+    inset: 4.75rem 0.75rem 0.75rem;
   }
 
   .ambientacao-hero__ornamento--tl {
@@ -105,12 +105,12 @@
   }
 
   .ambientacao-hero__ornamento--bl {
-    bottom: calc(3.5rem + 0.3rem);
+    bottom: calc(0.75rem + 0.3rem);
     left: calc(0.75rem + 0.3rem);
   }
 
   .ambientacao-hero__ornamento--br {
-    bottom: calc(3.5rem + 0.3rem);
+    bottom: calc(0.75rem + 0.3rem);
     right: calc(0.75rem + 0.3rem);
   }
 

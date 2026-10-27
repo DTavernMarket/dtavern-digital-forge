@@ -107,7 +107,7 @@ export class InputCustomizadoComponent implements ControlValueAccessor {
   
   // Classes customizáveis
   @Input() labelClasses: string = 'text-scroll-beige/80 text-sm font-medium mb-2';
-  @Input() inputClasses: string = 'w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60';
+  @Input() inputClasses: string = 'w-full px-4 py-2 text-base bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige placeholder-scroll-beige/60';
   @Input() iconClasses: string = 'text-scroll-beige/60';
   @Input() helpTextClasses: string = 'text-scroll-beige/60';
   
@@ -175,6 +175,10 @@ export class InputCustomizadoComponent implements ControlValueAccessor {
       classes += ` ${this.height}`;
     }
     
+    if (this.icon && this.type !== 'textarea') {
+      classes += ' pr-10';
+    }
+
     // Adicionar classes de estado
     if (this.disabled) {
       classes += ' opacity-50 cursor-not-allowed';

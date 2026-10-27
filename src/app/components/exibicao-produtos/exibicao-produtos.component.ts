@@ -9,27 +9,27 @@ import { ProdutosMaisVendidosDTO } from '../../models/produto.model';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section id="produtos" class="py-20 bg-tavern-wood">
+    <section id="produtos" class="py-14 md:py-20 bg-tavern-wood">
       <div class="container mx-auto px-4">
         <!-- Cabeçalho da Seção -->
-        <div class="text-center mb-20 space-y-4">
-          <h2 class="text-3xl md:text-5xl font-medieval font-bold text-scroll-beige">
+        <div class="text-center mb-10 md:mb-20 space-y-4">
+          <h2 class="text-2xl sm:text-3xl md:text-5xl font-medieval font-bold text-scroll-beige break-words">
             Tesouros para suas
             <span class="text-candlelight-gold"> Aventuras </span>
           </h2>
 
-          <p class="text-lg text-scroll-beige/70 max-w-2xl mx-auto">
+          <p class="text-base sm:text-lg text-scroll-beige/70 max-w-2xl mx-auto">
             Descubra criações únicas feitas por artesãos talentosos. Tokens, mapas, aventuras e
             muito mais para enriquecer suas campanhas.
           </p>
         </div>
 
         <!-- Grid de Produtos -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8 mb-12">
           <a
             *ngFor="let produto of produtosEmDestaque; let i = index"
-            [routerLink]="['/explorar', produto.nomeProdutoNormalizado]"
-            class="group block bg-midnight-brown/50 backdrop-blur-sm border-brass-accent/30 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-lg cursor-pointer no-underline"
+            [routerLink]="['/produtos', produto.nomeProdutoNormalizado]"
+            class="group block bg-midnight-brown/50 border border-brass-accent/30 overflow-hidden hover:shadow-xl transition-all duration-300 md:hover:-translate-y-2 rounded-lg cursor-pointer no-underline"
           >
             <!-- Imagem do Produto -->
             <div class="relative overflow-hidden bg-tavern-wood/20 h-48">
@@ -95,10 +95,10 @@ import { ProdutosMaisVendidosDTO } from '../../models/produto.model';
             </div>
 
             <!-- Informações do Produto -->
-            <div class="p-6 space-y-4">
+            <div class="p-4 sm:p-6 space-y-4">
               <div class="space-y-2">
                 <h3
-                  class="text-lg font-semibold text-scroll-beige group-hover:text-candlelight-gold transition-colors"
+                  class="text-lg font-semibold text-scroll-beige group-hover:text-candlelight-gold transition-colors break-words"
                 >
                   {{ produto.nomeProduto }}
                 </h3>
@@ -143,7 +143,7 @@ import { ProdutosMaisVendidosDTO } from '../../models/produto.model';
         <div class="text-center">
           <button
             routerLink="/explorar"
-            class="px-8 py-3 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all"
+            class="w-full sm:w-auto max-w-xs px-8 py-3 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all"
           >
             Ver Todos os Produtos
             <svg class="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">

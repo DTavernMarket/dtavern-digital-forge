@@ -23,13 +23,13 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
       <button
         type="button"
         (click)="voltarParaLoja()"
-        class="fixed top-28 left-1/2 -translate-x-1/2 z-50 px-6 py-2 rounded-full bg-candlelight-gold text-tavern-wood font-semibold shadow-lg hover:bg-brass-accent/90 transition-colors"
+        class="hidden md:block fixed top-28 left-1/2 -translate-x-1/2 z-40 px-6 py-2 rounded-full bg-candlelight-gold text-tavern-wood font-semibold shadow-lg hover:bg-brass-accent/90 transition-colors"
       >
         Voltar para a loja
       </button>
 
       <!-- Header da Loja com Fundo do Artesão (z-20 para dropdown ficar acima da barra de abas; sem overflow-hidden para não cortar o dropdown) -->
-      <div class="relative z-20 h-96">
+      <div class="relative z-20 flex min-h-[18rem] sm:min-h-[20rem] md:min-h-[24rem]">
         <!-- Imagem de Fundo (overflow-hidden só aqui para não cortar o dropdown do header) -->
         <div
           class="absolute inset-0 overflow-hidden bg-cover bg-center bg-no-repeat"
@@ -39,25 +39,25 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
         </div>
 
         <!-- Conteúdo do Header -->
-        <div class="relative z-10 container mx-auto px-4 h-full flex items-end pb-12">
-          <div class="flex items-end space-x-6">
+        <div class="relative z-10 container mx-auto px-4 flex items-end pt-24 pb-6 md:pb-12">
+          <div class="flex flex-col sm:flex-row items-start sm:items-end gap-3 sm:gap-6 w-full min-w-0">
             <!-- Avatar do Artesão -->
-            <div class="relative">
+            <div class="relative flex-shrink-0">
               <img
                 [src]="urlImagemPerfil()"
                 [alt]="artesao()?.nome"
-                class="w-32 h-32 rounded-full border-4 border-candlelight-gold shadow-xl object-cover"
+                class="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full border-4 border-candlelight-gold shadow-xl object-cover"
               />
             </div>
 
             <!-- Informações do Artesão -->
-            <div class="text-white">
-              <div class="flex items-center gap-3">
-                <h1 class="text-4xl font-medieval font-bold">{{ artesao()?.nome }}</h1>
+            <div class="text-white min-w-0 w-full">
+              <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                <h1 class="text-2xl sm:text-3xl md:text-4xl font-medieval font-bold break-words min-w-0">{{ artesao()?.nome }}</h1>
               </div>
               
               <!-- Resumo -->
-              <div class="text-scroll-beige/70 mb-2">
+              <div class="text-scroll-beige/70 mb-2 text-sm sm:text-base break-words">
                 {{ artesao()?.resumo }}
               </div>
 
@@ -89,7 +89,7 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
       <!-- Navegação da Loja (z-10 para ficar abaixo do dropdown de configuração do header) -->
       <div class="relative z-10 bg-midnight-brown/80 border-b border-brass-accent/30">
         <div class="container mx-auto px-4">
-          <div class="flex items-center justify-between py-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 py-4">
             <div class="flex items-center space-x-8">
               
                 Produtos ({{ produtosArtesao().length }})
@@ -98,11 +98,18 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
             </div>
 
             <!-- Botões de Ação -->
-            <div class="flex items-center space-x-4">
+            <div class="flex flex-wrap items-center gap-2 sm:gap-4">
+            <button
+              type="button"
+              (click)="voltarParaLoja()"
+              class="md:hidden px-4 py-2 border border-candlelight-gold text-candlelight-gold font-semibold rounded-lg hover:bg-candlelight-gold hover:text-tavern-wood transition-colors"
+            >
+              Voltar para a loja
+            </button>
             @if (isOwner() === true) {
             <button
                 (click)="novoProduto()"
-                class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-brass-accent/90 transition-colors"
+                class="px-4 sm:px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-brass-accent/90 transition-colors"
               >
                 Novo produto
               </button>
@@ -118,8 +125,8 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
       <!-- Aba de Produtos -->
         <div class="space-y-6">
           <!-- Filtros -->
-          <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center gap-3 sm:gap-4">
             
             <app-select-customizado
               [label]="'Categoria'"
@@ -139,13 +146,13 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
               </select>
             </div>
 
-            <div class="text-scroll-beige/70">
+            <div class="text-sm sm:text-base text-scroll-beige/70">
               {{ produtosFiltrados().length }} produtos encontrados
             </div>
           </div>
 
           <!-- Grid de Produtos -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             <div
               *ngFor="let produto of produtosFiltrados()"
               class="bg-tavern-wood/10 border border-brass-accent/30 rounded-xl overflow-hidden hover:border-brass-accent/40 hover:shadow-lg transition-all duration-300 group"
@@ -208,7 +215,7 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                 @if (isOwner()) {
                 <button
                   (click)="editarProduto(produto); $event.stopPropagation()"
-                  class="absolute bottom-3 right-3 w-8 h-8 bg-candlelight-gold/90 hover:bg-candlelight-gold text-tavern-wood rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors z-10"
+                  class="absolute bottom-3 right-3 w-11 h-11 md:w-8 md:h-8 bg-candlelight-gold/90 hover:bg-candlelight-gold text-tavern-wood rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-colors z-10"
                   title="Editar produto"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,7 +231,7 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
               </div>
 
               <!-- Informações do Produto -->
-              <div class="pl-5 pr-5 pb-5 pt-2 space-y-2">
+              <div class="px-4 pb-4 sm:px-5 sm:pb-5 pt-2 space-y-2">
                 <!-- Nome do Produto -->
                 <h3
                   class="font-semibold text-scroll-beige text-lg group-hover:text-candlelight-gold transition-colors line-clamp-2"
@@ -238,7 +245,7 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
                 </p>
 
                 <!-- Preço e Botão -->
-                <div class="flex items-center justify-between pt-2 border-t border-brass-accent/20">
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-brass-accent/20">
                   <div class="flex flex-col gap-0.5">
                     @if (produto.gratuito) {
                     <span class="text-scroll-beige/50 text-sm line-through">
@@ -312,13 +319,13 @@ import { CategoriaProdutoService } from '../../services/categoria-produto.servic
 
       <!-- Dialog de Confirmação de Cancelamento -->
       @if (mostrarDialogCancelar()) {
-        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" (click)="negarCancelarEdicao()">
-          <div class="bg-midnight-brown border border-brass-accent/40 rounded-xl p-6 max-w-md w-full mx-4" (click)="$event.stopPropagation()">
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="negarCancelarEdicao()">
+          <div class="bg-midnight-brown border border-brass-accent/40 rounded-xl p-5 sm:p-6 max-w-md w-full" (click)="$event.stopPropagation()">
             <h3 class="text-xl font-semibold text-scroll-beige mb-4">Cancelar Edição?</h3>
             <p class="text-scroll-beige/80 mb-6">
               Todas as alterações que você fez não serão salvas. Deseja realmente cancelar?
             </p>
-            <div class="flex gap-3">
+            <div class="flex flex-col-reverse sm:flex-row gap-3">
               <button
                 (click)="negarCancelarEdicao()"
                 class="flex-1 px-4 py-2 bg-tavern-wood/30 border border-brass-accent/40 text-scroll-beige font-semibold rounded-lg hover:bg-tavern-wood/40 transition-colors"

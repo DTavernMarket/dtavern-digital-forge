@@ -17,28 +17,28 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
     <div class="min-h-screen bg-tavern-wood font-body">
       <app-barra-navegacao [isFixed]="false" />
       
-      <section class="flex items-center justify-center min-h-screen py-20">
+      <section class="flex items-center justify-center min-h-[calc(100svh-4rem)] py-12 md:py-20">
         <div class="container mx-auto px-4 text-center">
           <!-- Ilustração -->
-          <div class="mb-8">
-            <div class="relative mx-auto w-64 h-64">
+          <div class="mb-6 sm:mb-8">
+            <div class="relative mx-auto w-48 h-48 sm:w-64 sm:h-64">
               <!-- Círculo de fundo -->
-              <div class="absolute inset-0 bg-candlelight-gold/20 rounded-full animate-pulse"></div>
+              <div class="absolute inset-0 bg-candlelight-gold/20 rounded-full motion-safe:animate-pulse"></div>
               
               <!-- Ícone de erro -->
               <div class="absolute inset-0 flex items-center justify-center">
-                <div class="w-32 h-32 bg-stone-gray/80 backdrop-blur-sm border border-brass-accent/30 rounded-full flex items-center justify-center">
-                  <svg class="w-16 h-16 text-candlelight-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-24 h-24 sm:w-32 sm:h-32 bg-stone-gray/80 border border-brass-accent/30 rounded-full flex items-center justify-center">
+                  <svg class="w-12 h-12 sm:w-16 sm:h-16 text-candlelight-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                   </svg>
                 </div>
               </div>
               
               <!-- Partículas decorativas -->
-              <div class="absolute top-4 left-4 w-4 h-4 bg-candlelight-gold rounded-full animate-bounce"></div>
-              <div class="absolute top-8 right-8 w-3 h-3 bg-warm-amber rounded-full animate-bounce" style="animation-delay: 0.5s"></div>
-              <div class="absolute bottom-8 left-8 w-2 h-2 bg-candlelight-gold rounded-full animate-bounce" style="animation-delay: 1s"></div>
-              <div class="absolute bottom-4 right-4 w-3 h-3 bg-warm-amber rounded-full animate-bounce" style="animation-delay: 1.5s"></div>
+              <div class="absolute top-4 left-4 w-4 h-4 bg-candlelight-gold rounded-full motion-safe:animate-bounce"></div>
+              <div class="absolute top-8 right-8 w-3 h-3 bg-warm-amber rounded-full motion-safe:animate-bounce" style="animation-delay: 0.5s"></div>
+              <div class="absolute bottom-8 left-8 w-2 h-2 bg-candlelight-gold rounded-full motion-safe:animate-bounce" style="animation-delay: 1s"></div>
+              <div class="absolute bottom-4 right-4 w-3 h-3 bg-warm-amber rounded-full motion-safe:animate-bounce" style="animation-delay: 1.5s"></div>
             </div>
           </div>
 
@@ -50,26 +50,26 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                   404
                 </span>
               </h1>
-              <h2 class="text-2xl md:text-4xl font-semibold text-scroll-beige">
+              <h2 class="text-xl sm:text-2xl md:text-4xl font-semibold text-scroll-beige break-words">
                 Página Perdida no Labirinto
               </h2>
             </div>
             
-            <p class="text-lg text-scroll-beige/70 leading-relaxed">
+            <p class="text-base sm:text-lg text-scroll-beige/70 leading-relaxed">
               Parece que esta página foi engolida por um portal dimensional ou se perdeu 
               em alguma masmorra esquecida. Não se preocupe, nossos aventureiros estão 
               procurando por ela!
             </p>
 
             <!-- Estatísticas Divertidas -->
-            <div class="flex flex-wrap justify-center gap-6 text-sm">
-              <div class="flex items-center space-x-2 bg-stone-gray/60 backdrop-blur-sm rounded-lg px-4 py-2">
+            <div class="flex flex-wrap justify-center gap-3 sm:gap-6 text-sm">
+              <div class="flex items-center space-x-2 bg-stone-gray/60 rounded-lg px-4 py-2">
                 <svg class="w-4 h-4 text-candlelight-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <span class="text-scroll-beige/80">Tempo de busca: 2.5 segundos</span>
               </div>
-              <div class="flex items-center space-x-2 bg-stone-gray/60 backdrop-blur-sm rounded-lg px-4 py-2">
+              <div class="flex items-center space-x-2 bg-stone-gray/60 rounded-lg px-4 py-2">
                 <svg class="w-4 h-4 text-candlelight-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
@@ -78,10 +78,10 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </div>
 
             <!-- Botões de Ação -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+            <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 justify-center pt-4 sm:pt-6">
               <button 
                 routerLink="/"
-                class="px-8 py-3 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-base flex items-center justify-center"
+                class="w-full max-w-xs sm:w-auto px-8 py-3 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-base flex items-center justify-center"
               >
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -90,7 +90,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
               </button>
               <button 
                 routerLink="/explorar"
-                class="px-8 py-3 border-2 border-candlelight-gold text-candlelight-gold rounded-lg font-medium hover:bg-candlelight-gold hover:text-tavern-wood transition-all text-base flex items-center justify-center"
+                class="w-full max-w-xs sm:w-auto px-8 py-3 border-2 border-candlelight-gold text-candlelight-gold rounded-lg font-medium hover:bg-candlelight-gold hover:text-tavern-wood transition-all text-base flex items-center justify-center"
               >
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -100,7 +100,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </div>
 
             <!-- Dica -->
-            <div class="mt-8 p-4 bg-stone-gray/40 backdrop-blur-sm border border-brass-accent/30 rounded-lg">
+            <div class="mt-6 sm:mt-8 p-4 bg-stone-gray/40 border border-brass-accent/30 rounded-lg">
               <p class="text-sm text-scroll-beige/60">
                 💡 <strong>Dica:</strong> Verifique se o URL está correto ou use a barra de navegação 
                 para encontrar o que procura.

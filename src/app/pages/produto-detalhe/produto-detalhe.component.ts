@@ -15,7 +15,7 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
     <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown font-body">
       <app-barra-navegacao [isFixed]="true" />
 
-      <div class="container mx-auto px-4 pt-28 pb-12">
+      <div class="container mx-auto px-4 pt-20 sm:pt-28 pb-12">
         @if (carregando()) {
           <div class="flex justify-center items-center py-20">
             <svg
@@ -51,7 +51,7 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
         } @else if (produto) {
           <!-- Navegação (Breadcrumb) -->
           <div class="mb-6">
-            <nav class="text-sm text-scroll-beige/70">
+            <nav class="text-sm text-scroll-beige/70 break-words">
               @if (produto.nomeLoja && produto.dominioLoja) {
                 <a
                   [routerLink]="['/lojas', produto.dominioLoja]"
@@ -68,17 +68,17 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
           </div>
 
           <!-- Layout: Container principal com imagem e detalhes -->
-          <div class="flex flex-col lg:flex-row gap-10 items-center">
+          <div class="flex flex-col lg:flex-row gap-6 lg:gap-10 items-center">
             <!-- 1) Imagem - ~45% -->
-            <div class="w-full lg:w-[45%] flex justify-center bg-midnight-brown/90 rounded-lg border border-brass-accent/40">
+            <div class="w-full lg:w-[45%] flex justify-center bg-midnight-brown/90 rounded-lg border border-brass-accent/40 overflow-hidden">
               @if (produto.midiaPreview?.url) {
                 <img
                   [src]="produto.midiaPreview?.url"
                   [alt]="produto.nome"
-                  class="max-h-[640px] w-auto object-contain"
+                  class="max-h-[60svh] lg:max-h-[640px] max-w-full w-auto object-contain"
                 />
               } @else {
-                <div class="flex flex-col items-center justify-center text-scroll-beige/40">
+                <div class="flex flex-col items-center justify-center text-center px-4 py-10 text-scroll-beige/40">
                   <svg
                     class="w-24 h-24 mb-4"
                     fill="none"
@@ -99,7 +99,7 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
 
             <!-- 2) Título + info da loja + resumo (200 caracteres) + preço/botão - ~55% -->
             <div class="w-full lg:w-[55%] space-y-4">
-              <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige">
+              <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige break-words">
                 {{ produto.nome }}
               </h1>
 
@@ -115,7 +115,7 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
                 </p>
               }
 
-              <p class="text-lg text-scroll-beige/80 leading-relaxed">
+              <p class="text-base sm:text-lg text-scroll-beige/80 leading-relaxed break-words">
                 {{
                   (produto.descricao || '').substring(0, 200)
                 }}
@@ -178,7 +178,7 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
                       </button>
                     }
                     @if (compraSucesso() && !produto.gratuito) {
-                      <div class="mt-1 flex gap-3 text-xs">
+                      <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs">
                         <button
                           type="button"
                           (click)="irParaPedidos()"
@@ -205,9 +205,9 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
           </div>
 
           <!-- Descrição Completa (abaixo das 2 colunas) -->
-          <div class="mt-10">
+          <div class="mt-8 sm:mt-10">
             <h2 class="text-xl font-semibold text-scroll-beige mb-3">Descrição do produto</h2>
-            <p class="text-scroll-beige/80 leading-relaxed whitespace-pre-line">
+            <p class="text-scroll-beige/80 leading-relaxed whitespace-pre-line break-words">
               {{ produto.descricao || 'Nenhuma descrição disponível para este produto.' }}
             </p>
           </div>
@@ -217,13 +217,14 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
 
     <!-- Dialog de Pagamento PIX -->
     @if (mostrarDialogPix()) {
-      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" (click)="fecharDialogPix()">
-        <div class="bg-midnight-brown border border-brass-accent/40 rounded-xl p-6 max-w-md w-full shadow-2xl" (click)="$event.stopPropagation()">
+      <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4" (click)="fecharDialogPix()">
+        <div class="bg-midnight-brown border border-brass-accent/40 rounded-xl p-4 sm:p-6 max-w-md w-full max-h-[92svh] overflow-y-auto shadow-2xl" (click)="$event.stopPropagation()">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-semibold text-scroll-beige">Pagamento PIX</h2>
             <button
               (click)="fecharDialogPix()"
-              class="text-scroll-beige/70 hover:text-scroll-beige transition-colors"
+              aria-label="Fechar"
+              class="-mr-2 p-2 text-scroll-beige/70 hover:text-scroll-beige transition-colors"
             >
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -248,11 +249,11 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
 
             <!-- QR Code -->
             @if (pagamentoPix()?.qrCodeBase64) {
-              <div class="flex justify-center bg-white p-4 rounded-lg">
+              <div class="flex justify-center bg-white p-3 sm:p-4 rounded-lg mx-auto w-full max-w-[16rem] sm:max-w-none">
                 <img
                   [src]="'data:image/png;base64,' + pagamentoPix()!.qrCodeBase64"
                   alt="QR Code PIX"
-                  class="max-w-full h-auto"
+                  class="w-full max-w-full h-auto"
                 />
               </div>
             }
@@ -285,18 +286,18 @@ import { PagamentoPixResponse } from '../../models/pagamento.model';
               </p>
             }
 
-            <div class="flex gap-2 pt-2">
+            <div class="flex flex-col sm:flex-row gap-2 pt-2">
               <button
                 type="button"
                 (click)="irParaPedidos()"
-                class="flex-1 py-2 border border-candlelight-gold text-candlelight-gold rounded-lg hover:bg-candlelight-gold hover:text-tavern-wood transition-colors text-sm"
+                class="flex-1 py-2.5 sm:py-2 border border-candlelight-gold text-candlelight-gold rounded-lg hover:bg-candlelight-gold hover:text-tavern-wood transition-colors text-sm"
               >
                 Acompanhar pedido
               </button>
               <button
                 type="button"
                 (click)="fecharDialogPix()"
-                class="flex-1 py-2 bg-candlelight-gold text-tavern-wood rounded-lg hover:bg-candlelight-gold/90 transition-colors text-sm"
+                class="flex-1 py-2.5 sm:py-2 bg-candlelight-gold text-tavern-wood rounded-lg hover:bg-candlelight-gold/90 transition-colors text-sm"
               >
                 Fechar
               </button>

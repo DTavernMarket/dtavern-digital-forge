@@ -7,10 +7,10 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section id="cta-final" class="py-20 bg-ash-smoke/25 border-t border-brass-accent/20">
+    <section id="cta-final" class="py-14 md:py-20 bg-ash-smoke/25 border-t border-brass-accent/20">
       <div class="container mx-auto px-4">
         <div class="max-w-4xl mx-auto text-center space-y-6">
-          <h2 class="text-3xl md:text-5xl font-medieval font-bold text-scroll-beige">
+          <h2 class="text-2xl sm:text-3xl md:text-5xl break-words font-medieval font-bold text-scroll-beige">
             Pronto para comecar?
           </h2>
 

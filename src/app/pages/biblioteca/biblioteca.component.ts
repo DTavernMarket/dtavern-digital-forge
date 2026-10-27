@@ -22,14 +22,14 @@ import { firstValueFrom } from 'rxjs';
         <div class="container mx-auto px-4">
           <!-- Título da Página -->
           <div class="mb-8">
-            <h1 class="text-3xl font-medieval font-bold text-scroll-beige mb-2">Minha Biblioteca</h1>
+            <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige mb-2">Minha Biblioteca</h1>
             <p class="text-scroll-beige/70">Produtos que você comprou e adicionou à sua biblioteca</p>
           </div>
 
           <!-- Barra de Busca -->
           <div class="mb-6">
             <div class="relative max-w-md flex gap-2">
-              <div class="relative flex-1">
+              <div class="relative flex-1 min-w-0">
                 <input
                   type="text"
                   [(ngModel)]="termoBusca"
@@ -53,7 +53,7 @@ import { firstValueFrom } from 'rxjs';
               </div>
               <button
                 (click)="buscarProdutos()"
-                class="px-6 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors"
+                class="px-4 sm:px-6 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors"
               >
                 Buscar
               </button>
@@ -91,12 +91,13 @@ import { firstValueFrom } from 'rxjs';
             <div class="space-y-4">
               @for (item of biblioteca(); track item.produto.nomeNormalizado) {
                 <div
-                  class="bg-midnight-brown/50 backdrop-blur-sm border border-brass-accent/30 rounded-lg p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  class="bg-midnight-brown/50 backdrop-blur-sm border border-brass-accent/30 rounded-lg p-4 sm:p-6 hover:shadow-xl transition-all duration-300 md:hover:-translate-y-1"
                 >
-                  <div class="flex space-x-6">
+                  <div class="flex flex-col sm:flex-row gap-4 sm:gap-6">
+                    <div class="flex gap-4 sm:gap-6 flex-1 min-w-0">
                     <!-- Imagem do Produto -->
                     <div class="flex-shrink-0">
-                      <div class="relative w-32 h-32 bg-tavern-wood/20 rounded-lg overflow-hidden">
+                      <div class="relative w-20 h-20 sm:w-32 sm:h-32 bg-tavern-wood/20 rounded-lg overflow-hidden">
                         @if (item.produto.midiaPreview?.url) {
                           <img
                             [src]="item.produto.midiaPreview?.url || ''"
@@ -106,7 +107,7 @@ import { firstValueFrom } from 'rxjs';
                         } @else {
                           <div class="w-full h-full flex items-center justify-center">
                             <svg
-                              class="w-16 h-16 text-scroll-beige/30"
+                              class="w-10 h-10 sm:w-16 sm:h-16 text-scroll-beige/30"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -121,9 +122,9 @@ import { firstValueFrom } from 'rxjs';
                           </div>
                         }
                         <!-- Badge de Categoria -->
-                        <div class="absolute top-2 left-2">
+                        <div class="hidden sm:block absolute top-2 left-2 max-w-[90%]">
                           <span
-                            class="bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold px-2 py-1 rounded-full"
+                            class="block truncate bg-candlelight-gold/90 text-tavern-wood text-xs font-semibold px-2 py-1 rounded-full"
                           >
                             {{ item.produto.categoriaCodigo }}
                           </span>
@@ -133,12 +134,12 @@ import { firstValueFrom } from 'rxjs';
 
                     <!-- Informações do Produto -->
                     <div class="flex-1 min-w-0">
-                      <div class="space-y-3">
+                      <div class="space-y-2 sm:space-y-3">
                         <!-- Nome do Produto -->
                         <div>
                           <h3
                             [routerLink]="['/produtos', item.produto.nomeNormalizado]"
-                            class="text-xl font-semibold text-scroll-beige hover:text-candlelight-gold transition-colors cursor-pointer inline-block"
+                            class="text-lg sm:text-xl break-words font-semibold text-scroll-beige hover:text-candlelight-gold transition-colors cursor-pointer inline-block"
                           >
                             {{ item.produto.nome }}
                           </h3>
@@ -173,13 +174,14 @@ import { firstValueFrom } from 'rxjs';
                         </div>
                       </div>
                     </div>
+                    </div>
 
                     <!-- Botão de Download -->
-                    <div class="flex-shrink-0 flex items-center">
+                    <div class="flex-shrink-0 flex sm:items-center">
                       <button
                         (click)="onDownload($event, item); $event.stopPropagation()"
                         [disabled]="baixando(item.produto.nomeNormalizado)"
-                        class="px-6 py-3 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="w-full sm:w-auto px-6 py-3 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-lg transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {{ baixando(item.produto.nomeNormalizado) ? 'Baixando...' : 'Download' }}
                       </button>
@@ -191,7 +193,7 @@ import { firstValueFrom } from 'rxjs';
 
             <!-- Paginação -->
             @if (totalPages() > 1) {
-              <div class="mt-8 flex justify-center items-center gap-4">
+              <div class="mt-8 flex flex-wrap justify-center items-center gap-2 sm:gap-4">
                 <button
                   (click)="irParaPagina(paginaAtual() - 1)"
                   [disabled]="paginaAtual() === 0"
@@ -199,7 +201,7 @@ import { firstValueFrom } from 'rxjs';
                 >
                   Anterior
                 </button>
-                <span class="text-scroll-beige/70">
+                <span class="text-sm sm:text-base text-scroll-beige/70">
                   Página {{ paginaAtual() + 1 }} de {{ totalPages() }}
                 </span>
                 <button

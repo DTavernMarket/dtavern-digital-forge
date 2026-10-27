@@ -95,7 +95,6 @@ import { RouterModule } from '@angular/router';
 
     .rodape {
       background: rgba(28, 15, 10, 0.9);
-      backdrop-filter: blur(4px);
       border-top: 1px solid rgba(197, 139, 61, 0.28);
     }
 
@@ -218,6 +217,31 @@ import { RouterModule } from '@angular/router';
       gap: 0.4rem 1.25rem;
       font-size: 0.75rem;
       line-height: 1.4;
+    }
+
+    @media (max-width: 767px) {
+      .rodape__descricao,
+      .rodape__texto,
+      .rodape__contato,
+      .rodape__copyright,
+      .rodape__legal-links {
+        font-size: 0.875rem;
+      }
+
+      .rodape__lista .rodape__link,
+      .rodape__legal-links .rodape__link {
+        display: inline-block;
+        padding-block: 0.3rem;
+      }
+
+      .rodape__botao-contato {
+        font-size: 0.875rem;
+        padding: 0.65rem 1.1rem;
+      }
+
+      .rodape__legal {
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+      }
     }
 
     @media (min-width: 768px) {

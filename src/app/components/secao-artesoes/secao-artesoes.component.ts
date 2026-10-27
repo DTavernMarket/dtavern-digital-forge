@@ -8,14 +8,14 @@ import { Artesao } from '../../models/artesao.model';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section id="artesaos" class="py-20 bg-ash-smoke/30">
+    <section id="artesaos" class="py-14 md:py-20 bg-ash-smoke/30">
       <div class="container mx-auto px-4">
         <!-- Cabecalho da secao -->
         <div class="text-center mb-6 space-y-4">
           <p class="text-sm uppercase tracking-[0.2em] text-candlelight-gold/80 font-semibold">
             Comunidade ativa
           </p>
-          <h2 class="text-3xl md:text-5xl font-medieval font-bold text-scroll-beige">
+          <h2 class="text-2xl sm:text-3xl md:text-5xl break-words font-medieval font-bold text-scroll-beige">
             Criadores reais em
             <span class="text-candlelight-gold"> destaque </span>
           </h2>

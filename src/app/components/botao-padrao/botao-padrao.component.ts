@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -32,9 +32,20 @@ import { RouterModule } from '@angular/router';
          @apply bg-candlelight-gold text-tavern-wood rounded-lg font-medium transition-all duration-300 border-none cursor-pointer inline-flex items-center justify-center;
        }
 
-       button:hover {
-         @apply shadow-lg;
-       }
+      :host(.botao-largura-total) {
+        display: block;
+        width: 100%;
+      }
+
+      @media (hover: hover) {
+        button:hover {
+          @apply shadow-lg;
+        }
+
+        button:hover::before {
+          left: 100%;
+        }
+      }
 
              button:disabled {
          @apply opacity-50 cursor-not-allowed;
@@ -52,10 +63,6 @@ import { RouterModule } from '@angular/router';
         z-index: 1;
       }
 
-      button:hover::before {
-        left: 100%;
-      }
-
       button:disabled::before {
         display: none;
       }
@@ -68,12 +75,12 @@ export class BotaoPadraoComponent {
   @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() disabled = false;
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
-  @Input() fullWidth = false;
+  @Input() @HostBinding('class.botao-largura-total') fullWidth = false;
 
      getClasses(): string {
      const sizeClasses = {
-       sm: 'px-3 py-1.5 text-sm',
-       md: 'px-4 py-2 text-sm',
+       sm: 'px-3 py-1.5 text-sm min-h-[40px] sm:min-h-0',
+       md: 'px-4 py-2 text-sm min-h-[44px] sm:min-h-0',
        lg: 'px-6 py-3 text-base'
      };
      const widthClass = this.fullWidth ? 'w-full' : '';

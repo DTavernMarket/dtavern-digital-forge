@@ -29,7 +29,7 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
     />
     @if (uploadMidiaMensagem()) {
       <div
-        class="fixed top-24 left-1/2 -translate-x-1/2 z-[210] px-4 py-3 rounded-lg shadow-xl border border-brass-accent/40 max-w-sm text-center text-sm bg-midnight-brown/95"
+        class="fixed top-24 left-1/2 -translate-x-1/2 z-[210] px-4 py-3 rounded-lg shadow-xl border border-brass-accent/40 w-[calc(100%-2rem)] max-w-sm text-center text-sm bg-midnight-brown/95"
         [class.text-green-400]="uploadMidiaMensagem()?.startsWith('Upload concluído')"
         [class.text-red-400]="uploadMidiaMensagem() && !uploadMidiaMensagem()?.startsWith('Upload concluído')"
       >
@@ -37,12 +37,12 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
       </div>
     }
     <div
-      class="fixed inset-0 bg-black/60 flex items-center justify-center z-[200] p-4"
+      class="fixed inset-0 bg-black/60 flex items-center justify-center z-[200] p-3 sm:p-4"
       
       (mousedown)="onOverlayMouseDown($event)"
       (mouseup)="onOverlayMouseUp($event)"
     >
-      <div class="relative bg-midnight-brown border border-brass-accent/40 rounded-xl overflow-hidden shadow-2xl max-w-lg w-full max-h-[90vh] flex flex-col" (click)="$event.stopPropagation()">
+      <div class="relative bg-midnight-brown border border-brass-accent/40 rounded-xl overflow-hidden shadow-2xl max-w-lg w-full max-h-[92svh] sm:max-h-[90vh] flex flex-col" (click)="$event.stopPropagation()">
         <!-- Botão fechar -->
         <button
           type="button"
@@ -64,9 +64,9 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
             >
               <div class="absolute inset-0 bg-black/50"></div>
             </div>
-            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/header:opacity-100 transition-opacity duration-200 bg-black/40 rounded-t-xl">
-              <div class="w-14 h-14 rounded-full bg-black/70 flex items-center justify-center">
-                <img src="assets/images/icon-maquina-fotografica.png" alt="Mudar imagem" class="w-14 h-14 object-contain" />
+            <div class="absolute inset-0 flex items-center justify-center opacity-100 md:opacity-0 md:group-hover/header:opacity-100 transition-opacity duration-200 bg-black/20 md:bg-black/40 rounded-t-xl">
+              <div class="w-11 h-11 md:w-14 md:h-14 rounded-full bg-black/70 flex items-center justify-center">
+                <img src="assets/images/icon-maquina-fotografica.png" alt="Mudar imagem" class="w-11 h-11 md:w-14 md:h-14 object-contain" />
               </div>
             </div>
           </div>
@@ -76,22 +76,22 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
               <img
                 [src]="urlPreviewPerfil() || urlImagemPerfil()"
                 [alt]="artesao()?.nome"
-                class="w-24 h-24 object-cover bg-midnight-brown block"
+                class="w-20 h-20 sm:w-24 sm:h-24 object-cover bg-midnight-brown block"
               />
-              <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/perfil:opacity-100 transition-opacity duration-200 bg-black/50 rounded-full">
-                <div class="w-14 h-14 rounded-full bg-black/70 flex items-center justify-center">
-                  <img src="assets/images/icon-maquina-fotografica.png" alt="Mudar foto de perfil" class="w-14 h-14 object-contain" />
+              <div class="absolute inset-0 flex items-center justify-center opacity-100 md:opacity-0 md:group-hover/perfil:opacity-100 transition-opacity duration-200 bg-black/30 md:bg-black/50 rounded-full">
+                <div class="w-10 h-10 md:w-14 md:h-14 rounded-full bg-black/70 flex items-center justify-center">
+                  <img src="assets/images/icon-maquina-fotografica.png" alt="Mudar foto de perfil" class="w-10 h-10 md:w-14 md:h-14 object-contain" />
                 </div>
               </div>
             </div>
           </div>
         </div>
         <!-- Nome da loja (fixo, abaixo da foto de perfil; mesma variável do campo editável) -->
-        <div class="flex-shrink-0 px-6 pt-14 pb-2">
-          <h2 class="text-2xl font-medieval font-bold text-scroll-beige">{{ nomeEditado() }}</h2>
+        <div class="flex-shrink-0 px-4 sm:px-6 pt-12 sm:pt-14 pb-2">
+          <h2 class="text-xl sm:text-2xl font-medieval font-bold text-scroll-beige break-words">{{ nomeEditado() }}</h2>
         </div>
         <!-- Conteúdo rolável: Nome, Especialidades, Resumo, Descrição e botões -->
-        <div class="flex-1 min-h-0 overflow-y-auto px-6 pb-6 space-y-5">
+        <div class="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 pb-6 space-y-5">
           <div>
             <label class="block text-sm font-medium text-scroll-beige/80 mb-2">Nome da loja</label>
             <input
@@ -128,7 +128,7 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
                   <button
                     type="button"
                     (click)="removerEspecialidade(esp)"
-                    class="p-0.5 rounded hover:bg-white/10 text-scroll-beige/80 hover:text-scroll-beige transition-colors"
+                    class="p-1.5 -m-1 rounded hover:bg-white/10 text-scroll-beige/80 hover:text-scroll-beige transition-colors"
                     aria-label="Remover especialidade"
                   >
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,11 +169,11 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
               placeholder="Nenhuma descrição informada."
             ></textarea>
           </div>
-          <div class="flex justify-end gap-3 pt-2">
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
             <button
               type="button"
               (click)="tentarFechar()"
-              class="px-6 py-2 bg-tavern-wood/30 border border-brass-accent/40 text-scroll-beige font-semibold rounded-lg hover:bg-tavern-wood/40 transition-colors"
+              class="w-full sm:w-auto px-6 py-2.5 sm:py-2 bg-tavern-wood/30 border border-brass-accent/40 text-scroll-beige font-semibold rounded-lg hover:bg-tavern-wood/40 transition-colors"
             >
               Fechar
             </button>
@@ -181,7 +181,7 @@ import { DialogConfirmacaoComponent } from '../dialog-confirmacao/dialog-confirm
               type="button"
               (click)="salvarLoja()"
               [disabled]="uploadMidiaLoading()"
-              class="px-6 py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full sm:w-auto px-6 py-2.5 sm:py-2 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {{ uploadMidiaLoading() ? 'Enviando...' : 'Salvar' }}
             </button>

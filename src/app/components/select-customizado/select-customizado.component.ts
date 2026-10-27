@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, forwardRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, forwardRef, HostListener, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
@@ -29,8 +29,8 @@ export interface OpcaoSelect {
           (click)="toggleDropdown();"
           [class]="buttonClasses"
         >
-          <span>{{ obterTextoSelecionado() }}</span>
-          <svg class="w-4 h-4 transition-transform" [class.rotate-180]="isOpen()" [class]="iconClasses" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <span class="truncate min-w-0 text-left">{{ obterTextoSelecionado() }}</span>
+          <svg class="w-4 h-4 ml-2 flex-shrink-0 transition-transform" [class.rotate-180]="isOpen()" [class]="iconClasses" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
         </button>
@@ -66,10 +66,12 @@ export class SelectCustomizadoComponent implements ControlValueAccessor {
   @Input() labelClasses: string = 'text-scroll-beige/80 text-sm font-medium mb-2';
   @Input() buttonClasses: string = 'w-full px-4 py-2 backdrop-blur-sm bg-tavern-wood/20 border border-brass-accent/40 rounded-lg rounded-lg text-scroll-beige flex items-center justify-between';
   @Input() iconClasses: string = 'text-scroll-beige/60';
-  @Input() dropdownClasses: string = 'absolute top-full left-0 right-0 mt-1 bg-midnight-brown border border-brass-accent/30 rounded-lg shadow-xl z-50';
-  @Input() optionClasses: string = 'w-full text-left px-3 py-1.5 text-scroll-beige hover:bg-stone-gray/40 transition-colors text-sm';
+  @Input() dropdownClasses: string = 'absolute top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto bg-midnight-brown border border-brass-accent/30 rounded-lg shadow-xl z-50';
+  @Input() optionClasses: string = 'w-full text-left px-3 py-2.5 sm:py-1.5 text-scroll-beige hover:bg-stone-gray/40 transition-colors text-sm';
 
   @Output() valorMudou = new EventEmitter<string>();
+
+  private elementRef = inject(ElementRef);
 
   isOpen = signal(false);
   value: string = '';
@@ -78,6 +80,13 @@ export class SelectCustomizadoComponent implements ControlValueAccessor {
   // ControlValueAccessor implementation
   private onChange = (value: string) => {};
   private onTouched = () => {};
+
+  @HostListener('document:click', ['$event'])
+  fecharAoClicarFora(event: Event) {
+    if (this.isOpen() && !this.elementRef.nativeElement.contains(event.target as Node)) {
+      this.isOpen.set(false);
+    }
+  }
 
   toggleDropdown() {
     this.isOpen.set(!this.isOpen());

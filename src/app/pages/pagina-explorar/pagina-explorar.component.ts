@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -25,16 +25,16 @@ import { TagModule } from 'primeng/tag';
       <app-barra-navegacao [isFixed]="false" />
 
       <!-- Layout Principal: Filtros + Produtos -->
-      <section class="py-8">
+      <section class="py-6 sm:py-8">
         <div class="container mx-auto px-4">
-          <div class="flex flex-col lg:flex-row gap-8">
+          <div class="flex flex-col lg:flex-row gap-6 lg:gap-8">
             <!-- Sidebar de Filtros (Esquerda) -->
             <div class="lg:w-80 flex-shrink-0">
               <div
-                class="bg-midnight-brown/50 backdrop-blur-sm border border-brass-accent/30 rounded-lg p-6 top-32"
+                class="bg-midnight-brown/50 backdrop-blur-sm border border-brass-accent/30 rounded-lg p-4 sm:p-6 top-32"
               >
                 <!-- Filtros de Busca -->
-                <div class="mb-6">
+                <div class="mb-4 sm:mb-6">
                   <h3 class="text-lg font-semibold text-scroll-beige mb-4">Filtros</h3>
 
                   <!-- Barra de Busca -->
@@ -72,7 +72,7 @@ import { TagModule } from 'primeng/tag';
              </div>
 
             <!-- Área Principal dos Artesãos (Direita) -->
-            <div class="p-4 flex-1 flex flex-col gap-4 bg-midnight-brown backdrop-blur-sm border border-brass-accent/30 rounded-lg">
+            <div class="p-2 sm:p-4 flex-1 min-w-0 flex flex-col gap-4 bg-midnight-brown backdrop-blur-sm border border-brass-accent/30 rounded-lg">
               <!-- DataView de Lojas -->
               <p-dataview
                 #dv
@@ -84,20 +84,20 @@ import { TagModule } from 'primeng/tag';
                 [paginatorPosition]="'bottom'"
                 [paginatorDropdownAppendTo]="'body'"
                 [totalRecords]="totalElementos()"
-                [pageLinks]="5"
+                [pageLinks]="quantidadeLinksPaginacao()"
                 [showCurrentPageReport]="true"
                 [currentPageReportTemplate]="textoRelatorioPaginacao"
                 (onPage)="aoMudarPaginaDataView($event)"
               >
                 <ng-template #grid let-artesaos>
-                    <div class="grid grid-cols-12 gap-4 items-stretch">
-                        <div *ngFor="let artesao of artesaos" class="col-span-12 sm:col-span-6 md:col-span-4 xl:col-span-4 p-2 flex">
+                    <div class="grid grid-cols-12 gap-2 sm:gap-4 items-stretch">
+                        <div *ngFor="let artesao of artesaos" class="col-span-12 sm:col-span-6 xl:col-span-4 p-1 sm:p-2 flex">
                             <a
                               [routerLink]="['/lojas', artesao.dominio]"
-                              class="card-artesao-link group/card bg-ash-smoke/30 backdrop-blur-sm border border-brass-accent/30 rounded flex min-h-[28rem] w-full flex-1 cursor-pointer flex-col overflow-hidden no-underline transition-all duration-200 ease-out hover:shadow-xl transition-all duration-300 hover:-translate-y-2 hover:border-brass-accent/50 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-accent focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-brown sm:min-h-[30rem]"
+                              class="card-artesao-link group/card bg-ash-smoke/30 backdrop-blur-sm border border-brass-accent/30 rounded flex min-h-[26rem] w-full flex-1 cursor-pointer flex-col overflow-hidden no-underline transition-all duration-200 ease-out hover:shadow-xl transition-all duration-300 md:hover:-translate-y-2 hover:border-brass-accent/50 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brass-accent focus-visible:ring-offset-2 focus-visible:ring-offset-midnight-brown sm:min-h-[30rem]"
                               [attr.aria-label]="'Abrir loja de ' + artesao.nome"
                             >
-                                <div class="relative h-[240px] w-full shrink-0">
+                                <div class="relative h-[200px] sm:h-[240px] w-full shrink-0">
                                     <div
                                       class="absolute inset-0 bg-cover bg-center bg-no-repeat"
                                       [style.background-image]="'url(' + urlImagemHeader(artesao) + ')'"
@@ -115,17 +115,17 @@ import { TagModule } from 'primeng/tag';
                                     <!-- Foto de perfil centralizada sobre a capa -->
                                     <div class="relative z-[1] flex h-full w-full items-center justify-center p-2">
                                       <img
-                                        class="h-[168px] w-[168px] object-cover rounded bg-scroll-beige shadow-lg ring-2 ring-brass-accent"
+                                        class="h-[136px] w-[136px] sm:h-[168px] sm:w-[168px] object-cover rounded bg-scroll-beige shadow-lg ring-2 ring-brass-accent"
                                         [src]="urlImagemPerfil(artesao)"
                                         [alt]="artesao.nome"
                                       />
                                     </div>
                                 </div>
-                                <div class="pr-6 pl-6 pb-6 pt-3 flex min-h-[12rem] flex-1 flex-col">
+                                <div class="px-4 pb-4 sm:px-6 sm:pb-6 pt-3 flex min-h-[10rem] sm:min-h-[12rem] flex-1 flex-col">
                                   <div class="flex flex-col gap-3 flex-1">
-                                      <span class="text-2xl font-semibold text-scroll-beige shrink-0">{{ artesao.nome }}</span>
+                                      <span class="text-xl sm:text-2xl font-semibold text-scroll-beige shrink-0 break-words">{{ artesao.nome }}</span>
                                       <div class="flex flex-1 flex-col gap-2 min-h-[5.5rem]">
-                                        <span class="text-medium text-scroll-beige/70 font-medium">
+                                        <span class="text-base text-scroll-beige/70 font-medium break-words">
                                           {{ artesao.resumo?.trim() ? artesao.resumo : ' ' }}
                                         </span>
                                         <span class="text-sm text-scroll-beige/70 line-clamp-5">
@@ -133,7 +133,7 @@ import { TagModule } from 'primeng/tag';
                                         </span>
                                       </div>
 
-                                      <span class="text-medium font-medium text-scroll-beige/70 group-hover/card:text-candlelight-gold transition-colors">
+                                      <span class="text-base font-medium text-scroll-beige/70 group-hover/card:text-candlelight-gold transition-colors">
                                         Ver loja →
                                       </span>
                                   </div>
@@ -301,6 +301,33 @@ import { TagModule } from 'primeng/tag';
         border-color: #c58b3d !important;
       }
 
+      @media (max-width: 639px) {
+        :host ::ng-deep .p-dataview p-paginator.p-paginator,
+        :host ::ng-deep .p-dataview .p-dataview-paginator-bottom {
+          gap: 0.5rem 0.25rem;
+          padding: 1rem 0 0.5rem !important;
+        }
+
+        :host ::ng-deep .p-dataview .p-paginator-first,
+        :host ::ng-deep .p-dataview .p-paginator-last {
+          display: none !important;
+        }
+
+        :host ::ng-deep .p-dataview .p-paginator-pages {
+          gap: 0.25rem;
+          margin: 0;
+        }
+
+        :host ::ng-deep .p-dataview .p-paginator .p-paginator-current {
+          order: 99;
+          width: 100%;
+          text-align: center;
+          white-space: normal;
+          font-size: 0.8125rem;
+          padding: 0;
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .card-artesao-link {
           transition: none;
@@ -325,6 +352,14 @@ export class PaginaExplorarComponent implements OnInit {
 
   /** Índice inicial (0-based) para o DataView ficar alinhado a `paginaAtual`. */
   indicePrimeiroItem = computed(() => this.paginaAtual() * this.itensPorPagina);
+
+  private larguraTela = signal(typeof window !== 'undefined' ? window.innerWidth : 1024);
+  quantidadeLinksPaginacao = computed(() => (this.larguraTela() < 640 ? 3 : 5));
+
+  @HostListener('window:resize')
+  aoRedimensionarTela() {
+    this.larguraTela.set(window.innerWidth);
+  }
 
   termoBusca = signal('');
   paginaAtual = signal(0);

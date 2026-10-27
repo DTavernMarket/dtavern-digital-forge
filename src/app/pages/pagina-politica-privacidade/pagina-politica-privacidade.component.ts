@@ -15,13 +15,13 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
       <main class="py-10 md:py-14">
         <div class="container mx-auto px-4 max-w-3xl">
           <article
-            class="pergaminho space-y-8 bg-scroll-beige border-2 border-brass-accent/50 rounded-sm p-6 md:p-10 md:px-12 text-midnight-brown shadow-[0_8px_32px_rgba(28,15,10,0.35),inset_0_1px_0_rgba(255,255,255,0.25)]"
+            class="pergaminho space-y-8 bg-scroll-beige border-2 border-brass-accent/50 rounded-sm p-4 sm:p-6 md:p-10 md:px-12 text-midnight-brown shadow-[0_8px_32px_rgba(28,15,10,0.35),inset_0_1px_0_rgba(255,255,255,0.25)]"
           >
             <header class="pb-6 border-b border-midnight-brown/15">
               <p class="text-midnight-brown/85 text-sm md:text-base leading-relaxed mb-6 italic text-left">
                 Transparência no tratamento de dados.
               </p>
-              <h1 class="font-medieval text-3xl md:text-4xl font-bold text-midnight-brown mb-3 text-center">
+              <h1 class="font-medieval text-2xl sm:text-3xl md:text-4xl break-words font-bold text-midnight-brown mb-3 text-center">
                 Política de privacidade
               </h1>
               <p class="text-center text-xs md:text-sm text-midnight-brown/65">
@@ -30,7 +30,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </header>
 
             <section id="introducao" class="scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Introdução
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
@@ -40,7 +40,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="dados-coletados" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Dados que podemos coletar
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -48,7 +48,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
                 processamento de pagamentos e suporte ao usuário.
               </p>
               <ul
-                class="list-disc list-inside text-sm md:text-base leading-relaxed space-y-2 pl-1 text-midnight-brown/90 marker:text-midnight-brown/50"
+                class="list-disc list-outside text-sm md:text-base leading-relaxed space-y-2 pl-5 text-midnight-brown/90 marker:text-midnight-brown/50"
               >
                 <li>Dados de conta: nome, apelido, e-mail e informações de perfil.</li>
                 <li>Dados operacionais: histórico de compras, vendas e arquivos disponibilizados.</li>
@@ -57,7 +57,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="finalidades" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Finalidades do tratamento
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -68,7 +68,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="cookies" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Cookies e tecnologias similares
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
@@ -79,7 +79,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="compartilhamento" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Compartilhamento de dados
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
@@ -90,7 +90,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="direitos" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Seus direitos
               </h2>
               <p class="text-sm md:text-base leading-relaxed mb-3 text-midnight-brown/90">
@@ -101,7 +101,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="alteracoes-privacidade" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Alterações nesta política
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
@@ -111,7 +111,7 @@ import { RodapeComponent } from '../../components/rodape/rodape.component';
             </section>
 
             <section id="contato-privacidade" class="pt-2 border-t border-midnight-brown/15 scroll-mt-24">
-              <h2 class="font-medieval text-xl md:text-2xl font-semibold text-midnight-brown mb-3">
+              <h2 class="font-medieval text-lg sm:text-xl md:text-2xl break-words hyphens-auto font-semibold text-midnight-brown mb-3">
                 Contato sobre privacidade
               </h2>
               <p class="text-sm md:text-base leading-relaxed text-midnight-brown/90">
