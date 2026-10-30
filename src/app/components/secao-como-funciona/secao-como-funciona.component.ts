@@ -3,34 +3,34 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-secao-o-que-e-dtavern',
+  selector: 'app-secao-como-funciona',
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <section id="o-que-e-dtavern" class="secao-o-que-e relative overflow-hidden pt-24 pb-24">
-      <div class="secao-o-que-e__bg" aria-hidden="true"></div>
-      <div class="secao-o-que-e__top-divider" aria-hidden="true">
-        <span class="secao-o-que-e__divider-line"></span>
-        <span class="secao-o-que-e__divider-mark"></span>
-        <span class="secao-o-que-e__divider-line secao-o-que-e__divider-line--invert"></span>
+    <section id="como-funciona" class="secao-como-funciona relative overflow-hidden pt-24 pb-24">
+      <div class="secao-como-funciona__bg" aria-hidden="true"></div>
+      <div class="secao-como-funciona__top-divider" aria-hidden="true">
+        <span class="secao-como-funciona__divider-line"></span>
+        <span class="secao-como-funciona__divider-mark"></span>
+        <span class="secao-como-funciona__divider-line secao-como-funciona__divider-line--invert"></span>
       </div>
 
       <div class="container relative z-10 mx-auto px-4">
         <div class="text-center max-w-3xl mx-auto mb-8 md:mb-12 space-y-4 md:space-y-5">
-          <p class="secao-o-que-e__eyebrow">COMO FUNCIONA</p>
+          <p class="secao-como-funciona__eyebrow">COMO FUNCIONA</p>
 
-          <h2 class="secao-o-que-e__titulo">
-            <span class="secao-o-que-e__destaque">Sua loja de RPG</span>, pronta para vender
+          <h2 class="secao-como-funciona__titulo">
+            <span class="secao-como-funciona__destaque">Sua loja de RPG</span>, pronta para vender
           </h2>
 
-          <p class="secao-o-que-e__subtitulo">
+          <p class="secao-como-funciona__subtitulo">
             Crie sua loja, publique seus materiais e venda conteúdos digitais de RPG com sua própria identidade.
           </p>
 
-          <div class="secao-o-que-e__intro-divider" aria-hidden="true">
-            <span class="secao-o-que-e__divider-line"></span>
-            <span class="secao-o-que-e__divider-mark"></span>
-            <span class="secao-o-que-e__divider-line secao-o-que-e__divider-line--invert"></span>
+          <div class="secao-como-funciona__intro-divider" aria-hidden="true">
+            <span class="secao-como-funciona__divider-line"></span>
+            <span class="secao-como-funciona__divider-mark"></span>
+            <span class="secao-como-funciona__divider-line secao-como-funciona__divider-line--invert"></span>
           </div>
         </div>
 
@@ -86,7 +86,7 @@ import { RouterModule } from '@angular/router';
 
               <h3 class="etapa-card__titulo">Publique seus produtos</h3>
               <p class="etapa-card__descricao">
-                Cadastre mapas, tokens, aventuras, trilhas e outros materiais digitais para deixar sua loja pronta para vender.
+                Cadastre seus materiais, defina o preço e deixe tudo pronto para vender na sua loja.
               </p>
             </article>
 
@@ -112,9 +112,9 @@ import { RouterModule } from '@angular/router';
                 </svg>
               </div>
 
-              <h3 class="etapa-card__titulo">Venda e entregue</h3>
+              <h3 class="etapa-card__titulo">Venda no automático</h3>
               <p class="etapa-card__descricao">
-                Divulgue suas criações para sua comunidade e venda seus produtos diretamente pelo DTavern.
+                Publique seus produtos e deixe o DTavern cuidar do pagamento e da entrega do produto digital para cada comprador.
               </p>
             </article>
           </li>
@@ -143,10 +143,10 @@ import { RouterModule } from '@angular/router';
           </button>
         </div>
 
-        <div class="secao-o-que-e__bottom-divider" aria-hidden="true">
-          <span class="secao-o-que-e__divider-line"></span>
-          <span class="secao-o-que-e__divider-mark"></span>
-          <span class="secao-o-que-e__divider-line secao-o-que-e__divider-line--invert"></span>
+        <div class="secao-como-funciona__bottom-divider" aria-hidden="true">
+          <span class="secao-como-funciona__divider-line"></span>
+          <span class="secao-como-funciona__divider-mark"></span>
+          <span class="secao-como-funciona__divider-line secao-como-funciona__divider-line--invert"></span>
         </div>
       </div>
     </section>
@@ -157,11 +157,11 @@ import { RouterModule } from '@angular/router';
         display: block;
       }
 
-      .secao-o-que-e {
+      .secao-como-funciona {
         background: #e9d7b8;
       }
 
-      .secao-o-que-e__bg {
+      .secao-como-funciona__bg {
         position: absolute;
         inset: 0;
         pointer-events: none;
@@ -170,8 +170,8 @@ import { RouterModule } from '@angular/router';
           linear-gradient(180deg, rgba(233, 215, 184, 1) 0%, rgba(228, 208, 174, 1) 58%, rgba(220, 198, 162, 1) 100%);
       }
 
-      .secao-o-que-e__bg::before,
-      .secao-o-que-e__bg::after {
+      .secao-como-funciona__bg::before,
+      .secao-como-funciona__bg::after {
         content: '';
         position: absolute;
         left: 0;
@@ -179,17 +179,17 @@ import { RouterModule } from '@angular/router';
         height: 120px;
       }
 
-      .secao-o-que-e__bg::before {
+      .secao-como-funciona__bg::before {
         top: 0;
         background: linear-gradient(180deg, rgba(75, 46, 25, 0.14), transparent);
       }
 
-      .secao-o-que-e__bg::after {
+      .secao-como-funciona__bg::after {
         bottom: 0;
         background: linear-gradient(180deg, transparent, rgba(75, 46, 25, 0.1));
       }
 
-      .secao-o-que-e__eyebrow {
+      .secao-como-funciona__eyebrow {
         font-size: 0.74rem;
         letter-spacing: 0.2em;
         text-transform: uppercase;
@@ -197,7 +197,7 @@ import { RouterModule } from '@angular/router';
         font-weight: 600;
       }
 
-      .secao-o-que-e__titulo {
+      .secao-como-funciona__titulo {
         font-family: 'Cinzel', serif;
         font-size: clamp(1.85rem, 3.6vw, 3.15rem);
         line-height: 1.16;
@@ -207,11 +207,11 @@ import { RouterModule } from '@angular/router';
         margin: 0 auto;
       }
 
-      .secao-o-que-e__destaque {
+      .secao-como-funciona__destaque {
         color: #7a4f22;
       }
 
-      .secao-o-que-e__subtitulo {
+      .secao-como-funciona__subtitulo {
         font-size: clamp(1rem, 1.55vw, 1.14rem);
         line-height: 1.72;
         color: rgba(28, 15, 10, 0.78);
@@ -219,9 +219,9 @@ import { RouterModule } from '@angular/router';
         margin: 0 auto;
       }
 
-      .secao-o-que-e__top-divider,
-      .secao-o-que-e__intro-divider,
-      .secao-o-que-e__bottom-divider {
+      .secao-como-funciona__top-divider,
+      .secao-como-funciona__intro-divider,
+      .secao-como-funciona__bottom-divider {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -229,7 +229,7 @@ import { RouterModule } from '@angular/router';
         pointer-events: none;
       }
 
-      .secao-o-que-e__top-divider {
+      .secao-como-funciona__top-divider {
         position: absolute;
         top: 0;
         left: 50%;
@@ -237,26 +237,26 @@ import { RouterModule } from '@angular/router';
         z-index: 2;
       }
 
-      .secao-o-que-e__intro-divider {
+      .secao-como-funciona__intro-divider {
         margin-top: 0.2rem;
       }
 
-      .secao-o-que-e__bottom-divider {
+      .secao-como-funciona__bottom-divider {
         width: 100%;
         margin-top: 3.5rem;
       }
 
-      .secao-o-que-e__divider-line {
+      .secao-como-funciona__divider-line {
         width: clamp(3rem, 11vw, 7rem);
         height: 1px;
         background: linear-gradient(90deg, transparent, rgba(197, 139, 61, 0.7));
       }
 
-      .secao-o-que-e__divider-line--invert {
+      .secao-como-funciona__divider-line--invert {
         background: linear-gradient(90deg, rgba(197, 139, 61, 0.7), transparent);
       }
 
-      .secao-o-que-e__divider-mark {
+      .secao-como-funciona__divider-mark {
         width: 0.38rem;
         height: 0.38rem;
         transform: rotate(45deg);
@@ -412,24 +412,24 @@ import { RouterModule } from '@angular/router';
       }
 
       @media (max-width: 767px) {
-        .secao-o-que-e {
+        .secao-como-funciona {
           padding-top: 4rem;
           padding-bottom: 3.5rem;
         }
 
-        .secao-o-que-e__top-divider {
+        .secao-como-funciona__top-divider {
           top: 0.15rem;
         }
 
-        .secao-o-que-e__subtitulo {
+        .secao-como-funciona__subtitulo {
           font-size: 0.95rem;
         }
 
-        .secao-o-que-e__divider-line {
+        .secao-como-funciona__divider-line {
           width: clamp(2.25rem, 18vw, 5rem);
         }
 
-        .secao-o-que-e__bottom-divider {
+        .secao-como-funciona__bottom-divider {
           margin-top: 2rem;
         }
 
@@ -500,4 +500,4 @@ import { RouterModule } from '@angular/router';
     `,
   ],
 })
-export class SecaoOQueEDtavernComponent { }
+export class SecaoComoFuncionaComponent { }

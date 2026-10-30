@@ -2,7 +2,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import {
+  applyActionCode,
+  confirmPasswordReset,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
+  updateProfile,
+  sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   User as FirebaseUser
@@ -11,9 +17,12 @@ import { BehaviorSubject, Observable, from, of, throwError } from 'rxjs';
 import { filter, map, switchMap, tap, catchError } from 'rxjs/operators';
 import { auth } from '../config/firebase.config';
 import { AuthResponse, User } from '../models/auth.model';
-import { CadastroLojaRequest } from '../models/artesao.model';
-import { sendPasswordResetEmail } from "firebase/auth";
 import { environment } from '../../environment/environment';
+
+export interface SessaoLogin {
+  user: User;
+  emailVerified: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -102,7 +111,7 @@ export class AuthService {
    * Login com email e senha
    * Após o login bem-sucedido, força o refresh do token para garantir que está atualizado
    */
-  login(email: string, password: string): Observable<User> {
+  login(email: string, password: string): Observable<SessaoLogin> {
     return from(signInWithEmailAndPassword(auth, email, password)).pipe(
       switchMap((cred) => {
         // Forçar refresh do token após login para garantir que está atualizado
@@ -123,7 +132,7 @@ export class AuthService {
               email: cred.user.email,
               displayName: cred.user.displayName || null
             };
-            return user;
+            return { user, emailVerified: cred.user.emailVerified };
           }),
           catchError((error) => {
             console.error('Erro ao obter token após login:', error);
@@ -148,6 +157,59 @@ export class AuthService {
   }
 
 
+  cadastrar(username: string, email: string, password: string): Observable<void> {
+    const emailLimpo = email.trim();
+    const usernameLimpo = username.trim();
+
+    return from(createUserWithEmailAndPassword(auth, emailLimpo, password)).pipe(
+      switchMap((cred) => from(updateProfile(cred.user, { displayName: usernameLimpo })).pipe(
+        switchMap(() => from(cred.user.getIdToken(true))),
+        switchMap((token) => {
+          const user: User = {
+            uid: cred.user.uid,
+            email: cred.user.email || emailLimpo,
+            displayName: usernameLimpo
+          };
+          this.idTokenSubject.next(token);
+          this.currentUserSubject.next(user);
+
+          return from(sendEmailVerification(cred.user, {
+            url: this.urlDaAplicacao('/login'),
+            handleCodeInApp: true
+          })).pipe(
+            switchMap(() => this.http.post<void>(`${environment.apiBaseUrl}/usuarios`, {
+              username: usernameLimpo
+            }))
+          );
+        })
+      ))
+    );
+  }
+
+  reenviarConfirmacao(): Observable<void> {
+    const usuario = auth.currentUser;
+    if (!usuario) {
+      return throwError(() => new Error('Faça login para reenviar o e-mail de confirmação.'));
+    }
+
+    return from(sendEmailVerification(usuario, {
+      url: this.urlDaAplicacao('/confirmar-conta'),
+      handleCodeInApp: true
+    }));
+  }
+
+  confirmarEmail(oobCode: string): Observable<void> {
+    return from(applyActionCode(auth, oobCode)).pipe(
+      switchMap(() => {
+        const usuario = auth.currentUser;
+        if (!usuario) {
+          return of(undefined);
+        }
+        return from(usuario.reload()).pipe(map(() => undefined));
+      })
+    );
+  }
+
   resetarSenha(email: string): Observable<void> {
     const emailLimpo = email?.trim();
 
@@ -161,7 +223,10 @@ export class AuthService {
       return throwError(() => new Error('Informe um e-mail válido para redefinir a senha.'));
     }
 
-    return from(sendPasswordResetEmail(auth, emailLimpo)).pipe(
+    return from(sendPasswordResetEmail(auth, emailLimpo, {
+      url: this.urlDaAplicacao('/redefinir-senha'),
+      handleCodeInApp: true
+    })).pipe(
       catchError((error) => {
         console.error('Erro ao enviar e-mail de redefinição de senha:', error);
         return throwError(() => error);
@@ -169,12 +234,12 @@ export class AuthService {
     );
   }
 
-  /**
-   * Registrar novo usuário
-   */
-  registerComprador(displayName: string, email: string, password: string): Observable<AuthResponse> {
-    const request: CadastroLojaRequest = { nomeLoja: displayName, email, password };
-    return this.http.post<AuthResponse>(`${environment.apiBaseUrl}/client/compradores/register`, request);
+  definirNovaSenha(oobCode: string, novaSenha: string): Observable<void> {
+    return from(confirmPasswordReset(auth, oobCode, novaSenha));
+  }
+
+  private urlDaAplicacao(caminho: string): string {
+    return `${window.location.origin}${caminho}`;
   }
 
   /**

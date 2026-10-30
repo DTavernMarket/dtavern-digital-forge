@@ -337,9 +337,8 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
       this.estaAutenticado.set(user !== null);
 
       if (user !== null) {
-        // Pegar displayName diretamente do Firebase User
-        this.displayName.set(user.displayName || user.email || null);
         this.photoURL.set(user.photoURL || null);
+        this.displayName.set(user.displayName || user.email || null);
         // Carregar role do token
         this.authService.getUserRole().subscribe({
           next: (role) => {

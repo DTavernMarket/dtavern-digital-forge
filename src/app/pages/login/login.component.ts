@@ -1,11 +1,9 @@
-// src/app/pages/login/login.component.ts
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -16,103 +14,83 @@ import { take } from 'rxjs/operators';
       <div class="w-full flex items-center justify-center p-4">
         <div class="bg-midnight-brown/90 rounded-xl p-5 sm:p-8 max-w-md w-full shadow-2xl">
           <h2 class="text-2xl font-medieval font-bold text-scroll-beige mb-6 text-center">Login</h2>
-          
+
           <form (ngSubmit)="onLogin()" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Email</label>
+              <label class="block text-sm font-medium text-scroll-beige mb-2" for="email">E-mail</label>
               <input
+                id="email"
                 type="email"
                 [(ngModel)]="email"
                 name="email"
                 required
+                autocomplete="email"
                 class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                placeholder="seu@email.com"
+                placeholder="Digite seu e-mail"
               />
             </div>
-            
+
             <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Senha</label>
+              <label class="block text-sm font-medium text-scroll-beige mb-2" for="senha">Senha</label>
               <div class="relative">
                 <input
+                  id="senha"
                   [type]="mostrarSenha() ? 'text' : 'password'"
                   [(ngModel)]="password"
                   name="password"
                   required
+                  autocomplete="current-password"
                   class="w-full px-4 py-2 pr-12 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                  placeholder="••••••••"
+                  placeholder="Digite sua senha"
                 />
                 <button
                   type="button"
                   (click)="mostrarSenha.set(!mostrarSenha())"
-                  class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-scroll-beige/70 hover:text-scroll-beige hover:bg-white/5 transition-colors"
+                  class="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg text-scroll-beige/70 hover:text-candlelight-gold"
                   [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'"
+                  [attr.aria-pressed]="mostrarSenha()"
                 >
                   @if (mostrarSenha()) {
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round"  stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
                     </svg>
                   } @else {
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round"  stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                      <path stroke-linecap="round"  stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   }
                 </button>
               </div>
             </div>
 
-            <!-- Esqueci minha senha -->
-            <div class="flex justify-end">
-              <button
-                type="button"
-                (click)="onForgotPassword()"
-                [disabled]="resetLoading()"
-                class="text-candlelight-gold text-sm hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {{ resetLoading() ? 'Enviando e-mail...' : 'Esqueci minha senha' }}
-              </button>
-            </div>
-            
             @if (errorMessage) {
-              <div class="text-red-400 text-sm">
-                {{ errorMessage }}
-              </div>
+              <p class="text-sm text-red-300">{{ errorMessage }}</p>
             }
 
-            @if (resetMessage) {
-              <div class="text-green-400 text-sm">
-                {{ resetMessage }}
-              </div>
-            }
-            
             <button
               type="submit"
               [disabled]="loading()"
-              class="w-full px-6 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full min-h-[44px] px-6 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {{ loading() ? 'Entrando...' : 'Entrar' }}
             </button>
           </form>
-          
-          <div class="mt-4 text-center space-y-2">
-            <p class="text-scroll-beige/70 text-sm">
-              Não tem uma conta?
-              <a routerLink="/cadastro" class="text-candlelight-gold hover:underline">Registre-se</a>
+
+          <div class="mt-4 text-center space-y-2 text-sm text-scroll-beige/70">
+            <p>
+              <a routerLink="/recuperar-senha" class="text-candlelight-gold hover:underline">Esqueci minha senha</a>
             </p>
-            <p class="text-scroll-beige/70 text-sm">
+            <p>
+              Não tem uma conta?
+              <a routerLink="/cadastro" class="text-candlelight-gold hover:underline">Criar conta</a>
+            </p>
+            <p>
               <a routerLink="/" class="text-candlelight-gold hover:underline">Continue navegando</a>
             </p>
           </div>
         </div>
       </div>
-      <a
-        href="https://docs.google.com/forms/d/e/1FAIpQLSdwk87Zg9IGnvZcI73XsEk-9O3bJO3lDGoP_jejMzR4LDzgaA/viewform?usp=publish-editor"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="mb-4 px-4 text-center sm:mb-0 sm:px-0 sm:text-left sm:fixed sm:bottom-4 sm:left-4 z-10 text-sm text-scroll-beige/80 hover:text-candlelight-gold hover:underline transition-colors"
-      >
-        Procura-se artista para ilustrar essa tela.
-      </a>
     </div>
   `
 })
@@ -124,101 +102,35 @@ export class LoginComponent {
   email = '';
   password = '';
   mostrarSenha = signal(false);
-  loading = signal<boolean>(false);
-  errorMessage: string = '';
-  resetLoading = signal<boolean>(false);
-  resetMessage: string = '';
+  loading = signal(false);
+  errorMessage = '';
 
   onLogin() {
     this.loading.set(true);
     this.errorMessage = '';
-    this.resetMessage = '';
 
-    this.authService.login(this.email, this.password).subscribe({
-      next: () => {
+    this.authService.login(this.email.trim(), this.password).subscribe({
+      next: (sessao) => {
+        if (!sessao.emailVerified) {
+          this.router.navigate(['/confirmar-conta'], { queryParams: { email: this.email.trim() } });
+          return;
+        }
+
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-        if (returnUrl && returnUrl.startsWith('/')) {
+        if (returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')) {
           this.router.navigateByUrl(returnUrl);
-        } else {
-          this.authService.getUserRole().pipe(take(1)).subscribe({
-            next: (role) => {
-              if (role === 'LOJA') {
-                this.authService.getUserDominio().pipe(take(1)).subscribe({
-                  next: (dominio) => {
-                    if (dominio) {
-                      this.router.navigate(['/lojas', dominio, 'gerenciar-produtos']);
-                      return;
-                    }
-                    this.router.navigate(['/novo-produto']);
-                  },
-                  error: () => {
-                    this.router.navigate(['/novo-produto']);
-                  }
-                });
-                return;
-              }
-
-              if (role === 'COMPRADOR') {
-                this.router.navigate(['/biblioteca']);
-                return;
-              }
-
-              this.router.navigate(['/']);
-            },
-            error: () => {
-              this.router.navigate(['/']);
-            }
-          });
+          return;
         }
+        this.router.navigate(['/']);
       },
       error: (error) => {
-        console.log('error:', error);
-        this.errorMessage = getFirebaseErrorMessage(error.code);
-
+        this.password = '';
+        this.errorMessage = error?.code
+          ? getFirebaseErrorMessage(error.code)
+          : 'Não foi possível entrar.';
         this.loading.set(false);
       },
-      complete: () => {
-        this.loading.set(false);
-      }
-    });
-  }
-
-  onForgotPassword() {
-    // Limpar mensagens anteriores
-    this.errorMessage = '';
-    this.resetMessage = '';
-
-    const emailTrim = this.email?.trim();
-
-    if (!emailTrim) {
-      this.errorMessage = 'Informe seu e-mail para redefinir a senha.';
-      return;
-    }
-
-    this.resetLoading.set(true);
-
-    this.authService.resetarSenha(emailTrim).subscribe({
-      next: () => {
-        this.resetMessage =
-          'Você receberá um e-mail para redefinir sua senha em poucos instantes.';
-      },
-      error: (error) => {
-        console.error('Erro ao solicitar redefinição de senha:', error);
-
-        // Se for erro vindo do Firebase, tentar traduzir
-        if (error?.code) {
-          this.errorMessage = getFirebaseErrorMessage(error.code);
-        } else if (error?.message) {
-          this.errorMessage = error.message;
-        } else {
-          this.errorMessage = 'Não foi possível enviar o e-mail de redefinição de senha. Tente novamente.';
-        }
-
-        this.resetLoading.set(false);
-      },
-      complete: () => {
-        this.resetLoading.set(false);
-      }
+      complete: () => this.loading.set(false)
     });
   }
 }

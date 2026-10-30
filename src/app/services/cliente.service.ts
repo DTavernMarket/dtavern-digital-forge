@@ -1,7 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CadastroClienteRequest } from '../models/cliente.model';
 import { MeResponseCliente } from '../models/auth.model';
 import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
@@ -16,10 +15,6 @@ export class ClienteService {
     private authService = inject(AuthService);
     private http = inject(HttpClient);
     private readonly API_BASE = environment.apiBaseUrl;
-
-    criarCliente(cliente: CadastroClienteRequest): Observable<void> {
-        return this.http.post<void>(`${this.API_BASE}/client/clientes/register`, cliente);
-    }
 
     getBibliotecaCliente(page: number = 0, size: number = 10, termoBusca?: string): Observable<PagedResult<Venda>> {
 

@@ -1,11 +1,9 @@
-// src/app/pages/cadastro/cadastro.component.ts
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ArtesaoService } from '../../services/artesao.service';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { ClienteService } from '../../services/cliente.service';
+import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
 
 @Component({
   selector: 'app-cadastro',
@@ -14,700 +12,171 @@ import { ClienteService } from '../../services/cliente.service';
   template: `
     <div class="min-h-dvh flex flex-col items-center justify-center bg-tavern-wood relative sm:overflow-hidden">
       <div class="w-full flex items-center justify-center p-4">
-        <div class="bg-midnight-brown/90 border border-brass-accent/40 rounded-xl p-5 sm:p-8 max-w-md w-full sm:max-h-[90vh] sm:overflow-y-auto">
-          <h2 class="text-2xl font-medieval font-bold text-scroll-beige mb-6 text-center">Criar Conta</h2>
-        
-        <!-- Indicador de Passos -->
-        <div class="flex items-center justify-center mb-6">
-          <div class="flex items-center">
-            <div class="flex items-center justify-center w-8 h-8 rounded-full border-2 transition-colors"
-                 [class.bg-candlelight-gold]="step === 1"
-                 [class.border-candlelight-gold]="step === 1"
-                 [class.text-tavern-wood]="step === 1"
-                 [class.border-brass-accent]="step !== 1"
-                 [class.text-scroll-beige]="step !== 1">
-              <span class="text-sm font-semibold">1</span>
-            </div>
-            <div class="w-12 h-0.5 mx-2 transition-colors"
-                 [ngClass]="step === 2 ? 'bg-candlelight-gold' : 'bg-brass-accent/40'">
-            </div>
-            <div class="flex items-center justify-center w-8 h-8 rounded-full border-2 transition-colors"
-                 [class.bg-candlelight-gold]="step === 2"
-                 [class.border-candlelight-gold]="step === 2"
-                 [class.text-tavern-wood]="step === 2"
-                 [class.border-brass-accent]="step !== 2"
-                 [class.text-scroll-beige]="step !== 2">
-              <span class="text-sm font-semibold">2</span>
-            </div>
-          </div>
-        </div>
+        <div class="bg-midnight-brown/90 rounded-xl p-5 sm:p-8 max-w-md w-full shadow-2xl">
+          <h2 class="text-2xl font-medieval font-bold text-scroll-beige mb-6 text-center">Criar conta</h2>
 
-        <!-- Passo 1: Seleção do Tipo de Usuário -->
-        <div *ngIf="step === 1" class="space-y-6">
-          <div class="text-center">
-            <p class="text-scroll-beige text-lg mb-2">O que você deseja fazer?</p>
-            <p class="text-scroll-beige/70 text-sm">Escolha como você vai usar sua conta</p>
-          </div>
-          
-          <div class="grid grid-cols-1 gap-4">
-            <button
-              type="button"
-              (click)="selecionarTipoUsuario('artesao')"
-              class="p-4 sm:p-6 border-2 rounded-lg transition-all duration-300 text-left"
-              [ngClass]="{
-                'border-candlelight-gold': tipoUsuario === 'artesao',
-                'bg-candlelight-gold/10': tipoUsuario === 'artesao',
-                'border-brass-accent/40': tipoUsuario !== 'artesao',
-                'hover:border-candlelight-gold': tipoUsuario !== 'artesao'
-              }"
-            >
-              <div class="flex items-center gap-3 sm:gap-4">
-                <div class="flex-shrink-0">
-                  <svg class="w-8 h-8 text-candlelight-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                  </svg>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h3 class="text-scroll-beige font-semibold text-base sm:text-lg mb-1">Vender Produtos</h3>
-                  <p class="text-scroll-beige/70 text-sm">Crie sua própria loja e venda seus produtos</p>
-                </div>
-                <div *ngIf="tipoUsuario === 'artesao'" class="flex-shrink-0">
-                  <svg class="w-6 h-6 text-candlelight-gold" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                  </svg>
-                </div>
-              </div>
-            </button>
-            
-            <button
-              type="button"
-              (click)="selecionarTipoUsuario('cliente')"
-              class="p-4 sm:p-6 border-2 rounded-lg transition-all duration-300 text-left"
-              [ngClass]="{
-                'border-candlelight-gold': tipoUsuario === 'cliente',
-                'bg-candlelight-gold/10': tipoUsuario === 'cliente',
-                'border-brass-accent/40': tipoUsuario !== 'cliente',
-                'hover:border-candlelight-gold': tipoUsuario !== 'cliente'
-              }"
-            >
-              <div class="flex items-center gap-3 sm:gap-4">
-                <div class="flex-shrink-0">
-                  <svg class="w-8 h-8 text-candlelight-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                  </svg>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h3 class="text-scroll-beige font-semibold text-base sm:text-lg mb-1">Comprar Produtos</h3>
-                  <p class="text-scroll-beige/70 text-sm">Explore e compre produtos dos artesãos</p>
-                </div>
-                <div *ngIf="tipoUsuario === 'cliente'" class="flex-shrink-0">
-                  <svg class="w-6 h-6 text-candlelight-gold" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                  </svg>
-                </div>
-              </div>
-            </button>
-          </div>
-          
-          <button
-            type="button"
-            (click)="proximoPasso()"
-            [disabled]="!tipoUsuario"
-            class="w-full px-6 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Continuar
-          </button>
-        </div>
-
-        <!-- Passo 2: Formulário de Cadastro -->
-        <form *ngIf="step === 2" (ngSubmit)="onRegister()" class="space-y-4">
-          <!-- Formulário para Artesão -->
-          <ng-container *ngIf="tipoUsuario === 'artesao'">
+          <form (ngSubmit)="onCadastrar()" class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Nome da Loja</label>
+              <label class="block text-sm font-medium text-scroll-beige mb-2" for="username">Username</label>
               <input
+                id="username"
                 type="text"
-                [(ngModel)]="nomeLoja"
-                name="nomeLoja"
+                [(ngModel)]="username"
+                name="username"
                 required
-                (blur)="validarNomeLoja()"
+                maxlength="255"
+                autocomplete="username"
                 class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                [class.border-red-500]="nomeLojaError"
-                placeholder="Nome da sua loja"
+                placeholder="seu nome de usuário"
               />
-              <div *ngIf="nomeLojaError" class="text-red-400 text-sm mt-1">
-                {{ nomeLojaError }}
-              </div>
             </div>
-            
+
             <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Email da Loja</label>
+              <label class="block text-sm font-medium text-scroll-beige mb-2" for="email">E-mail</label>
               <input
+                id="email"
                 type="email"
                 [(ngModel)]="email"
                 name="email"
                 required
-                (blur)="validarEmail()"
+                autocomplete="email"
                 class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                [class.border-red-500]="emailError"
-                placeholder="loja@email.com"
-              />
-              <div *ngIf="emailError" class="text-red-400 text-sm mt-1">
-                {{ emailError }}
-              </div>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Senha</label>
-              <input
-                type="password"
-                [(ngModel)]="password"
-                name="password"
-                required
-                (blur)="validarSenha()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                [class.border-red-500]="senhaError"
-                placeholder="••••••••"
-              />
-              <div *ngIf="senhaError" class="text-red-400 text-sm mt-1">
-                {{ senhaError }}
-              </div>
-              <div class="text-scroll-beige/60 text-xs mt-1">
-                A senha deve ter entre 6 e 256 caracteres, incluindo letra maiúscula, minúscula e número.
-              </div>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Confirmar Senha</label>
-              <input
-                type="password"
-                [(ngModel)]="confirmPassword"
-                name="confirmPassword"
-                required
-                (blur)="validarConfirmacaoSenha()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                [class.border-red-500]="confirmacaoSenhaError"
-                placeholder="••••••••"
-              />
-              <div *ngIf="confirmacaoSenhaError" class="text-red-400 text-sm mt-1">
-                {{ confirmacaoSenhaError }}
-              </div>
-            </div>
-          </ng-container>
-
-          <!-- Formulário para Cliente -->
-          <ng-container *ngIf="tipoUsuario === 'cliente'">
-            <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Nome Completo</label>
-              <input
-                type="text"
-                [(ngModel)]="nomeCompleto"
-                name="nomeCompleto"
-                required
-                (blur)="validarNomeCompleto()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                [class.border-red-500]="nomeCompletoError"
-                placeholder="Seu nome completo"
-              />
-              <div *ngIf="nomeCompletoError" class="text-red-400 text-sm mt-1">
-                {{ nomeCompletoError }}
-              </div>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Apelido</label>
-              <div class="text-scroll-beige/60 text-xs mt-1">
-                É assim que você será apresentado no DTavern
-              </div>
-              <input
-                type="text"
-                [(ngModel)]="apelido"
-                name="apelido"
-                required
-                (blur)="validarApelido()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                [class.border-red-500]="apelidoError"
-                placeholder="Seu apelido"
-              />
-              <div *ngIf="apelidoError" class="text-red-400 text-sm mt-1">
-                {{ apelidoError }}
-              </div>
-
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Email</label>
-              <input
-                type="email"
-                [(ngModel)]="email"
-                name="email"
-                required
-                (blur)="validarEmail()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                [class.border-red-500]="emailError"
                 placeholder="seu@email.com"
               />
-              <div *ngIf="emailError" class="text-red-400 text-sm mt-1">
-                {{ emailError }}
-              </div>
             </div>
-            
+
             <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Data de Nascimento</label>
-              <input
-                type="date"
-                [(ngModel)]="dataNascimento"
-                name="dataNascimento"
-                required
-                (blur)="validarDataNascimento()"
-                class="w-full min-h-[42px] appearance-none px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                [class.border-red-500]="dataNascimentoError"
-              />
-              <div *ngIf="dataNascimentoError" class="text-red-400 text-sm mt-1">
-                {{ dataNascimentoError }}
+              <label class="block text-sm font-medium text-scroll-beige mb-2" for="senha">Senha</label>
+              <div class="relative">
+                <input
+                  id="senha"
+                  [type]="mostrarSenha() ? 'text' : 'password'"
+                  [(ngModel)]="password"
+                  name="password"
+                  required
+                  minlength="6"
+                  autocomplete="new-password"
+                  class="w-full px-4 py-2 pr-12 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
+                  placeholder="mínimo de 6 caracteres"
+                />
+                <button
+                  type="button"
+                  (click)="mostrarSenha.set(!mostrarSenha())"
+                  class="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg text-scroll-beige/70 hover:text-candlelight-gold"
+                  [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'"
+                  [attr.aria-pressed]="mostrarSenha()"
+                >
+                  @if (mostrarSenha()) {
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    </svg>
+                  } @else {
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  }
+                </button>
               </div>
             </div>
-            
+
             <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Senha</label>
-              <input
-                type="password"
-                [(ngModel)]="password"
-                name="password"
-                required
-                (blur)="validarSenha()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                [class.border-red-500]="senhaError"
-                placeholder="••••••••"
-              />
-              <div *ngIf="senhaError" class="text-red-400 text-sm mt-1">
-                {{ senhaError }}
-              </div>
-              <div class="text-scroll-beige/60 text-xs mt-1">
-                A senha deve ter entre 6 e 256 caracteres, incluindo letra maiúscula, minúscula e número.
-              </div>
-            </div>
-            
-            <div>
-              <label class="block text-sm font-medium text-scroll-beige mb-2">Confirmar Senha</label>
-              <input
-                type="password"
-                [(ngModel)]="confirmPassword"
-                name="confirmPassword"
-                required
-                (blur)="validarConfirmacaoSenha()"
-                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                [class.border-red-500]="confirmacaoSenhaError"
-                placeholder="••••••••"
-              />
-              <div *ngIf="confirmacaoSenhaError" class="text-red-400 text-sm mt-1">
-                {{ confirmacaoSenhaError }}
+              <label class="block text-sm font-medium text-scroll-beige mb-2" for="confirmar">Confirmar senha</label>
+              <div class="relative">
+                <input
+                  id="confirmar"
+                  [type]="mostrarSenha() ? 'text' : 'password'"
+                  [(ngModel)]="confirmPassword"
+                  name="confirmPassword"
+                  required
+                  autocomplete="new-password"
+                  class="w-full px-4 py-2 pr-12 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
+                  placeholder="repita a senha"
+                />
+                <button
+                  type="button"
+                  (click)="mostrarSenha.set(!mostrarSenha())"
+                  class="absolute right-1 top-1/2 -translate-y-1/2 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg text-scroll-beige/70 hover:text-candlelight-gold"
+                  [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'"
+                  [attr.aria-pressed]="mostrarSenha()"
+                >
+                  @if (mostrarSenha()) {
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                    </svg>
+                  } @else {
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  }
+                </button>
               </div>
             </div>
-          </ng-container>
-          
-          <div *ngIf="errorMessage" class="text-red-400 text-sm">
-            {{ errorMessage }}
-          </div>
-          
-          <div class="flex flex-col-reverse sm:flex-row gap-3">
-            <button
-              type="button"
-              (click)="voltarPasso()"
-              class="flex-1 px-4 sm:px-6 py-3 border-2 border-brass-accent/40 text-scroll-beige font-semibold rounded-lg hover:border-candlelight-gold hover:text-candlelight-gold transition-colors"
-            >
-              Voltar
-            </button>
+
+            @if (errorMessage) {
+              <p class="text-sm text-red-300">{{ errorMessage }}</p>
+            }
+
             <button
               type="submit"
-              [disabled]="loading() || !formularioValido()"
-              class="flex-1 px-4 sm:px-6 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              [disabled]="loading()"
+              class="w-full min-h-[44px] px-6 py-3 bg-candlelight-gold text-tavern-wood font-semibold rounded-lg hover:bg-candlelight-gold/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {{ loading() ? 'Criando conta...' : 'Criar conta' }}
             </button>
-          </div>
-        </form>
-        
-        <div class="mt-4 text-center space-y-2">
-          <p class="text-scroll-beige/70 text-sm">
+          </form>
+
+          <p class="mt-4 text-center text-scroll-beige/70 text-sm">
             Já tem uma conta?
-            <a routerLink="/login" class="text-candlelight-gold hover:underline">Fazer login</a>
+            <a routerLink="/login" class="text-candlelight-gold hover:underline">Entrar</a>
           </p>
-          <p class="text-scroll-beige/70 text-sm">
-            <a routerLink="/" class="text-candlelight-gold hover:underline">Continue navegando</a>
-          </p>
-        </div>
         </div>
       </div>
-      <a
-        href="https://docs.google.com/forms/d/e/1FAIpQLSdwk87Zg9IGnvZcI73XsEk-9O3bJO3lDGoP_jejMzR4LDzgaA/viewform?usp=publish-editor"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="mb-4 px-4 text-center sm:mb-0 sm:px-0 sm:text-left sm:fixed sm:bottom-4 sm:left-4 z-10 text-sm text-scroll-beige/80 hover:text-candlelight-gold hover:underline transition-colors"
-      >
-        Procura-se artista para ilustrar essa tela.
-      </a>
     </div>
   `
 })
-export class CadastroComponent implements OnInit {
-  private static readonly REGISTER_ERROR_MESSAGE = 'Falha ao criar a conta. Tente novamente mais tarde';
+export class CadastroComponent {
   private authService = inject(AuthService);
-  private artesaoService = inject(ArtesaoService);
-  private clienteService = inject(ClienteService);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
 
-  step = 1;
-  tipoUsuario: 'artesao' | 'cliente' | null = null;
-  nomeLoja = '';
-  nomeCompleto = '';
-  apelido = '';
+  username = '';
   email = '';
-  dataNascimento = '';
   password = '';
   confirmPassword = '';
-  loading = signal<boolean>(false);
+  mostrarSenha = signal(false);
+  loading = signal(false);
   errorMessage = '';
-  nomeLojaError = '';
-  nomeCompletoError = '';
-  apelidoError = '';
-  emailError = '';
-  dataNascimentoError = '';
-  senhaError = '';
-  confirmacaoSenhaError = '';
 
-  ngOnInit(): void {
-    const cadastro = this.route.snapshot.queryParamMap.get('cadastro');
-    if (cadastro === 'artesao' || cadastro === 'cliente') {
-      this.tipoUsuario = cadastro;
-    }
-  }
-
-  selecionarTipoUsuario(tipo: 'artesao' | 'cliente') {
-    this.tipoUsuario = tipo;
-  }
-
-  proximoPasso() {
-    if (this.tipoUsuario) {
-      this.step = 2;
-    }
-  }
-
-  voltarPasso() {
-    this.step = 1;
-  }
-
-  validarNomeLoja(): boolean {
-    this.nomeLojaError = '';
-
-    if (!this.nomeLoja) {
-      this.nomeLojaError = 'Nome da loja é obrigatório';
-      return false;
-    }
-
-    if (this.nomeLoja.trim().length < 3) {
-      this.nomeLojaError = 'O nome da loja deve ter no mínimo 3 caracteres';
-      return false;
-    }
-
-    if (this.nomeLoja.trim().length > 100) {
-      this.nomeLojaError = 'O nome da loja deve ter no máximo 100 caracteres';
-      return false;
-    }
-
-    return true;
-  }
-
-  validarNomeCompleto(): boolean {
-    this.nomeCompletoError = '';
-
-    if (!this.nomeCompleto) {
-      this.nomeCompletoError = 'Nome completo é obrigatório';
-      return false;
-    }
-
-    if (this.nomeCompleto.trim().length < 3) {
-      this.nomeCompletoError = 'O nome completo deve ter no mínimo 3 caracteres';
-      return false;
-    }
-
-    if (this.nomeCompleto.trim().length > 200) {
-      this.nomeCompletoError = 'O nome completo deve ter no máximo 200 caracteres';
-      return false;
-    }
-
-    return true;
-  }
-
-  validarApelido(): boolean {
-    this.apelidoError = '';
-
-    if (!this.apelido) {
-      this.apelidoError = 'Apelido é obrigatório';
-      return false;
-    }
-
-    if (this.apelido.trim().length < 1) {
-      this.apelidoError = 'O apelido deve ter no mínimo 1 caracter';
-      return false;
-    }
-
-    if (this.apelido.trim().length > 50) {
-      this.apelidoError = 'O apelido deve ter no máximo 50 caracteres';
-      return false;
-    }
-
-    return true;
-  }
-
-  validarDataNascimento(): boolean {
-    this.dataNascimentoError = '';
-
-    if (!this.dataNascimento) {
-      this.dataNascimentoError = 'Data de nascimento é obrigatória';
-      return false;
-    }
-
-    const data = new Date(this.dataNascimento);
-    const hoje = new Date();
-    const idadeMinima = new Date();
-    idadeMinima.setFullYear(hoje.getFullYear() - 120); // Máximo 120 anos
-
-    if (isNaN(data.getTime())) {
-      this.dataNascimentoError = 'Data de nascimento inválida';
-      return false;
-    }
-
-    if (data > hoje) {
-      this.dataNascimentoError = 'A data de nascimento não pode ser no futuro';
-      return false;
-    }
-
-    if (data < idadeMinima) {
-      this.dataNascimentoError = 'Data de nascimento inválida';
-      return false;
-    }
-
-    // Verificar se a pessoa tem pelo menos 13 anos (idade mínima comum para cadastros)
-    const idadeMinimaPermitida = new Date();
-    idadeMinimaPermitida.setFullYear(hoje.getFullYear() - 13);
-    if (data > idadeMinimaPermitida) {
-      this.dataNascimentoError = 'Você deve ter pelo menos 13 anos para criar uma conta';
-      return false;
-    }
-
-    return true;
-  }
-
-  validarEmail(): boolean {
-    this.emailError = '';
-
-    if (!this.email) {
-      this.emailError = 'Email é obrigatório';
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.email)) {
-      this.emailError = 'Email inválido';
-      return false;
-    }
-
-    return true;
-  }
-
-  validarSenha(): boolean {
-    this.senhaError = '';
-
-    if (!this.password) {
-      this.senhaError = 'Senha é obrigatória';
-      return false;
-    }
-
-    if (this.password.length < 6) {
-      this.senhaError = 'A senha deve ter no mínimo 6 caracteres';
-      return false;
-    }
-
-    if (this.password.length > 256) {
-      this.senhaError = 'A senha deve ter no máximo 256 caracteres';
-      return false;
-    }
-
-    if (!/[A-Z]/.test(this.password)) {
-      this.senhaError = 'A senha deve conter pelo menos uma letra maiúscula';
-      return false;
-    }
-
-    if (!/[a-z]/.test(this.password)) {
-      this.senhaError = 'A senha deve conter pelo menos uma letra minúscula';
-      return false;
-    }
-
-    if (!/[0-9]/.test(this.password)) {
-      this.senhaError = 'A senha deve conter pelo menos um número';
-      return false;
-    }
-
-    // Se a senha mudou e já existe confirmação, validar novamente
-    if (this.confirmPassword) {
-      this.validarConfirmacaoSenha();
-    }
-
-    return true;
-  }
-
-  validarConfirmacaoSenha(): boolean {
-    this.confirmacaoSenhaError = '';
-
-    if (!this.confirmPassword) {
-      this.confirmacaoSenhaError = 'Confirmação de senha é obrigatória';
-      return false;
-    }
-
-    if (this.password !== this.confirmPassword) {
-      this.confirmacaoSenhaError = 'As senhas não coincidem';
-      return false;
-    }
-
-    return true;
-  }
-
-  formularioValido(): boolean {
-    if (this.tipoUsuario === 'artesao') {
-      const nomeLojaValido = this.validarNomeLoja();
-      const emailValido = this.validarEmail();
-      const senhaValida = this.validarSenha();
-      const confirmacaoValida = this.validarConfirmacaoSenha();
-      return nomeLojaValido && emailValido && senhaValida && confirmacaoValida &&
-        this.nomeLoja !== '' &&
-        this.email !== '' &&
-        this.password !== '' &&
-        this.confirmPassword !== '';
-    } else {
-      const nomeCompletoValido = this.validarNomeCompleto();
-      const apelidoValido = this.validarApelido();
-      const emailValido = this.validarEmail();
-      const dataNascimentoValida = this.validarDataNascimento();
-      const senhaValida = this.validarSenha();
-      const confirmacaoValida = this.validarConfirmacaoSenha();
-      return nomeCompletoValido && apelidoValido && emailValido && dataNascimentoValida && senhaValida && confirmacaoValida &&
-        this.nomeCompleto !== '' &&
-        this.apelido !== '' &&
-        this.email !== '' &&
-        this.dataNascimento !== '' &&
-        this.password !== '' &&
-        this.confirmPassword !== '';
-    }
-  }
-
-  onRegister() {
-    // Limpar mensagens de erro anteriores
+  onCadastrar() {
     this.errorMessage = '';
-    this.nomeLojaError = '';
-    this.nomeCompletoError = '';
-    this.apelidoError = '';
-    this.emailError = '';
-    this.dataNascimentoError = '';
-    this.senhaError = '';
-    this.confirmacaoSenhaError = '';
+    const username = this.username.trim();
+    const email = this.email.trim();
 
-    // Validar todos os campos
-    let camposValidos = false;
-
-    if (this.tipoUsuario === 'artesao') {
-      const nomeLojaValido = this.validarNomeLoja();
-      const emailValido = this.validarEmail();
-      const senhaValida = this.validarSenha();
-      const confirmacaoValida = this.validarConfirmacaoSenha();
-      camposValidos = nomeLojaValido && emailValido && senhaValida && confirmacaoValida;
-    } else {
-      const nomeCompletoValido = this.validarNomeCompleto();
-      const apelidoValido = this.validarApelido();
-      const emailValido = this.validarEmail();
-      const dataNascimentoValida = this.validarDataNascimento();
-      const senhaValida = this.validarSenha();
-      const confirmacaoValida = this.validarConfirmacaoSenha();
-      camposValidos = nomeCompletoValido && apelidoValido && emailValido && dataNascimentoValida && senhaValida && confirmacaoValida;
+    if (!username || !email || !this.password) {
+      this.errorMessage = 'Preencha username, e-mail e senha.';
+      return;
     }
-
-    if (!camposValidos) {
-      this.errorMessage = 'Por favor, corrija os erros no formulário';
+    if (this.password.length < 6) {
+      this.errorMessage = 'A senha precisa ter pelo menos 6 caracteres.';
+      return;
+    }
+    if (this.password !== this.confirmPassword) {
+      this.errorMessage = 'A confirmação da senha não confere.';
       return;
     }
 
     this.loading.set(true);
-
-    if (this.tipoUsuario === 'artesao') {
-      // Criar loja do artesão
-      this.artesaoService.criarLoja({
-        nomeLoja: this.nomeLoja.trim(),
-        email: this.email.trim(),
-        password: this.password
-      }).subscribe({
-        next: (response) => {
-          console.log('Loja criada:', response);
-          this.router.navigate(['/login'], {
-            queryParams: { returnUrl: '/onboarding-artesao' }
-          });
-        },
-        error: (error) => {
-          console.error('Erro ao criar loja:', error);
-          this.step = 2;
-          this.tratarErroBackend(error);
-          this.loading.set(false);
-        },
-        complete: () => {
-          this.loading.set(false);
-        }
-      });
-    } else {
-      // Criar conta de cliente
-      this.clienteService.criarCliente({
-        nomeCompleto: this.nomeCompleto.trim(),
-        apelido: this.apelido.trim(),
-        email: this.email.trim(),
-        password: this.password,
-        dataNascimento: this.dataNascimento
-      }).subscribe({
-        next: () => {
-          console.log('Cliente criado com sucesso');
-          this.router.navigate(['/login']); // Redirecionar após cadastro
-        },
-        error: (error) => {
-          console.error('Erro ao criar cliente:', error);
-          this.step = 2;
-          this.tratarErroBackend(error);
-          this.loading.set(false);
-        },
-        complete: () => {
-          this.loading.set(false);
-        }
-      });
-    }
-  }
-
-  /**
-   * Trata erros retornados pelo backend
-   * Verifica se é o erro de email já existente e exibe a mensagem apropriada
-   */
-  tratarErroBackend(error: any): void {
-    // Limpar erros anteriores
-    this.emailError = '';
-    this.errorMessage = CadastroComponent.REGISTER_ERROR_MESSAGE;
-
-    // Verificar se o erro tem o formato esperado do backend
-    if (error?.error) {
-      const errorData = error.error;
-
-      // Verificar se é o erro de email já existente
-      if (errorData.codigoErro === 'EMAIL_JA_EXISTE' && errorData.mensagem) {
-        // Exibir erro no campo de email
-        this.emailError = errorData.mensagem;
-        return;
-      }
-    }
+    this.authService.cadastrar(username, email, this.password).subscribe({
+      next: () => {
+        this.router.navigate(['/confirmar-conta'], { queryParams: { email } });
+      },
+      error: (error) => {
+        this.errorMessage = error?.error?.message
+          || (error?.code ? getFirebaseErrorMessage(error.code) : 'Não foi possível criar a conta.');
+        this.loading.set(false);
+      },
+      complete: () => this.loading.set(false)
+    });
   }
 }
-

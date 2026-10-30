@@ -119,7 +119,7 @@ import { AmbientacaoHeroComponent } from '../ambientacao-hero/ambientacao-hero.c
 })
 export class SecaoHeroComponent {
   rolarParaProximaSecao(): void {
-    const elementoProximaSecao = document.getElementById('o-que-e-dtavern');
+    const elementoProximaSecao = document.getElementById('como-funciona');
     if (elementoProximaSecao) {
       elementoProximaSecao.scrollIntoView({
         behavior: 'smooth',
