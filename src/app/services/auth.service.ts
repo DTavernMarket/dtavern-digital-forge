@@ -2,15 +2,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import {
+  EmailAuthProvider,
   applyActionCode,
   confirmPasswordReset,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
-  updateProfile,
+  reauthenticateWithCredential,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
+  updateProfile,
+  verifyBeforeUpdateEmail,
   User as FirebaseUser
 } from 'firebase/auth';
 import { BehaviorSubject, Observable, from, of, throwError } from 'rxjs';
@@ -18,6 +22,7 @@ import { filter, map, switchMap, tap, catchError } from 'rxjs/operators';
 import { auth } from '../config/firebase.config';
 import { AuthResponse, User } from '../models/auth.model';
 import { environment } from '../../environment/environment';
+import { sanitizarUsername } from '../models/username';
 
 export interface SessaoLogin {
   user: User;
@@ -157,9 +162,16 @@ export class AuthService {
   }
 
 
-  cadastrar(username: string, email: string, password: string): Observable<void> {
+  cadastrar(
+    nomeCompleto: string,
+    username: string,
+    dataNascimento: string,
+    email: string,
+    password: string
+  ): Observable<void> {
     const emailLimpo = email.trim();
-    const usernameLimpo = username.trim();
+    const usernameLimpo = sanitizarUsername(username);
+    const nomeCompletoLimpo = nomeCompleto.trim();
 
     return from(createUserWithEmailAndPassword(auth, emailLimpo, password)).pipe(
       switchMap((cred) => from(updateProfile(cred.user, { displayName: usernameLimpo })).pipe(
@@ -178,7 +190,9 @@ export class AuthService {
             handleCodeInApp: true
           })).pipe(
             switchMap(() => this.http.post<void>(`${environment.apiBaseUrl}/usuarios`, {
-              username: usernameLimpo
+              nomeCompleto: nomeCompletoLimpo,
+              username: usernameLimpo,
+              dataNascimento
             }))
           );
         })
@@ -224,7 +238,7 @@ export class AuthService {
     }
 
     return from(sendPasswordResetEmail(auth, emailLimpo, {
-      url: this.urlDaAplicacao('/redefinir-senha'),
+      url: this.urlDaAplicacao('/login'),
       handleCodeInApp: true
     })).pipe(
       catchError((error) => {
@@ -236,6 +250,84 @@ export class AuthService {
 
   definirNovaSenha(oobCode: string, novaSenha: string): Observable<void> {
     return from(confirmPasswordReset(auth, oobCode, novaSenha));
+  }
+
+  usaSenha(): boolean {
+    return !!auth.currentUser?.providerData?.some((provedor) => provedor.providerId === 'password');
+  }
+
+  confirmarSenhaAtual(senhaAtual: string): Observable<void> {
+    if (!this.usaSenha()) {
+      return of(undefined);
+    }
+    return this.reautenticar(senhaAtual);
+  }
+
+  atualizarSessao(): Observable<void> {
+    const usuario = auth.currentUser;
+    if (!usuario) {
+      return of(undefined);
+    }
+
+    return from(usuario.reload()).pipe(
+      switchMap(() => from(usuario.getIdToken(true))),
+      tap((token) => {
+        this.idTokenSubject.next(token);
+        this.currentUserSubject.next({
+          uid: usuario.uid,
+          email: usuario.email,
+          displayName: usuario.displayName,
+          photoURL: usuario.photoURL
+        });
+      }),
+      map(() => undefined)
+    );
+  }
+
+  alterarSenha(senhaAtual: string, novaSenha: string): Observable<void> {
+    const usuario = auth.currentUser;
+    if (!usuario) {
+      return throwError(() => new Error('Faça login novamente para continuar.'));
+    }
+    if (!this.usaSenha()) {
+      return throwError(() => new Error('Esta conta não usa senha. A alteração precisa ser feita no provedor de login.'));
+    }
+
+    return this.reautenticar(senhaAtual).pipe(
+      switchMap(() => from(updatePassword(usuario, novaSenha)))
+    );
+  }
+
+  solicitarAlteracaoEmail(novoEmail: string, senhaAtual: string): Observable<void> {
+    const usuario = auth.currentUser;
+    if (!usuario) {
+      return throwError(() => new Error('Faça login novamente para continuar.'));
+    }
+
+    const emailLimpo = novoEmail.trim();
+    const enviar = () => from(verifyBeforeUpdateEmail(usuario, emailLimpo, {
+      url: this.urlDaAplicacao('/conta'),
+      handleCodeInApp: false
+    }));
+
+    if (!this.usaSenha()) {
+      return enviar();
+    }
+
+    return this.reautenticar(senhaAtual).pipe(switchMap(() => enviar()));
+  }
+
+  private reautenticar(senhaAtual: string): Observable<void> {
+    const usuario = auth.currentUser;
+    if (!usuario?.email) {
+      return throwError(() => new Error('Faça login novamente para continuar.'));
+    }
+    if (!senhaAtual) {
+      return throwError(() => new Error('Informe a senha atual para continuar.'));
+    }
+
+    const credencial = EmailAuthProvider.credential(usuario.email, senhaAtual);
+    return from(reauthenticateWithCredential(usuario, credencial)).pipe(map(() => undefined));
   }
 
   private urlDaAplicacao(caminho: string): string {

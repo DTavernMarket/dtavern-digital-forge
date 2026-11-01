@@ -447,7 +447,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   irParaMeuPerfil() {
     this.fecharMenuPerfil();
-    this.router.navigate(['/meu-perfil']);
+    this.router.navigate(['/conta']);
   }
 
   obterTipoUsuario(): 'LOJA' | 'COMPRADOR' | null {

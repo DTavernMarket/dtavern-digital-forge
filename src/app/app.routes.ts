@@ -9,6 +9,8 @@ import { CadastroComponent } from './pages/cadastro/cadastro.component';
 import { ConfirmarContaComponent } from './pages/confirmar-conta/confirmar-conta.component';
 import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha.component';
 import { RedefinirSenhaComponent } from './pages/redefinir-senha/redefinir-senha.component';
+import { ContaComponent } from './pages/conta/conta.component';
+import { authGuard } from './config/auth.guard';
 
 export const routes: Routes = [
   { path: '', component: PaginaInicialComponent },
@@ -20,6 +22,7 @@ export const routes: Routes = [
   { path: 'confirmar-conta', component: ConfirmarContaComponent },
   { path: 'recuperar-senha', component: RecuperarSenhaComponent },
   { path: 'redefinir-senha', component: RedefinirSenhaComponent },
+  { path: 'conta', component: ContaComponent, canActivate: [authGuard] },
   { path: 'em-desenvolvimento', component: PaginaEmDesenvolvimentoComponent },
   { path: '**', redirectTo: 'em-desenvolvimento' }
 ];

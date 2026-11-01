@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
+import { MENSAGEM_USERNAME, sanitizarUsername, usernameValido } from '../../models/username';
 
 @Component({
   selector: 'app-cadastro',
@@ -17,6 +18,21 @@ import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
 
           <form (ngSubmit)="onCadastrar()" class="space-y-4">
             <div>
+              <label class="block text-sm font-medium text-scroll-beige mb-2" for="nomeCompleto">Nome completo</label>
+              <input
+                id="nomeCompleto"
+                type="text"
+                [(ngModel)]="nomeCompleto"
+                name="nomeCompleto"
+                required
+                maxlength="200"
+                autocomplete="name"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
+                placeholder="seu nome completo"
+              />
+            </div>
+
+            <div>
               <label class="block text-sm font-medium text-scroll-beige mb-2" for="username">Username</label>
               <input
                 id="username"
@@ -24,10 +40,24 @@ import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
                 [(ngModel)]="username"
                 name="username"
                 required
-                maxlength="255"
+                maxlength="100"
                 autocomplete="username"
                 class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige"
-                placeholder="seu nome de usuário"
+                placeholder="letras, números e hífens"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-scroll-beige mb-2" for="dataNascimento">Data de nascimento</label>
+              <input
+                id="dataNascimento"
+                type="date"
+                [(ngModel)]="dataNascimento"
+                name="dataNascimento"
+                required
+                [max]="dataMaxima"
+                autocomplete="bday"
+                class="w-full px-4 py-2 bg-tavern-wood/20 border border-brass-accent/40 rounded-lg text-scroll-beige [color-scheme:dark]"
               />
             </div>
 
@@ -140,21 +170,39 @@ export class CadastroComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  nomeCompleto = '';
   username = '';
+  dataNascimento = '';
   email = '';
   password = '';
   confirmPassword = '';
   mostrarSenha = signal(false);
   loading = signal(false);
   errorMessage = '';
+  readonly dataMaxima = dataLocalDeHoje();
 
   onCadastrar() {
     this.errorMessage = '';
-    const username = this.username.trim();
+    const nomeCompleto = this.nomeCompleto.trim();
+    const username = sanitizarUsername(this.username);
+    this.username = username;
     const email = this.email.trim();
+    const dataNascimento = this.dataNascimento;
 
-    if (!username || !email || !this.password) {
-      this.errorMessage = 'Preencha username, e-mail e senha.';
+    if (!nomeCompleto || !username || !dataNascimento || !email || !this.password) {
+      this.errorMessage = 'Preencha nome completo, username, data de nascimento, e-mail e senha.';
+      return;
+    }
+    if (nomeCompleto.length > 200) {
+      this.errorMessage = 'O nome completo deve ter no máximo 200 caracteres.';
+      return;
+    }
+    if (!usernameValido(username)) {
+      this.errorMessage = MENSAGEM_USERNAME;
+      return;
+    }
+    if (dataNascimento > this.dataMaxima) {
+      this.errorMessage = 'A data de nascimento não pode ser futura.';
       return;
     }
     if (this.password.length < 6) {
@@ -167,16 +215,26 @@ export class CadastroComponent {
     }
 
     this.loading.set(true);
-    this.authService.cadastrar(username, email, this.password).subscribe({
+    this.authService.cadastrar(nomeCompleto, username, dataNascimento, email, this.password).subscribe({
       next: () => {
         this.router.navigate(['/confirmar-conta'], { queryParams: { email } });
       },
       error: (error) => {
-        this.errorMessage = error?.error?.message
+        const corpo = error?.error;
+        this.errorMessage = corpo?.detalhes
+          || corpo?.mensagem
+          || corpo?.message
           || (error?.code ? getFirebaseErrorMessage(error.code) : 'Não foi possível criar a conta.');
         this.loading.set(false);
       },
       complete: () => this.loading.set(false)
     });
   }
+}
+
+function dataLocalDeHoje(): string {
+  const hoje = new Date();
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dia = String(hoje.getDate()).padStart(2, '0');
+  return `${hoje.getFullYear()}-${mes}-${dia}`;
 }
