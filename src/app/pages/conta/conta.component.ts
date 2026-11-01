@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { switchMap } from 'rxjs';
-import { BarraNavegacaoComponent } from '../../components/barra-navegacao/barra-navegacao.component';
 import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
 import { MENSAGEM_USERNAME, sanitizarUsername, usernameValido } from '../../models/username';
 import { AuthService } from '../../services/auth.service';
@@ -13,12 +12,8 @@ import { ContaService, ContaUsuario } from '../../services/conta.service';
 @Component({
   selector: 'app-conta',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, BarraNavegacaoComponent],
+  imports: [CommonModule, FormsModule, RouterModule],
   template: `
-    <div class="min-h-screen bg-gradient-to-br from-midnight-brown via-tavern-wood to-dark-brown">
-      <app-barra-navegacao [isFixed]="true" />
-      <div class="pt-20">
-        <div class="container mx-auto px-4 py-6">
           <div class="mb-6 flex flex-col items-center">
             <h1 class="text-2xl md:text-3xl font-medieval font-bold text-scroll-beige mb-1">Minha conta</h1>
             <p class="text-scroll-beige/70 text-xs md:text-sm">Visualize e gerencie as informações da sua conta</p>
@@ -169,9 +164,6 @@ import { ContaService, ContaUsuario } from '../../services/conta.service';
               </section>
             </div>
           }
-        </div>
-      </div>
-    </div>
 
     @if (modalExclusao()) {
       <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4" (click)="fecharExclusao()">

@@ -77,7 +77,20 @@ import { Subscription, filter } from 'rxjs';
                       (click)="irParaMeuPerfil()"
                       class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
                     >
-                      Minha conta
+                      Meu perfil
+                    </button>
+                    <button
+                      type="button"
+                      class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                    >
+                      Minha biblioteca
+                    </button>
+                    <button
+                      type="button"
+                      (click)="irParaContaLoja()"
+                      class="w-full px-4 py-2 text-left text-scroll-beige hover:bg-tavern-wood/20 transition-colors text-sm"
+                    >
+                      Minha loja
                     </button>
                     
                     <!-- Opções específicas para LOJA -->
@@ -448,6 +461,11 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   irParaMeuPerfil() {
     this.fecharMenuPerfil();
     this.router.navigate(['/conta']);
+  }
+
+  irParaContaLoja() {
+    this.fecharMenuPerfil();
+    this.router.navigate(['/conta/loja']);
   }
 
   obterTipoUsuario(): 'LOJA' | 'COMPRADOR' | null {
