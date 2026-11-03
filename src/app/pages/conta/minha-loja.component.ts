@@ -65,7 +65,7 @@ import { ArtesaoService } from '../../services/artesao.service';
             @if (erroDados()) {
               <p class="text-sm text-red-800">{{ erroDados() }}</p>
             }
-            <button type="submit" [disabled]="carregando() || salvando() || !dadosAlterados()" class="min-h-[44px] rounded-lg bg-candlelight-gold px-6 py-2 font-semibold text-tavern-wood disabled:cursor-not-allowed disabled:opacity-50">
+            <button type="submit" [disabled]="carregando() || salvando() || !dadosAlterados()" class="min-h-[44px] rounded-lg bg-tavern-wood px-6 py-2 font-semibold text-candlelight-gold transition-all duration-200 enabled:cursor-pointer enabled:shadow-sm enabled:hover:-translate-y-0.5 enabled:hover:bg-midnight-brown enabled:hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50">
               {{ salvando() ? 'Salvando...' : 'Salvar alterações' }}
             </button>
           </form>

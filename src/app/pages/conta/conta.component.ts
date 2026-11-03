@@ -58,16 +58,16 @@ import { ContaService, ContaUsuario } from '../../services/conta.service';
                 <form (ngSubmit)="salvarDados()" class="space-y-4 card-padrao rounded-xl p-5 sm:p-6" [attr.aria-busy]="carregando()">
                   <div>
                     <label class="mb-2 block text-sm text-midnight-brown" for="nomeCompleto">Nome completo</label>
-                    <input id="nomeCompleto" name="nomeCompleto" type="text" maxlength="200" required [(ngModel)]="nomeCompleto" [readonly]="carregando()" [class.campo-skeleton]="carregando()" class="w-full rounded-lg border border-brass-accent/50 bg-white/60 px-4 py-2 text-midnight-brown" />
+                    <input id="nomeCompleto" name="nomeCompleto" type="text" maxlength="200" required [ngModel]="nomeCompleto" (ngModelChange)="nomeCompleto = $event; limparAvisosDados()" [readonly]="carregando()" [class.campo-skeleton]="carregando()" class="w-full rounded-lg border border-brass-accent/50 bg-white/60 px-4 py-2 text-midnight-brown" />
                   </div>
                   <div>
                     <label class="mb-2 block text-sm text-midnight-brown" for="username">Username</label>
-                    <input id="username" name="username" type="text" maxlength="100" required [(ngModel)]="username" [readonly]="carregando()" [class.campo-skeleton]="carregando()" class="w-full rounded-lg border border-brass-accent/50 bg-white/60 px-4 py-2 text-midnight-brown" />
+                    <input id="username" name="username" type="text" maxlength="100" required [ngModel]="username" (ngModelChange)="username = $event; limparAvisosDados()" [readonly]="carregando()" [class.campo-skeleton]="carregando()" class="w-full rounded-lg border border-brass-accent/50 bg-white/60 px-4 py-2 text-midnight-brown" />
                     <p class="mt-1 text-xs text-midnight-brown/70">Letras minúsculas, números e hífens. De 3 a 100 caracteres.</p>
                   </div>
                   <div>
                     <label class="mb-2 block text-sm text-midnight-brown" for="dataNascimento">Data de nascimento</label>
-                    <input id="dataNascimento" name="dataNascimento" type="date" required [max]="dataMaxima" [(ngModel)]="dataNascimento" [readonly]="carregando()" [class.campo-skeleton]="carregando()" class="w-full rounded-lg border border-brass-accent/50 bg-white/60 px-4 py-2 text-midnight-brown [color-scheme:light]" />
+                    <input id="dataNascimento" name="dataNascimento" type="date" required [max]="dataMaxima" [ngModel]="dataNascimento" (ngModelChange)="dataNascimento = $event; limparAvisosDados()" [readonly]="carregando()" [class.campo-skeleton]="carregando()" class="w-full rounded-lg border border-brass-accent/50 bg-white/60 px-4 py-2 text-midnight-brown [color-scheme:light]" />
                   </div>
                   <div>
                     <label class="mb-2 block text-sm text-midnight-brown" for="dataCriacao">Data de criação da conta</label>
@@ -82,7 +82,7 @@ import { ContaService, ContaUsuario } from '../../services/conta.service';
                   @if (erroDados) {
                     <p class="text-sm text-red-800">{{ erroDados }}</p>
                   }
-                  <button type="submit" [disabled]="carregando() || salvandoDados() || !dadosAlterados()" class="min-h-[44px] rounded-lg bg-candlelight-gold px-6 py-2 font-semibold text-tavern-wood disabled:cursor-not-allowed disabled:opacity-50">
+                  <button type="submit" [disabled]="carregando() || salvandoDados() || !dadosAlterados()" class="min-h-[44px] rounded-lg bg-tavern-wood px-6 py-2 font-semibold text-candlelight-gold transition-all duration-200 enabled:cursor-pointer enabled:shadow-sm enabled:hover:-translate-y-0.5 enabled:hover:bg-midnight-brown enabled:hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50">
                     {{ salvandoDados() ? 'Salvando...' : 'Salvar alterações' }}
                   </button>
                 </form>
@@ -281,6 +281,12 @@ export class ContaComponent implements OnInit {
 
   usaSenha(): boolean {
     return this.authService.usaSenha();
+  }
+
+  limparAvisosDados() {
+    this.mensagemDados = '';
+    this.avisoDados = '';
+    this.erroDados = '';
   }
 
   dadosAlterados(): boolean {

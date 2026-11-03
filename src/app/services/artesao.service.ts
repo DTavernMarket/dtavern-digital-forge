@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, Injectable, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom, take } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Artesao, CadastroLojaRequest, LojaResponse, LojaMaisVendas } from '../models/artesao.model';
 import { PagedResult, ProdutoCompleto } from '../models/produto.model';
@@ -144,7 +144,7 @@ export class ArtesaoService {
       this.router.navigate(['/cadastro'], { queryParams: { cadastro: 'artesao' } });
       return;
     }
-    this.getMeLoja().subscribe({
+    this.getMeLoja().pipe(take(1)).subscribe({
       next: () => this.router.navigate(['/conta/loja']),
       error: () => this.router.navigate(['/criar-loja'])
     });
