@@ -453,7 +453,7 @@ export class MeuPerfilComponent implements OnInit, OnDestroy {
     return caminho.startsWith('/') ? this.CDN_BASE + caminho : this.CDN_BASE + '/' + caminho;
   }
 
-  formatarData(data: string | undefined): string {
+  formatarData(data: string | null | undefined): string {
     if (!data) return '';
     try {
       const date = new Date(data);
