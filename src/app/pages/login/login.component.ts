@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
+import { consumirIntencaoCriarLoja } from '../../models/intencao-criar-loja';
 
 @Component({
   selector: 'app-login',
@@ -113,6 +114,11 @@ export class LoginComponent {
       next: (sessao) => {
         if (!sessao.emailVerified) {
           this.router.navigate(['/confirmar-conta'], { queryParams: { email: this.email.trim() } });
+          return;
+        }
+
+        if (consumirIntencaoCriarLoja()) {
+          this.router.navigate(['/criar-loja']);
           return;
         }
 

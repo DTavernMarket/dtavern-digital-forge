@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { getFirebaseErrorMessage } from '../../models/firebase-error-handler';
 import { MENSAGEM_USERNAME, sanitizarUsername, usernameValido } from '../../models/username';
+import { consumirIntencaoCriarLoja } from '../../models/intencao-criar-loja';
 
 @Component({
   selector: 'app-cadastro',
@@ -217,6 +218,10 @@ export class CadastroComponent {
     this.loading.set(true);
     this.authService.cadastrar(nomeCompleto, username, dataNascimento, email, this.password).subscribe({
       next: () => {
+        if (consumirIntencaoCriarLoja()) {
+          this.router.navigate(['/criar-loja']);
+          return;
+        }
         this.router.navigate(['/confirmar-conta'], { queryParams: { email } });
       },
       error: (error) => {

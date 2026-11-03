@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { computed, Injectable, signal, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, firstValueFrom } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Artesao, CadastroLojaRequest, LojaResponse, LojaMaisVendas } from '../models/artesao.model';
@@ -7,6 +8,7 @@ import { PagedResult, ProdutoCompleto } from '../models/produto.model';
 import { AuthService } from './auth.service';
 import { EditarLojaRequest, MeResponseLoja } from '../models/auth.model';
 import { environment } from '../../environment/environment';
+import { marcarIntencaoCriarLoja } from '../models/intencao-criar-loja';
 import { StatusPagamento, Venda } from '../models/venda.model';
 
 @Injectable({
@@ -16,6 +18,7 @@ export class ArtesaoService {
   private lojasCache = signal<LojaResponse[]>([]);
   private authService = inject(AuthService);
   private http = inject(HttpClient);
+  private router = inject(Router);
   private readonly API_BASE = environment.apiBaseUrl;
 
   /**
@@ -118,6 +121,35 @@ export class ArtesaoService {
     return this.http.post<LojaResponse>(`${this.API_BASE}/client/lojas/register`, loja);
   }
 
+  criarLojaDaConta(loja: { nome: string; dominio: string; descricao: string | null }): Observable<MeResponseLoja> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => this.http.post<MeResponseLoja>(`${this.API_BASE}/lojas`, loja, {
+        headers: { Authorization: `Bearer ${token}` }
+      }))
+    );
+  }
+
+  consultarDominio(dominio: string): Observable<{ disponivel: boolean }> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => this.http.get<{ disponivel: boolean }>(`${this.API_BASE}/lojas/dominio/disponivel`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: new HttpParams().set('dominio', dominio)
+      }))
+    );
+  }
+
+  abrirFluxoCriarLoja() {
+    if (!this.authService.getCurrentUser()) {
+      marcarIntencaoCriarLoja();
+      this.router.navigate(['/cadastro'], { queryParams: { cadastro: 'artesao' } });
+      return;
+    }
+    this.getMeLoja().subscribe({
+      next: () => this.router.navigate(['/conta/loja']),
+      error: () => this.router.navigate(['/criar-loja'])
+    });
+  }
+
   verifyOwner(dominio: string): Observable<boolean> {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {
@@ -171,6 +203,14 @@ export class ArtesaoService {
    * Edita a descrição sobre da loja
    * @param descricaoSobre Nova descrição sobre
    */
+  atualizarDadosLoja(loja: { nome: string; dominio: string; descricao: string | null }): Observable<MeResponseLoja> {
+    return this.authService.getCurrentToken().pipe(
+      switchMap(token => this.http.patch<MeResponseLoja>(`${this.API_BASE}/lojas/editar-loja`, loja, {
+        headers: { Authorization: `Bearer ${token}` }
+      }))
+    );
+  }
+
   editarLoja(editarLojaRequest: EditarLojaRequest): Observable<void> {
     return this.authService.getCurrentToken().pipe(
       switchMap(token => {

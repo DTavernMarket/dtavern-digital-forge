@@ -12,6 +12,7 @@ import { RedefinirSenhaComponent } from './pages/redefinir-senha/redefinir-senha
 import { ContaComponent } from './pages/conta/conta.component';
 import { ContaLayoutComponent } from './pages/conta/conta-layout.component';
 import { MinhaLojaComponent } from './pages/conta/minha-loja.component';
+import { CriarLojaComponent } from './pages/criar-loja/criar-loja.component';
 import { authGuard } from './config/auth.guard';
 
 export const routes: Routes = [
@@ -24,6 +25,7 @@ export const routes: Routes = [
   { path: 'confirmar-conta', component: ConfirmarContaComponent },
   { path: 'recuperar-senha', component: RecuperarSenhaComponent },
   { path: 'redefinir-senha', component: RedefinirSenhaComponent },
+  { path: 'criar-loja', component: CriarLojaComponent, canActivate: [authGuard] },
   {
     path: 'conta',
     component: ContaLayoutComponent,

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ArtesaoService } from '../../services/artesao.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -122,8 +123,8 @@ import { RouterModule } from '@angular/router';
 
         <div class="mt-8 md:mt-14 flex justify-center">
           <button
-            [routerLink]="['/cadastro']"
-            [queryParams]="{ cadastro: 'artesao' }"
+            type="button"
+            (click)="criarMinhaLoja()"
             class="w-full sm:w-auto max-w-xs px-8 py-4 bg-tavern-wood text-candlelight-gold rounded-lg font-medium hover:bg-midnight-brown hover:shadow-xl md:hover:scale-105 transition-all duration-300 text-lg"
           >
             Criar minha loja
@@ -500,4 +501,10 @@ import { RouterModule } from '@angular/router';
     `,
   ],
 })
-export class SecaoComoFuncionaComponent { }
+export class SecaoComoFuncionaComponent {
+  private artesaoService = inject(ArtesaoService);
+
+  criarMinhaLoja() {
+    this.artesaoService.abrirFluxoCriarLoja();
+  }
+}

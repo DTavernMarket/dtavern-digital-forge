@@ -72,6 +72,14 @@ body {
   animation: shimmer 2s infinite;
 }
 
+/* Card padrão: o mesmo pergaminho claro dos cards da seção Como funciona. */
+.card-padrao {
+  border: 1px solid rgba(197, 139, 61, 0.45);
+  background: linear-gradient(180deg, #f4ebdc, #ede0c8);
+  box-shadow: 0 4px 14px rgba(75, 46, 25, 0.08);
+  color: #1c0f0a;
+}
+
 /* Efeitos de hover para botões */
 .btn-medieval {
   position: relative;

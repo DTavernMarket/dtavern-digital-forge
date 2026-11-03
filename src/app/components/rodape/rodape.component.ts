@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ArtesaoService } from '../../services/artesao.service';
 
 @Component({
   selector: 'app-rodape',
@@ -28,9 +29,9 @@ import { RouterModule } from '@angular/router';
             <h3 class="rodape__titulo">Links Rápidos</h3>
             <ul class="rodape__lista">
               <li>
-                <a [routerLink]="['/cadastro']" [queryParams]="{ cadastro: 'artesao' }" class="rodape__link">
+                <button type="button" (click)="criarMinhaLoja()" class="rodape__link">
                   Criar minha loja
-                </a>
+                </button>
               </li>
               <li>
                 <a routerLink="/login" class="rodape__link">
@@ -143,6 +144,12 @@ import { RouterModule } from '@angular/router';
       transition: color 180ms ease;
       text-decoration: none;
       outline: none;
+      background: none;
+      border: 0;
+      padding: 0;
+      font: inherit;
+      cursor: pointer;
+      text-align: left;
     }
 
     .rodape__link:hover {
@@ -266,5 +273,10 @@ import { RouterModule } from '@angular/router';
   `]
 })
 export class RodapeComponent {
+  private artesaoService = inject(ArtesaoService);
   readonly anoAtual = new Date().getFullYear();
+
+  criarMinhaLoja() {
+    this.artesaoService.abrirFluxoCriarLoja();
+  }
 }

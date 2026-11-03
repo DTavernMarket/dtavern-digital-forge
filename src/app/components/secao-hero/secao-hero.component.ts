@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AmbientacaoHeroComponent } from '../ambientacao-hero/ambientacao-hero.component';
+import { ArtesaoService } from '../../services/artesao.service';
 
 @Component({
   selector: 'app-secao-hero',
@@ -34,8 +35,8 @@ import { AmbientacaoHeroComponent } from '../ambientacao-hero/ambientacao-hero.c
           <!-- Botões CTA -->
           <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button
-              [routerLink]="['/cadastro']"
-              [queryParams]="{ cadastro: 'artesao' }"
+              type="button"
+              (click)="criarMinhaLoja()"
               class="w-full sm:w-auto max-w-xs px-8 py-4 bg-candlelight-gold text-tavern-wood rounded-lg font-medium hover:bg-warm-amber hover:shadow-xl md:hover:scale-105 transition-all duration-300 text-lg"
             >
               Criar minha loja
@@ -118,6 +119,12 @@ import { AmbientacaoHeroComponent } from '../ambientacao-hero/ambientacao-hero.c
   ],
 })
 export class SecaoHeroComponent {
+  private artesaoService = inject(ArtesaoService);
+
+  criarMinhaLoja() {
+    this.artesaoService.abrirFluxoCriarLoja();
+  }
+
   rolarParaProximaSecao(): void {
     const elementoProximaSecao = document.getElementById('como-funciona');
     if (elementoProximaSecao) {

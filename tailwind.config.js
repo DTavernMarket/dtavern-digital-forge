@@ -20,8 +20,8 @@ module.exports = {
         'warm-amber': '#FFB347',         // Âmbar aconchegante - botões secundários, hovers
         /** Fundo sólido para pills de especialidade (evita /opacity no Tailwind). */
         'especialidade-tag': '#7a4f22',
-        'stone-gray': '#8C7A6B',         // Pedra medieval - texto secundário, cards
-        'scroll-beige': '#E9D7B8',       // Pergaminho envelhecido - fundos de texto, modais
+        'stone-gray': '#8C7A6B',         // Pedra medieval - texto secundário
+        'scroll-beige': '#E9D7B8',       // Pergaminho envelhecido - textos sobre fundo escuro
         
         // Paleta auxiliar
         'midnight-brown': '#1C0F0A',     // Quase preto - texto principal em fundo claro
@@ -30,7 +30,7 @@ module.exports = {
         // Cores de sistema (mantidas para compatibilidade)
         'background': '#4B2E19',
         'foreground': '#E9D7B8',
-        'card': '#8C7A6B',
+        'card': '#F4EBDC',               // Pergaminho claro - cor padrão dos cards
         'muted': '#5A4B43',
         'accent': '#FFD36A',
       },

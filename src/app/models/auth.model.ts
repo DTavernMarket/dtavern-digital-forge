@@ -21,9 +21,12 @@ export interface User {
 export interface MeResponseLoja {
 
   nomeLoja: string;
-  email: string;
+  email?: string | null;
   dominio: string;
-  dataCriacaoConta: string;
+  descricao?: string | null;
+  dataCriacaoConta?: string | null;
+  ativo?: boolean;
+  dataCriacao?: string | null;
 
 }
 

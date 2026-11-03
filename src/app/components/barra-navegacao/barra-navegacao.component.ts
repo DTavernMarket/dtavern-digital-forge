@@ -3,6 +3,7 @@ import { CommonModule, DOCUMENT } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { ArtesaoService } from '../../services/artesao.service';
 import { AuthService } from '../../services/auth.service';
+import { marcarIntencaoCriarLoja } from '../../models/intencao-criar-loja';
 import { Subscription, filter } from 'rxjs';
 
 @Component({
@@ -453,6 +454,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
   }
 
   irParaCadastroArtesao() {
+    marcarIntencaoCriarLoja();
     this.router.navigate(['/cadastro'], {
       queryParams: { cadastro: 'artesao' }
     });
@@ -465,7 +467,7 @@ export class BarraNavegacaoComponent implements OnInit, OnDestroy {
 
   irParaContaLoja() {
     this.fecharMenuPerfil();
-    this.router.navigate(['/conta/loja']);
+    this.router.navigate(['/criar-loja']);
   }
 
   obterTipoUsuario(): 'LOJA' | 'COMPRADOR' | null {
