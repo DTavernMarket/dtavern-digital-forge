@@ -327,7 +327,16 @@ export class AuthService {
     }
 
     const credencial = EmailAuthProvider.credential(usuario.email, senhaAtual);
-    return from(reauthenticateWithCredential(usuario, credencial)).pipe(map(() => undefined));
+    return from(reauthenticateWithCredential(usuario, credencial)).pipe(
+      map(() => undefined),
+      catchError((error) => {
+        // Aqui o e-mail vem da sessão; só a senha foi digitada. Não reaproveitar a mensagem do login.
+        if (error?.code === 'auth/invalid-credential' || error?.code === 'auth/wrong-password') {
+          return throwError(() => new Error('Senha atual incorreta. Confira e tente de novo.'));
+        }
+        return throwError(() => error);
+      })
+    );
   }
 
   private urlDaAplicacao(caminho: string): string {
