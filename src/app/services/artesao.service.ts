@@ -3,7 +3,7 @@ import { computed, Injectable, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, firstValueFrom, take } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { Artesao, CadastroLojaRequest, LojaResponse, LojaMaisVendas } from '../models/artesao.model';
+import { Artesao, CadastroLojaRequest, LojaResponse } from '../models/artesao.model';
 import { PagedResult, ProdutoCompleto } from '../models/produto.model';
 import { AuthService } from './auth.service';
 import { EditarLojaRequest, MeResponseLoja } from '../models/auth.model';
@@ -20,29 +20,6 @@ export class ArtesaoService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private readonly API_BASE = environment.apiBaseUrl;
-
-  /**
-   * Lista lojas paginadas do backend
-   * @param filtroGeral Termo de busca opcional
-   * @param page Número da página (baseado em 0)
-   * @param size Tamanho da página
-   */
-  listarLojas(
-    filtroGeral?: string,
-    page: number = 0,
-  ): Observable<PagedResult<LojaResponse>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', '9');
-
-    if (filtroGeral && filtroGeral.trim()) {
-      params = params.set('filtroGeral', filtroGeral.trim());
-    }
-
-    return this.http.get<PagedResult<LojaResponse>>(`${this.API_BASE}/client/lojas`, {
-      params,
-    });
-  }
 
   /**
    * Busca uma loja específica pelo domínio
@@ -228,15 +205,6 @@ export class ArtesaoService {
   }
 
   /**
-   * Busca lojas com mais vendas
-   */
-  buscarLojasMaisVendas(): Observable<PagedResult<LojaMaisVendas>> {
-    return this.http.get<PagedResult<LojaMaisVendas>>(
-      `${this.API_BASE}/client/lojas/mais-vendas`
-    );
-  }
-
-  /**
    * Lista todos os produtos da loja.
    * Requer autenticação e que o usuário seja o dono da loja.
    * @param dominio Domínio da loja
@@ -280,34 +248,6 @@ export class ArtesaoService {
             'Authorization': `Bearer ${token}`
           }
         });
-      })
-    );
-  }
-
-  /**
-   * Faz upload de mídia da loja (foto de perfil ou header).
-   * Requer autenticação.
-   * @param arquivo Arquivo de imagem a ser enviado
-   * @param tipoMidia 'PERFIL' (foto da loja) ou 'HEADER' (imagem de capa)
-   */
-  uploadMidia(arquivo: File, tipoMidia: 'HEADER' | 'PERFIL'): Observable<unknown> {
-    const formData = new FormData();
-    formData.append('imagem', arquivo);
-
-    const params = new HttpParams().set('tipoMidia', tipoMidia);
-
-    return this.authService.getCurrentToken().pipe(
-      switchMap(token => {
-        return this.http.post<unknown>(
-          `${this.API_BASE}/lojas/midia`,
-          formData,
-          {
-            params,
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          }
-        );
       })
     );
   }

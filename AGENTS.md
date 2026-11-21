@@ -9,8 +9,8 @@ SPA do marketplace DTavern. Consome a API Quarkus em `dtavern-server`.
 - **Change detection zoneless** (`provideZonelessChangeDetection`); use **signals** para estado.
 - **HTTP** com `withFetch()` + interceptor funcional. Templates em sua maioria **inline** (poucos `.html`/`.css` por componente).
 - **Estilo:** Tailwind CSS 3.4 (tema medieval/taverna - cores `tavern-wood`, `candlelight-gold`,
-  etc. em `tailwind.config.js`); CSS global em `src/styles.css`. **PrimeNG** usado pontualmente
-  (ex.: `pagina-explorar`).
+  etc. em `tailwind.config.js`); CSS global em `src/styles.css`. **PrimeNG** esta instalado, mas
+  nenhuma pagina atual usa (o unico uso era a `pagina-explorar`, removida).
 - **Auth:** Firebase (email/senha). Token JWT mantido **so em memoria** (BehaviorSubject), nao em localStorage.
 
 ## Como rodar
@@ -42,23 +42,25 @@ app.config.ts  providers globais (router, http, interceptor, zoneless)
 | Rota | Componente | Guard |
 |------|------------|-------|
 | `` | `PaginaInicialComponent` | - |
-| `explorar` | `PaginaExplorarComponent` | - |
 | `sobre`, `termos-uso`, `politica-privacidade` | paginas institucionais | - |
-| `produtos/:nomeNormalizado` | `ProdutoDetalheComponent` | - |
-| `lojas/:dominio` | `LojaArtesaoComponent` | - |
-| `lojas/:dominio/gerenciar-produtos` | `GerenciarProdutosComponent` | `authGuard` + `lojaOwnerGuard` |
-| `novo-produto`, `editar-produto` | `CadastroProdutoComponent` | `authGuard` |
-| `login`, `cadastro` | autenticacao | - |
-| `meu-perfil`, `biblioteca` | conta do usuario | `authGuard` |
-| `**` | `PaginaNaoEncontradaComponent` | - |
+| `login`, `cadastro`, `confirmar-conta`, `recuperar-senha`, `redefinir-senha` | autenticacao | - |
+| `criar-loja` | `CriarLojaComponent` | `authGuard` |
+| `conta` (layout `ContaLayoutComponent`) | `ContaComponent`; filho `loja` -> `MinhaLojaComponent` | `authGuard` |
+| `em-desenvolvimento` | `PaginaEmDesenvolvimentoComponent` | - |
+| `**` | redireciona para `em-desenvolvimento` | - |
+
+> Paginas antigas fora das rotas (`pagina-explorar`, `meu-perfil`, `loja-artesao`, `gerenciar-produtos`,
+> `secao-artesoes`, `dialog-editar-loja`) foram removidas junto com a listagem de lojas e o upload de
+> foto de perfil/header no backend. Ainda existem links para `/explorar` e `/lojas/:dominio/...`
+> que caem em `em-desenvolvimento`.
 
 ## Services -> endpoints
 
 | Service | Responsabilidade |
 |---------|------------------|
 | `auth.service.ts` | Login/logout/reset via Firebase; registro de comprador; `verifyToken`; estado do usuario (token + claims em memoria) |
-| `artesao.service.ts` | Lojas: listar, buscar por dominio, criar, editar, verificar dono, upload de midia (`/lojas`, `/client/lojas`) |
-| `cliente.service.ts` | Comprador: criar, perfil (`me`), biblioteca, upload de foto (`/clientes`, `/client/clientes`) |
+| `artesao.service.ts` | Lojas: buscar por dominio, criar, editar, verificar dono (`/lojas`, `/client/lojas`) |
+| `cliente.service.ts` | Comprador: criar, perfil (`me`), biblioteca (`/clientes`, `/client/clientes`) |
 | `produto.service.ts` | Produtos: CRUD, comprar, downloads, upload de arquivos (preview/conteudo) (`/produtos`, `/client/produtos`) |
 | `categoria-produto.service.ts` | Lista categorias (`/categorias-produtos`) |
 

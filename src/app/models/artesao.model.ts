@@ -41,15 +41,3 @@ export interface CadastroLojaRequest {
   email: string;
   password: string;
 }
-
-// DTO para lojas com mais vendas
-export interface LojaMaisVendas {
-  descricaoLoja: string;
-  dominioLoja: string;
-  idLoja: string;
-  nomeLoja: string;
-  qtdVendas: number;
-  /** Caminho da imagem de perfil da loja (opcional, quando retornado pelo backend) */
-  caminhoImagemPerfil?: string;
-}
-

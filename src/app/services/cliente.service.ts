@@ -85,28 +85,4 @@ export class ClienteService {
             })
         );
     }
-
-    /**
-     * Envia a foto de perfil do comprador e vincula ao cliente autenticado.
-     * Requer autenticação.
-     * @param arquivo Arquivo de imagem a ser enviado
-     */
-    uploadMidia(arquivo: File): Observable<unknown> {
-        const formData = new FormData();
-        formData.append('imagem', arquivo);
-
-        return this.authService.getCurrentToken().pipe(
-            switchMap(token => {
-                return this.http.post<unknown>(
-                    `${this.API_BASE}/clientes/midia`,
-                    formData,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    }
-                );
-            })
-        );
-    }
 }
